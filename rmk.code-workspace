@@ -3,15 +3,12 @@
     {
       "path": "."
     },
+    {
+      "neme": "example",
+      "path": "../rmk-user-example"
+    },
   ],
   "settings": {
     "explorer.excludeGitIgnore": true,
-    "files.exclude": {
-      "**/.git": true,
-      "**/.gitignore": true,
-      "**/.DS_Store": true,
-      "**/node_modules": true,
-      "**/target": true
-    },
   }
 }
