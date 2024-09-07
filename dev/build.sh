@@ -9,8 +9,6 @@ cd keyboards/$1
 
 TARGET=$(grep -m 1 '^target *= *' ./.cargo/config.toml | sed 's/target *= *"\(.*\)"/\1/')
 
-echo $TARGET
-
 cargo install cargo-binutils || true
 rustup component add llvm-tools-preview || true
 rustup target add $TARGET || true

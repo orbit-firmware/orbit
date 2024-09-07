@@ -1,0 +1,77 @@
+name: Build RMK Firmware
+
+on:
+  workflow_call:
+    inputs:
+      keyboard:
+        description: "which keyboard to use"
+        default: ""
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Firmware
+    runs-on: ubuntu-latest
+    container: rmkfirmware/rmk:latest
+    
+    steps:
+      - name: Checkout rmk
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          path: .
+          repository: rmk-firmware/rmk
+          ref: main
+
+      - name: Checkout User Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false 
+          fetch-depth: 0
+
+      
+
+      # - name: Genarate Build Scripts
+      #   run: |
+      #     cp ./.github/build.sh .
+      #     cp ./.github/build.bat .
+      #     sed -i "s/%KEYBOARD%/${{inputs.keyboard}}/g" ./build.sh
+      #     sed -i "s/%KEYBOARD%/${{inputs.keyboard}}/g" ./build.bat
+
+      # - name: Commit Build Scripts
+      #   run: |
+      #     git config --global --add safe.directory $(pwd)
+      #     git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
+      #     git add build.sh build.bat
+      #     if git diff --cached --quiet; then
+      #       echo "No changes to commit."
+      #     else
+      #       git commit -m "Update build scripts"
+      #     fi
+      
+      # - name: Push Build Scripts
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.ref }}
+
+      # - name: Build
+      #   run: chmod +x ./build.sh && ./build.sh 
+
+      # - name: Generate Release
+      #   uses: softprops/action-gh-release@v2
+      #   if: always() && !cancelled()
+      #   with:
+      #     token: ${{ github.token }}
+      #     name: Latest Firmware
+      #     tag_name: ${{ inputs.release_name || 'latest' }}
+      #     fail_on_unmatched_files: false
+      #     draft: false
+      #     prerelease: false
+      #     files: |
+      #       build/*.hex
+      #       build/*.bin
+
+      
