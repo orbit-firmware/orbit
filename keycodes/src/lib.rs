@@ -12,7 +12,7 @@ struct KeyCode {
 }
 
 fn read_kcs_file(path: &str) -> Vec<KeyCode> {
-  let kcs_path = format!("keycodes/data/{}.kcs", path);
+  let kcs_path = format!("keycodes/definitions/{}.kcs", path);
   let msg = format!("Failed to read keycodes file at {:?}", kcs_path);
   let content = fs::read_to_string(&kcs_path).expect(msg.as_str());
 
