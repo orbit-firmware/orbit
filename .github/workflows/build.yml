@@ -31,7 +31,7 @@ jobs:
 
       - name: Compile Firmware
         run: |
-          make build kb=${inputs.keyboard}
+          make build kb=${{ inputs.keyboard }}
       
       - name: Generate Release
         uses: softprops/action-gh-release@v2
