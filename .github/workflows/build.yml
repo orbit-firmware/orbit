@@ -21,7 +21,7 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: rmk-firmware/rmk
-          ref: main
+          ref: master
 
       - name: Checkout User Repository
         uses: actions/checkout@v4
