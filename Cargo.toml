@@ -11,6 +11,7 @@ members = [
   "keyboards/keyboard_f",
 ]
 
+
 [profile.dev]
 debug = true
 lto = true
