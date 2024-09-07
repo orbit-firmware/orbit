@@ -9,11 +9,13 @@ all: help
 build: #/ [kb=keyboard]
 	@if [ "$(kb)" = "" ]; then \
 		echo "No keyboard specified. Use make build kb=<keyboard_name>"; \
+		exit 1; \
 	elif [ -d "keyboards/$(kb)" ]; then \
 		chmod +x ./dev/build.sh; \
 		./dev/build.sh $(kb); \
 	else \
 		echo "Keyboard $(kb) not found"; \
+		exit 1; \
 	fi
 
 docker: #/ runs the dev container

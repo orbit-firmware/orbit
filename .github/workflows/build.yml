@@ -31,16 +31,8 @@ jobs:
           fetch-depth: 0
 
       - name: Compile Firmware
-        run: |
-          if [ "${{ inputs.keyboard }}" = "" ]; then \
-            echo "No keyboard specified. Use make build kb=<keyboard_name>"; \
-          elif [ -d "keyboards/${{ inputs.keyboard }}" ]; then \
-            chmod +x ./dev/build.sh; \
-            ./dev/build.sh ${{ inputs.keyboard }}; \
-          else \
-            echo "Keyboard ${{ inputs.keyboard }} not found"; \
-          fi
-      
+        run: make build kb=${{ inputs.keyboard }}
+
       - name: Generate Release
         uses: softprops/action-gh-release@v2
         if: always() && !cancelled()
