@@ -15,8 +15,12 @@ use embassy_stm32::gpio::{Level, Output, Speed};
 use embassy_time::{Duration, Timer};
 use fmt::info;
 
+use rmk::keycodes::KeyCodes;
+
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
   let _p = embassy_stm32::init(Default::default());
-  loop {}
+  loop {
+    info!("{}", KeyCodes::A as u16);
+  }
 }

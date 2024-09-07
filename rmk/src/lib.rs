@@ -5,7 +5,7 @@
 // pub mod flow;
 // pub mod key;
 // pub mod keyboard;
-// pub mod keycodes;
+pub mod keycodes;
 // pub mod keymap;
 // pub mod time;
 
