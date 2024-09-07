@@ -1,5 +1,3 @@
-
-version: '3'
 services:
   rmk:
     build:
@@ -9,3 +7,4 @@ services:
     volumes:
       - ../:/rmk
     command: /bin/bash
+    working_dir: /rmk

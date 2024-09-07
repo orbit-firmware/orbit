@@ -5,6 +5,11 @@ edition = "2021"
 name = "keyboard_a"
 version = "0.1.0"
 
+[[bin]]
+name = "keyboard_a"
+test = false
+bench = false
+
 [dependencies]
 rmk = { path = "../../rmk/firmware" }
 cortex-m = { version = "0.7.7", features = [
@@ -31,23 +36,6 @@ embassy-sync = "0.6.0"
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 panic-halt = "0.2.0"
 panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
-
-[[bin]]
-name = "keyboard_a"
-test = false
-bench = false
-
-[profile.dev]
-debug = true
-lto = true
-opt-level = "z"
-incremental = true
-
-[profile.release]
-debug = false
-lto = true
-opt-level = "z"
-incremental = true
 
 [features]
 defmt = ["dep:defmt"]

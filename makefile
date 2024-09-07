@@ -11,8 +11,8 @@ build: #/ [kb=keyboard]
 		echo "No keyboard specified. Use make build kb=<keyboard_name>"; \
 		exit 1; \
 	elif [ -d "keyboards/$(kb)" ]; then \
-		chmod +x ./dev/build.sh; \
-		./dev/build.sh $(kb); \
+		chmod +x ./dev/firmware_build.sh; \
+		./dev/firmware_build.sh $(kb); \
 	else \
 		echo "Keyboard $(kb) not found"; \
 		exit 1; \

@@ -43,4 +43,8 @@ RUN rustup target add riscv32imac-unknown-none-elf
 RUN rustup target add riscv64gc-unknown-none-elf
 RUN rustup target add riscv64imac-unknown-none-elf
 
+RUN mkdir /rmk
+
+WORKDIR /rmk
+
 ENTRYPOINT ["tail", "-f", "/dev/null"]
