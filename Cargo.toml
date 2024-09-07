@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = [
+  "rmk/firmware",
+  "rmk/keycodes",
+  "keyboards/keyboard_a",
+  "keyboards/keyboard_b",
+  "keyboards/keyboard_c",
+  "keyboards/keyboard_d",
+  "keyboards/keyboard_e",
+  "keyboards/keyboard_f",
+]

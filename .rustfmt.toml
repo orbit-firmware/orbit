@@ -1,0 +1,6 @@
+brace_style = "PreferSameLine"
+control_brace_style = "AlwaysSameLine"
+fn_single_line = true
+short_array_element_width_threshold = 1000
+tab_spaces = 2
+hard_tabs = false

@@ -1,0 +1,11 @@
+[package]
+name = "keyboard_b"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "keyboard_b"
+path = "src/main.rs"
+
+[dependencies]
+rmk = { path = "../../rmk/firmware" }
