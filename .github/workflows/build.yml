@@ -26,11 +26,13 @@ jobs:
       - name: Checkout User Repository
         uses: actions/checkout@v4
         with:
+          path: user
           persist-credentials: false 
           fetch-depth: 0
 
       - name: Compile Firmware
         run: |
+          cat makefile
           make build kb=${{ inputs.keyboard }}
       
       - name: Generate Release
