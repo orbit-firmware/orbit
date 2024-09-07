@@ -71,6 +71,17 @@ pub fn generate(input: TokenStream) -> TokenStream {
       pub enum KeyCodes {
           #(#enum_variants)*
       }
+
+      impl KeyCodes {
+          pub fn from_u16(code: u16) -> Option<KeyCodes> {
+              match code {
+                  #(
+                      #enum_variants
+                  )*
+                  _ => None,
+              }
+          }
+      }
   };
 
   TokenStream::from(generated_enum)
