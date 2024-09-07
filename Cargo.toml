@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["rmk/firmware", "rmk/keycodes", "keyboards/feb42"]
+members = ["rmk", "keyboards/feb42"]
 
 
 [profile.dev]

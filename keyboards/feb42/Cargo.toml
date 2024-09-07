@@ -11,7 +11,7 @@ test = false
 bench = false
 
 [dependencies]
-rmk = { path = "../../rmk/firmware" }
+rmk = { path = "../../rmk" }
 cortex-m = { version = "0.7.7", features = [
     "inline-asm",
     "critical-section-single-core",
