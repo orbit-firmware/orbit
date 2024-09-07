@@ -2,11 +2,11 @@
 
 [package]
 edition = "2021"
-name = "keyboard_a"
+name = "feb42"
 version = "0.1.0"
 
 [[bin]]
-name = "keyboard_a"
+name = "feb42"
 test = false
 bench = false
 
