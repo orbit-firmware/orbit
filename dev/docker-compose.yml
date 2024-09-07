@@ -1,0 +1,11 @@
+
+version: '3'
+services:
+  rmk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rmk
+    volumes:
+      - ../:/rmk
+    command: /bin/bash

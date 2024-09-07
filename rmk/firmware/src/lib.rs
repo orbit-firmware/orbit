@@ -1,7 +1,6 @@
-pub fn scan_matrix() {
-    println!("Scanning matrix...");
-}
+#![no_std]
+#![no_main]
 
-pub fn handle_keypress() {
-    println!("Handling keypress...");
-}
+pub fn scan_matrix() {}
+
+pub fn handle_keypress() {}

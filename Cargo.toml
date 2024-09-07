@@ -10,3 +10,16 @@ members = [
   "keyboards/keyboard_e",
   "keyboards/keyboard_f",
 ]
+
+
+[profile.dev]
+debug = true
+lto = true
+opt-level = "z"
+incremental = true
+
+[profile.release]
+debug = false
+lto = true
+opt-level = "z"
+incremental = true
