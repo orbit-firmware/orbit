@@ -18,7 +18,8 @@ make kb=MY_KEYBOARD
 ```
 else
 ```shell
-./rmk/dev/compile.sh MY_KEYBOARD 
+chmod +x rmk/dev/compile.sh
+rmk/dev/compile.sh MY_KEYBOARD 
 ```
 
 `MY_KEYBOARD` should be replaced with the keyboard of your choice.  
