@@ -1,8 +1,5 @@
 # ![logo](https://github.com/rmk-firmware/rmk/blob/master/docs/public/logo-64x64.png?raw=true) RMK Firmware
 
-📖 [Docs](https://rmk-firmware.github.io/rmk)
-
-
 RMK is a rust keyboard firmware built for ease.  
 The main selling points are:
   - You can configure your keyboard directly through the keyboard's flash drive.
@@ -30,6 +27,6 @@ mac        | lgui   lctl   ---           ---           ---                  --- 
 ```
   
   
-To get started, check out the [docs](https://rmk-firmware.github.io/rmk/getting-started.html)
+To get started, check out the 📖 [Docs](https://rmk-firmware.github.io/rmk).
 
 If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
