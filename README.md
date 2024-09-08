@@ -4,12 +4,11 @@
 
 
 RMK is a rust keyboard firmware built for ease.  
-The main selling pints are:
-  1. that you can configure your keyboard trough the keyboards flash drive.
-  2. that its fast and reliable since its built on rust.
-  3. that adding your own keyboard is just a single config file.
-  4. that it supports a lot of chipsets trough [embassy](https://github.com/embassy-rs/embassy)
-
+The main selling points are:
+  - You can configure your keyboard directly through the keyboard's flash drive.
+  - It’s fast and reliable, as it's built in Rust.
+  - Adding your own keyboard is as simple as creating a single configuration file.
+  - It supports a wide variety of chipsets through [embassy](https://github.com/embassy-rs/embassy).
 
 Here is an example keymap:  
 ```rmk
@@ -32,3 +31,5 @@ mac        | lgui   lctl   ---           ---           ---                  --- 
   
   
 To get started, check out the [docs](https://rmk-firmware.github.io/rmk/getting-started.html)
+
+If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
