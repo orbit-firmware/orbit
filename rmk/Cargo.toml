@@ -1,25 +1,20 @@
 [package]
 name = "rmk"
-version = "0.1.0"
+version = "1.0.0"
 description = "Rust Keyboard Firmware"
 authors = ["yesitsfebreeze"]
 repository = "https://github.com/rmk-firmware/rmk"
 publish = false
 edition = "2021"
 
-
 [dependencies]
 macros = { path = "macros" }
-# chip_stm32f303cb = { path = "chips/stm32f303cb" }
 
 [build-dependencies]
 toml = "0.8"
 
 [features]
-default = [
-  "keycodes_us",
-  # , "chip_stm32f303cb"
-]
+default = ["keycodes_us"]
 
 # chips
 # chip_stm32f303cb = []
@@ -105,15 +100,3 @@ keycodes_us_international = []
 keycodes_us = []
 keycodes_workman_zxcvm = []
 keycodes_workman = []
-
-[profile.dev]
-debug = true
-lto = true
-opt-level = "z"
-incremental = true
-
-[profile.release]
-debug = false
-lto = true
-opt-level = "z"
-incremental = true

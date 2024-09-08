@@ -2,16 +2,16 @@
 
 [package]
 edition = "2021"
-name = "chip_stm32f303cb"
+name = "stm32f303cbtx"
 version = "0.1.0"
 
-[lib]
-name = "stm32f303cb"
+[[bin]]
+name = "stm32f303cbtx"
 test = false
 bench = false
 
 [dependencies]
-
+rmk = { path = "../../../rmk" }
 cortex-m = { version = "0.7.7", features = [
   "inline-asm",
   "critical-section-single-core",

@@ -1,2 +1,15 @@
 [workspace]
-members = ["rmk", "chips/stm32f303cb"]
+resolver = "2"
+members = ["rmk", "presets/chips/*"]
+
+[profile.dev]
+debug = true
+lto = true
+opt-level = "z"
+incremental = true
+
+[profile.release]
+debug = false
+lto = true
+opt-level = "z"
+incremental = true

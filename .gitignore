@@ -34,3 +34,8 @@ Temporary Items
 
 # Python
 /**/__pycache__
+
+*.bin
+*.elf
+*.hex
+*.uf2
