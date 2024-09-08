@@ -1,4 +1,8 @@
-use crate::modifiers;
+#[path = "../../src/modifiers.rs"]
+mod modifiers;
+
+// rmk_macros/src/
+
 use crate::types::KeyCode;
 
 pub fn code(code_str: &str, list: &Vec<KeyCode>) -> u16 {

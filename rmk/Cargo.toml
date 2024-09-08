@@ -8,7 +8,7 @@ publish = false
 edition = "2021"
 
 [dependencies]
-rmk_macros = { path = "../rmk_macros" }
+macros = { path = "macros" }
 
 [features]
 default = ["keycodes_german"]

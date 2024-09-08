@@ -16,7 +16,7 @@ fn valid_line(line: &str) -> bool {
 }
 
 pub fn file(path: &str) -> Vec<KeyCode> {
-  let kcs_path = format!("rmk_macros/definitions/{}.k", path);
+  let kcs_path = format!("rmk/keycodes/{}.k", path);
   let msg = format!("Failed to read keycodes file at {:?}", kcs_path);
   let content = fs::read_to_string(&kcs_path).expect(msg.as_str());
 

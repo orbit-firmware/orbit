@@ -1,5 +1,5 @@
 [package]
-name = "rmk_macros"
+name = "macros"
 version = "0.1.0"
 description = "Rust Keyboard Firmware"
 authors = ["yesitsfebreeze"]
