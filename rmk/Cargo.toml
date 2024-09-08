@@ -7,9 +7,6 @@ repository = "https://github.com/rmk-firmware/rmk"
 publish = false
 edition = "2021"
 
-# [workspace]
-# members = ["chips/stm32f303cb"]
-
 
 [dependencies]
 macros = { path = "macros" }
