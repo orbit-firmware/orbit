@@ -1,7 +1,0 @@
-# Building
-
-
-## Github Actions
-
-## Locally
-

@@ -16,9 +16,24 @@ fn valid_line(line: &str) -> bool {
 }
 
 pub fn file(path: &str) -> Vec<KeyCode> {
-  let kcs_path = format!("rmk/keycodes/{}.k", path);
-  let msg = format!("Failed to read keycodes file at {:?}", kcs_path);
-  let content = fs::read_to_string(&kcs_path).expect(msg.as_str());
+  let filepath = format!("keycodes/{}.k", path);
+
+  let content = match fs::read_to_string(&filepath) {
+    Ok(content) => content,
+    Err(e) => {
+      println!(
+        "\x1b[31mKeycodes file does not exist!: {} \x1b[0m",
+        filepath
+      );
+      eprintln!(
+        "Warning: Failed to read keycodes file at '{}': {}",
+        filepath, e
+      );
+      std::process::exit(1);
+    }
+  };
+
+  println!("\x1b[32mUsing Keycodes: {}\x1b[0m", filepath);
 
   let mut keycodes: Vec<KeyCode> = vec![];
 

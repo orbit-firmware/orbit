@@ -2,35 +2,35 @@
 
 [package]
 edition = "2021"
-name = "feb42"
+name = "chip_stm32f303cb"
 version = "0.1.0"
 
-[[bin]]
-name = "feb42"
+[lib]
+name = "stm32f303cb"
 test = false
 bench = false
 
 [dependencies]
-rmk = { path = "../../rmk" }
+
 cortex-m = { version = "0.7.7", features = [
-    "inline-asm",
-    "critical-section-single-core",
+  "inline-asm",
+  "critical-section-single-core",
 ] }
 cortex-m-rt = "0.7.3"
 defmt = { version = "0.3.8", optional = true }
 defmt-rtt = { version = "0.4.1", optional = true }
 embassy-executor = { version = "0.6.0", features = [
-    "arch-cortex-m",
-    "executor-thread",
-    "integrated-timers",
+  "arch-cortex-m",
+  "executor-thread",
+  "integrated-timers",
 ] }
 embassy-futures = "0.1.1"
 embassy-stm32 = { version = "0.1.0", features = [
-    "memory-x",
-    "stm32f303cb",
-    "time-driver-any",
-    "exti",
-    "unstable-pac",
+  "memory-x",
+  "stm32f303cb",
+  "time-driver-any",
+  "exti",
+  "unstable-pac",
 ] }
 embassy-sync = "0.6.0"
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
@@ -43,13 +43,13 @@ defmt-rtt = ["dep:defmt-rtt"]
 panic-probe = ["dep:panic-probe"]
 default = ["debug"]
 debug = [
-    "defmt",
-    "defmt-rtt",
-    "panic-probe",
-    "embassy-executor/defmt",
-    "embassy-sync/defmt",
-    "embassy-futures/defmt",
-    "embassy-time/defmt",
-    "embassy-time/defmt-timestamp-uptime",
-    "embassy-stm32/defmt",
+  "defmt",
+  "defmt-rtt",
+  "panic-probe",
+  "embassy-executor/defmt",
+  "embassy-sync/defmt",
+  "embassy-futures/defmt",
+  "embassy-time/defmt",
+  "embassy-time/defmt-timestamp-uptime",
+  "embassy-stm32/defmt",
 ]

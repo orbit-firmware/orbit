@@ -136,50 +136,15 @@
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
 
-.content-container {
-  max-width: var(--vp-layout-max-width) !important;
+.VPDoc.has-aside .container {
+  justify-content: left;
 }
 
-.VPNavBar.home {
-  max-width: calc(1152px + 64px) !important;
-  margin: 0 auto;
+.VPDoc.has-aside .content {
+
+  max-width: 800px;
 }
 
-
-.VPHome vp-doc container {
-  padding: 0;
-}
-
-.VPNavBar .content-body {
-  max-width: 1216px !important
-}
-
-.VPNavBar .container {
-  max-width: 100% !important;
-}
-
-.VPNavBar .title {
-  margin-left: -6px;
-}
-
-.code-showcase-container {
-  position: relative;
-}
-
-.code-showcase-container [class^="code-showcase-"] {
-  position: absolute;
-  top: 0;
-}
-
-.code-showcase-container [class^="code-showcase-"] {
-  transition-property: opacity;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-out;
-  opacity: 0;
-  width: 100%;
-}
-
-[class^="code-showcase-"].visible {
-  opacity: 1;
-  transition-duration: 1.0s;
+.content .content .content-container {
+  margin: 0;
 }

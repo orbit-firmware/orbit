@@ -166,60 +166,60 @@ macro_rules! unwrap {
 
 #[cfg(not(feature = "defmt"))]
 macro_rules! unwrap {
-    ($arg:expr) => {
-        match $crate::fmt::Try::into_result($arg) {
-            ::core::result::Result::Ok(t) => t,
-            ::core::result::Result::Err(_) => {
-                ::core::panic!();
-            }
-        }
-    };
-    ($arg:expr, $($msg:expr),+ $(,)? ) => {
-        match $crate::fmt::Try::into_result($arg) {
-            ::core::result::Result::Ok(t) => t,
-            ::core::result::Result::Err(_) => {
-                ::core::panic!();
-            }
-        }
-    };
+  ($arg:expr) => {
+    match $crate::fmt::Try::into_result($arg) {
+      ::core::result::Result::Ok(t) => t,
+      ::core::result::Result::Err(_) => {
+        ::core::panic!();
+      }
+    }
+  };
+  ($arg:expr, $($msg:expr),+ $(,)? ) => {
+    match $crate::fmt::Try::into_result($arg) {
+      ::core::result::Result::Ok(t) => t,
+      ::core::result::Result::Err(_) => {
+        ::core::panic!();
+      }
+    }
+  };
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct NoneError;
 
 pub trait Try {
-    type Ok;
-    type Error;
-    fn into_result(self) -> Result<Self::Ok, Self::Error>;
+  type Ok;
+  type Error;
+  fn into_result(self) -> Result<Self::Ok, Self::Error>;
 }
 
 impl<T> Try for Option<T> {
-    type Ok = T;
-    type Error = NoneError;
+  type Ok = T;
+  type Error = NoneError;
 
-    #[inline]
-    fn into_result(self) -> Result<T, NoneError> {
-        self.ok_or(NoneError)
-    }
+  #[inline]
+  fn into_result(self) -> Result<T, NoneError> {
+    self.ok_or(NoneError)
+  }
 }
 
 impl<T, E> Try for Result<T, E> {
-    type Ok = T;
-    type Error = E;
+  type Ok = T;
+  type Error = E;
 
-    #[inline]
-    fn into_result(self) -> Self {
-        self
-    }
+  #[inline]
+  fn into_result(self) -> Self {
+    self
+  }
 }
 
 pub(crate) struct Bytes<'a>(pub &'a [u8]);
 
 #[cfg(feature = "defmt")]
 impl<'a> defmt::Format for Bytes<'a> {
-    fn format(&self, fmt: defmt::Formatter) {
-        defmt::write!(fmt, "{:02x}", self.0)
-    }
+  fn format(&self, fmt: defmt::Formatter) {
+    defmt::write!(fmt, "{:02x}", self.0)
+  }
 }
 
 pub(crate) use _warn as warn;

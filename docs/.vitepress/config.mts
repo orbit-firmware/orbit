@@ -11,18 +11,16 @@ export default defineConfig({
       provider: 'local'
     },
 
-    nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/getting-started' }
-    ],
-
     sidebar: [
       {
-
+        items: [
+          { text: 'Introduction', link: '/' },
+        ],
+      },
+      {
+        text: 'Setup',
         items: [
           { text: 'Getting Started', link: '/getting-started' },
-          { text: 'Concepts', link: '/' },
-          { text: 'Keymaps', link: '/' },
           { text: 'Keycodes', link: '/' },
           { text: 'Runtime API Examples', link: '/' }
         ],
@@ -40,6 +38,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
+      { icon: 'discord', link: 'https://discord.gg/SrESTtBKV5' },
       { icon: 'github', link: 'https://github.com/rmk-firmware' }
     ]
   }

@@ -1,19 +1,11 @@
-.PHONY: all help docker
+.PHONY: all help docker docs
 
 MAKEFLAGS += --no-print-directory
 
-# Define 'all' as the default target
 compile: #/ [kb=keyboard]
-	@if [ "$(kb)" = "" ]; then \
-		echo "No keyboard specified. Use make all kb=<keyboard_name>"; \
-		exit 1; \
-	elif [ -d "keyboards/$(kb)" ]; then \
-		chmod +x ./dev/firmware_build.sh; \
-		./dev/firmware_build.sh $(kb); \
-	else \
-		echo "Keyboard $(kb) not found"; \
-		exit 1; \
-	fi
+	@cd rmk && RMK_KEYBOARD=$(kb) cargo build --release
+	@cd rmk && RMK_KEYBOARD=$(kb) cargo objcopy --release -- -O binary firmware.bin
+	@cd rmk && RMK_KEYBOARD=$(kb) cargo objcopy --release -- -O binary firmware.hex
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -21,3 +13,7 @@ help:
 docker: #/ runs the dev container
 	@cd dev && docker-compose up -d
 	@docker exec -it rmk bash
+
+docs:
+	@cd docs && npm install
+	@cd docs && npm run docs:dev
