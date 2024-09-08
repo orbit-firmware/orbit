@@ -21,7 +21,7 @@ export default defineConfig({
         text: 'Setup',
         items: [
           { text: 'Getting Started', link: '/getting-started' },
-          { text: 'Keycodes', link: '/' },
+          { text: 'Keycodes', link: '/keycodes' },
           { text: 'Runtime API Examples', link: '/' }
         ],
       },

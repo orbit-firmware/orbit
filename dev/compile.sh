@@ -32,8 +32,11 @@ cd $ROOT/rmk && cargo build --release
 
 cd $CHIP_DIR
 
+TARGET=$(grep "\[target." $CHIP_DIR/.cargo/config.toml | cut -d '.' -f 2)
+TARGET=${TARGET%?}
 
-# TARGET=$(grep "chip = " $KEYBOARD_CONFIG | cut -d '"' -f 2)
+rustup component add llvm-tools-preview
+rustup target add $TARGET
 
 echo -e "${GREEN}Compiling keyboard $KEYBOARD with chip $CHIP.${RESET}"
 cargo build --release
