@@ -39,7 +39,7 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'discord', link: 'https://discord.gg/SrESTtBKV5' },
-      { icon: 'github', link: 'https://github.com/rmk-firmware' }
+      { icon: 'github', link: 'https://github.com/rmk-firmware/rmk' }
     ]
   }
 })
