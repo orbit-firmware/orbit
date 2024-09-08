@@ -6,6 +6,7 @@
 // pub mod key;
 // pub mod keyboard;
 pub mod keycodes;
+pub mod modifiers;
 // pub mod keymap;
 // pub mod time;
 

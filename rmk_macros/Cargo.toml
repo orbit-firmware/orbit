@@ -1,7 +1,7 @@
 [package]
-name = "keycodes"
+name = "rmk_macros"
 version = "0.1.0"
-description = "Rust Keyboard Firmware Keycodes"
+description = "Rust Keyboard Firmware"
 authors = ["yesitsfebreeze"]
 repository = "https://github.com/rmk-firmware/rmk"
 publish = false
