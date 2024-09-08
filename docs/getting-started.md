@@ -29,7 +29,7 @@ A full list is available [here](https://github.com/rmk-firmware/rmk/tree/master/
 
 
 ## Locally (Docker)
-```
+```shell
   make docker // creates container and connects to docker tty
   make kb=MY_KEYBOARD
 ```
