@@ -14,5 +14,5 @@ rustup component add llvm-tools-preview || true
 rustup target add $TARGET || true
 
 cargo build --release
-# cargo objcopy --release -- -O binary ../../firmware.bin
-# cargo objcopy --release -- -O binary ../../firmware.hex
+cargo objcopy --release -- -O binary ../../firmware.bin
+cargo objcopy --release -- -O binary ../../firmware.hex

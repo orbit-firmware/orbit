@@ -1,37 +1,11 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-
 use quote::quote;
 
 mod modifiers;
 mod parser;
 mod read;
 mod types;
-
-#[proc_macro]
-pub fn modifiers(_input: TokenStream) -> TokenStream {
-  let modifiers = read::file("_modifiers");
-
-  let mut entries = vec![];
-
-  for modifier in modifiers {
-    let name = modifier.name;
-    let code = parser::code(&modifier.code_str, &vec![]);
-    entries.push(quote! {
-      #name = #code,
-    });
-  }
-
-  let generated = quote! {
-      #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-      #[repr(u16)]
-      pub enum Modifier {
-          #(#entries)*
-      }
-  };
-
-  TokenStream::from(generated)
-}
 
 #[proc_macro]
 pub fn keycodes(input: TokenStream) -> TokenStream {
@@ -43,13 +17,24 @@ pub fn keycodes(input: TokenStream) -> TokenStream {
   let merged = parser::merge(keycodes, remaps);
 
   let mut entries = vec![];
+  let mut match_arms = vec![];
+  let mut alias_entries = vec![];
 
   for keycode in merged {
     let name = keycode.name;
     let code = keycode.code;
+    let alias_list = keycode.alias_list;
     entries.push(quote! {
       #name = #code,
     });
+    match_arms.push(quote! {
+        #code => KeyCode::#name,
+    });
+    for alias in alias_list {
+      alias_entries.push(quote! {
+          #alias => KeyCode::#name,
+      });
+    }
   }
 
   let generated = quote! {
@@ -59,22 +44,21 @@ pub fn keycodes(input: TokenStream) -> TokenStream {
           #(#entries)*
       }
 
-      // impl KeyCode {
-      //     pub fn from_u16(code: u16) -> KeyCode {
-      //         match code {
-      //             #(
-      //                 #enum_variants[0] => Some(KeyCodes::#enum_variants[1]),
-      //             )*
-      //             _ => KeyCode::None,
-      //         }
-      //     }
+      impl KeyCode {
+        pub fn from_u16(code: u16) -> KeyCode {
+            match code {
+                #(#match_arms)*
+                _ => KeyCode::None,
+            }
+        }
 
-      //   get_by_alias(alias: &str) -> KeyCode {
-      // }
-      // }
-
-
-      //  generate alias mapping
+        pub fn from_alias(alias: &str) -> KeyCode {
+          match alias {
+              #(#alias_entries)*
+              _ => KeyCode::None,
+          }
+        }
+      }
 
   };
 

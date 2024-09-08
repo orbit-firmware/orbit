@@ -21,6 +21,6 @@ use rmk::keycodes::KeyCode;
 async fn main(_spawner: Spawner) {
   let _p = embassy_stm32::init(Default::default());
   loop {
-    info!("{}", KeyCode::A as u16);
+    info!("{}", KeyCode::from_alias("a") as u16);
   }
 }

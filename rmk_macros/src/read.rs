@@ -32,12 +32,31 @@ pub fn file(path: &str) -> Vec<KeyCode> {
     if parts.len() >= 2 {
       keycode.name = Ident::new(parts[0], Span::call_site());
       keycode.code_str = parts[1].trim().to_string();
+
+      let mut alias_list: Vec<String> = vec![];
+      let main_alias = parts[0].to_lowercase();
+      alias_list.push(main_alias);
+
+      if parts.len() == 3 {
+        let mut alias_string = parts[2].to_string();
+
+        if alias_string.contains("\\") {
+          alias_string = alias_string.replace("\\\\", "%%BS%%");
+          alias_string = alias_string.replace("\\,", "%%COMMA%%");
+        }
+
+        let alias_parts = alias_string.split(',');
+        for alias in alias_parts {
+          let mut a = alias.trim().to_string();
+          a = a.replace("%%BS%%", "\\");
+          a = a.replace("%%COMMA%%", ",");
+          alias_list.push(a);
+        }
+      }
+      keycode.alias_list = alias_list.iter().map(|s| s.to_string()).collect();
+
       keycodes.push(keycode);
     }
-
-    // if parts.len() == 3 {
-    //   println!("Found alias: {:?}", parts[2]);
-    // }
   }
 
   return keycodes;
