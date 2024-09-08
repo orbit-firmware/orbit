@@ -11,8 +11,8 @@ pub fn keycodes(input: TokenStream) -> TokenStream {
   let input_str = input.to_string();
   let remap = input_str.trim_matches('"');
 
-  let keycodes = read::file("_common");
-  let remaps = read::file(remap);
+  let keycodes = read::keycode_file("us", false);
+  let remaps = read::keycode_file(remap, true);
   let merged = parser::merge(keycodes, remaps);
 
   let mut entries = vec![];
@@ -58,7 +58,6 @@ pub fn keycodes(input: TokenStream) -> TokenStream {
           }
         }
       }
-
   };
 
   TokenStream::from(generated)

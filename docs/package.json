@@ -3,8 +3,9 @@
     "vitepress": "^1.3.4"
   },
   "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:keycodes": "node tools/keycodes.mjs",
+    "docs:dev": "npm run docs:keycodes && vitepress dev",
+    "docs:build": "npm run docs:keycodes && vitepress build",
+    "docs:preview": "npm run docs:keycodes && vitepress preview"
   }
 }

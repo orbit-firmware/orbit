@@ -15,7 +15,7 @@ fn valid_line(line: &str) -> bool {
   true
 }
 
-pub fn file(path: &str) -> Vec<KeyCode> {
+pub fn keycode_file(path: &str, log: bool) -> Vec<KeyCode> {
   let filepath = format!("rmk/keycodes/{}.k", path);
 
   let content = match fs::read_to_string(&filepath) {
@@ -33,7 +33,9 @@ pub fn file(path: &str) -> Vec<KeyCode> {
     }
   };
 
-  println!("\x1b[32mUsing Keycodes: {}\x1b[0m", filepath);
+  if log {
+    println!("\x1b[32mUsing Keycodes: {}\x1b[0m", filepath);
+  }
 
   let mut keycodes: Vec<KeyCode> = vec![];
 

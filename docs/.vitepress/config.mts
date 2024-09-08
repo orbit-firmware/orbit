@@ -1,5 +1,8 @@
 import { defineConfig } from 'vitepress'
 
+
+import keycodes from './keycodes.mts'
+
 export default defineConfig({
   title: "RMK Firmware",
   description: "Documentaion for the RMK firmware",
@@ -21,9 +24,12 @@ export default defineConfig({
         text: 'Setup',
         items: [
           { text: 'Getting Started', link: '/getting-started' },
-          { text: 'Keycodes', link: '/keycodes' },
-          { text: 'Runtime API Examples', link: '/' }
         ],
+      },
+      {
+        text: 'Keycodes',
+        link: '/keycodes',
+        items: keycodes
       },
       {
         text: 'Features',
