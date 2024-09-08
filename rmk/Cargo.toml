@@ -7,22 +7,25 @@ repository = "https://github.com/rmk-firmware/rmk"
 publish = false
 edition = "2021"
 
-[workspace]
-members = ["chips/stm32f303cb"]
+# [workspace]
+# members = ["chips/stm32f303cb"]
 
 
 [dependencies]
 macros = { path = "macros" }
-chip_stm32f303cb = { path = "chips/stm32f303cb" }
+# chip_stm32f303cb = { path = "chips/stm32f303cb" }
 
 [build-dependencies]
 toml = "0.8"
 
 [features]
-default = ["keycodes_us", "chip_stm32f303cb"]
+default = [
+  "keycodes_us",
+  # , "chip_stm32f303cb"
+]
 
 # chips
-chip_stm32f303cb = []
+# chip_stm32f303cb = []
 
 # features
 disable_combo_feature = []

@@ -8,16 +8,16 @@
 2. Clone the main repository:
 ```shell
 git clone https://github.com/rmk-firmware/rmk.git rmk
-cd rmk
 ```
 
 3. Then run:
-```shell
-cd rmk && RMK_KEYBOARD=MY_KEYBOARD cargo build --release
-```
-or *(if [gnu make](https://www.gnu.org/software/make/) is installed)*
+*(if [gnu make](https://www.gnu.org/software/make/) is installed)*
 ```shell
 make kb=MY_KEYBOARD
+```
+else
+```shell
+cd rmk/dev && ./build_firmware.sh MY_KEYBOARD 
 ```
 
 `MY_KEYBOARD` should be replaced with the keyboard of your choice.  

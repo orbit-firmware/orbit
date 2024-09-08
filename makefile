@@ -3,9 +3,8 @@
 MAKEFLAGS += --no-print-directory
 
 compile: #/ [kb=keyboard]
-	@cd rmk && RMK_KEYBOARD=$(kb) cargo build --release
-	@cd rmk && RMK_KEYBOARD=$(kb) cargo objcopy --release -- -O binary firmware.bin
-	@cd rmk && RMK_KEYBOARD=$(kb) cargo objcopy --release -- -O binary firmware.hex
+	@cd dev && chmod +x ./build_firmware.sh
+	@cd dev && ./build_firmware.sh $(kb)
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
