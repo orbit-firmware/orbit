@@ -25,6 +25,14 @@ A full list is available [here](https://github.com/rmk-firmware/rmk/tree/master/
 
 4. this should produce `firmware.hex/bin` in the rmk directory.
 
+
+## Locally (Docker)
+```
+  make docker // creates container and connects to docker tty
+  make kb=MY_KEYBOARD
+```
+
+
 ## Github Actions
 
 An example can be found [here](https://github.com/rmk-firmware/rmk-user-example).
