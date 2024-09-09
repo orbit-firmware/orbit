@@ -14,14 +14,14 @@ if [ -z "$KEYBOARD" ]; then
     exit 1
 fi
 
-KEYBOARD_CONFIG=$ROOT/presets/keyboards/$KEYBOARD.toml
+KEYBOARD_CONFIG=$ROOT/definitions/keyboards/$KEYBOARD.toml
 if [ ! -f "$KEYBOARD_CONFIG" ]; then
     echo -e "${RED}Keyboard $KEYBOARD not found!${RESET}"
     exit 1
 fi
 
 CHIP=$(grep "chip = " $KEYBOARD_CONFIG | cut -d '"' -f 2)
-CHIP_DIR=$ROOT/presets/chips/$CHIP
+CHIP_DIR=$ROOT/definitions/chips/$CHIP
 
 if [ ! -d "$CHIP_DIR" ]; then
     echo -e "${RED}Chip $CHIP not found!${RESET}"
