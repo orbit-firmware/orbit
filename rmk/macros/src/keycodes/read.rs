@@ -1,7 +1,11 @@
-use crate::types::KeyCode;
+use crate::keycodes::types::KeyCode;
 use proc_macro2::Span;
 use std::fs;
 use syn::Ident;
+
+const RED: &str = "\x1b[31m";
+const GREEN: &str = "\x1b[32m";
+const RESET: &str = "\x1b[0m";
 
 fn valid_line(line: &str) -> bool {
   if line.is_empty() {
@@ -15,15 +19,15 @@ fn valid_line(line: &str) -> bool {
   true
 }
 
-pub fn keycode_file(path: &str, log: bool) -> Vec<KeyCode> {
+pub fn file(path: &str, log: bool) -> Vec<KeyCode> {
   let filepath = format!("rmk/keycodes/{}.k", path);
 
   let content = match fs::read_to_string(&filepath) {
     Ok(content) => content,
     Err(e) => {
       println!(
-        "\x1b[31mKeycodes file does not exist!: {} \x1b[0m",
-        filepath
+        "{}Keycodes file does not exist!: {}{}",
+        RED, filepath, RESET
       );
       eprintln!(
         "Warning: Failed to read keycodes file at '{}': {}",
@@ -34,7 +38,7 @@ pub fn keycode_file(path: &str, log: bool) -> Vec<KeyCode> {
   };
 
   if log {
-    println!("\x1b[32mUsing Keycodes: {}\x1b[0m", filepath);
+    println!("{}Using Keycodes: {}{}", GREEN, filepath, RESET);
   }
 
   let mut keycodes: Vec<KeyCode> = vec![];

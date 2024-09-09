@@ -15,7 +15,7 @@ Icon
 .Spotlight-V100
 .TemporaryItems
 .Trashes
-.VolumeIcon.icns
+.VolumeIcon.icns  
 .com.apple.timemachine.donotpresent
 
 # Directories potentially created on remote AFP share
@@ -31,6 +31,7 @@ Temporary Items
 /.idea
 /.vscode
 /itm.txt
+/tmp
 
 # Python
 /**/__pycache__

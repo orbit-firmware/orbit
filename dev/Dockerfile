@@ -43,6 +43,8 @@ RUN rustup target add riscv32imac-unknown-none-elf
 RUN rustup target add riscv64gc-unknown-none-elf
 RUN rustup target add riscv64imac-unknown-none-elf
 
+RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
+
 RUN mkdir /rmk
 
 WORKDIR /rmk

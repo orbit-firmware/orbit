@@ -48,26 +48,10 @@ rustup target add $TARGET
 
 echo -e "${GREEN}Compiling keyboard $KEYBOARD with chip $CHIP.${RESET}"
 
-# build
-RMK_KEYBOARD=$KEYBOARD cargo build --release
+# flash
+RMK_KEYBOARD=$KEYBOARD cargo run --release
 if [ $? -ne 0 ]; then
     echo -e "${RED}Compilation failed!${RESET}"
     exit 1
 fi
-
-# bin
-RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.bin
-if [ $? -ne 0 ]; then
-    echo -e "${RED}.bin creation Failed!${RESET}"
-    exit 1
-fi
-echo -e "${GREEN}Created firmware.bin${RESET}"
-
-# hex
-RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.hex
-if [ $? -ne 0 ]; then
-    echo -e "${RED}.hex creation Failed!${RESET}"
-    exit 1
-fi
-echo -e "${GREEN}Created firmware.hex${RESET}"
  

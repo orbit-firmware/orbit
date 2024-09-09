@@ -30,3 +30,13 @@ mac        | lgui   lctl   ---           ---           ---                  --- 
 To get started, check out the 📖 [Docs](https://rmk-firmware.github.io/rmk).
 
 If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
+
+
+## License
+
+RMK is licensed under either of
+
+    Apache License, Version 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
+    MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
+
+at your option.

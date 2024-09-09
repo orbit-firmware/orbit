@@ -1,9 +1,12 @@
-#[path = "../../src/modifiers.rs"]
+// borrow modifiers from original source
+// this is not the prefered way to use modules
+// but it ensuures we always use the same masks
+#[path = "../../../src/modifiers.rs"]
 mod modifiers;
 
 // rmk_macros/src/
 
-use crate::types::KeyCode;
+use crate::keycodes::types::KeyCode;
 
 pub fn code(code_str: &str, list: &Vec<KeyCode>) -> u16 {
   let msg = format!("Failed to parse code {:?}", code_str);

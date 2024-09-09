@@ -10,10 +10,10 @@ pub use chip::Chip;
 pub use config::Config;
 pub use keycode::KeyCode;
 
-// #[cfg(feature = "chip_stm32f303cb")]
-// mod chip_stm32f303cb;
+// pub async fn run(_config: config::Config) -> ! {
+pub async fn run() -> ! {
+  // let config_data = env!("CONFIG_DATA");
 
-pub async fn run(_config: config::Config) -> ! {
   loop {
     // Your processing logic here
   }
