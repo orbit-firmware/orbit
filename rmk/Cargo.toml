@@ -10,8 +10,6 @@ edition = "2021"
 [dependencies]
 macros = { path = "macros" }
 
-[build-dependencies]
-toml = "0.8"
 
 [features]
 default = ["keycodes_us"]

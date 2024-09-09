@@ -1,1 +1,4 @@
+[keyboard]
+name = "Feb42"
+manufacturer = "febreeze"
 chip = "stm32f303cbtx"

@@ -36,6 +36,7 @@ embassy-sync = "0.6.0"
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 panic-halt = "0.2.0"
 panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
+static_cell = "2"
 
 [features]
 defmt = ["dep:defmt"]
