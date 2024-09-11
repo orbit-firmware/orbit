@@ -5,6 +5,7 @@ use crate::config::parser;
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 
+#[allow(unused)]
 #[derive(Debug)]
 pub struct Keyboard {
   pub product_id: u16,
@@ -16,6 +17,7 @@ pub struct Keyboard {
   pub debounce_ms: u32,
 }
 
+#[allow(unused)]
 #[derive(Debug)]
 pub struct Matrix {
   pub row_count: usize,
@@ -24,6 +26,7 @@ pub struct Matrix {
   pub col_pins: Vec<String>,
 }
 
+#[allow(unused)]
 #[derive(Debug)]
 pub struct Multiplexers {
   pub count: usize,
@@ -32,6 +35,7 @@ pub struct Multiplexers {
   pub com: Vec<String>,
 }
 
+#[allow(unused)]
 #[derive(Debug)]
 pub struct Config {
   pub keyboard: Keyboard,

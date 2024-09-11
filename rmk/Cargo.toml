@@ -13,6 +13,10 @@ path = "src/rmk.rs"
 
 [dependencies]
 macros = { path = "macros" }
+embedded-hal = { version = "1.0.0", features = ["defmt-03"] }
+embedded-hal-async = { version = "1.0.0", features = [
+    "defmt-03",
+], optional = true }
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 embassy-usb = { version = "0.3", features = [
   "defmt",

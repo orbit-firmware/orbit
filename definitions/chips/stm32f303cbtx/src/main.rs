@@ -23,6 +23,8 @@ use embassy_time::{Duration, Timer};
 use fmt::info;
 use static_cell::StaticCell;
 
+use rmk::pinout::Pinout;
+
 bind_interrupts!(struct Irqs {
   USB_LP_CAN_RX0 => InterruptHandler<USB>;
 });
@@ -32,7 +34,7 @@ async fn main(_spawner: Spawner) {
   let p = embassy_stm32::init(Default::default());
   let usb_driver = Driver::new(p.USB, Irqs, p.PA12, p.PA11);
 
-  let pinout = rmk::config::Pinout::new(p);
+  let pinout = Pinout::new();
 
   rmk::run(usb_driver, pinout).await
 }

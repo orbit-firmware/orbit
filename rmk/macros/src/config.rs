@@ -38,19 +38,19 @@ pub fn generate(_input: TokenStream) -> TokenStream {
     .unwrap();
 
   let merged = merge(keyboard_config, user_config);
-  let cfg = Config::from_toml(merged);
+  let config = Config::from_toml(merged);
 
-  let name = cfg.keyboard.name;
-  let manufacturer = cfg.keyboard.manufacturer;
-  let chip = cfg.keyboard.chip;
-  let key_count = cfg.keyboard.key_count;
-  let debounce_ms = cfg.keyboard.debounce_ms;
-  let use_matrix = cfg.use_matrix;
-  let use_multiplexers = cfg.use_multiplexers;
+  let name = config.keyboard.name;
+  let manufacturer = config.keyboard.manufacturer;
+  let chip = config.keyboard.chip;
+  let key_count = config.keyboard.key_count;
+  let debounce_ms = config.keyboard.debounce_ms;
+  let use_matrix = config.use_matrix;
+  let use_multiplexers = config.use_multiplexers;
 
   let mut layout = vec![];
 
-  for key in cfg.layout {
+  for key in config.layout {
     let row: usize = key[0] as usize;
     let col: usize = key[1] as usize;
     layout.push(quote! {
@@ -58,11 +58,37 @@ pub fn generate(_input: TokenStream) -> TokenStream {
     });
   }
 
-  let mut matrix = quote! {};
+  let mut matrix = quote! {
+    pub const MATRIX_ROW_COUNT: usize = 0;
+      pub const MATRIX_COL_COUNT: usize = 0;
+      pub const MATRIX_ROW_PINS: [&str; 0] = [];
+      pub const MATRIX_COL_PINS: [&str; 0] = [];
+  };
+  if use_matrix {
+    let m = config.matrix.unwrap();
+    let row_count = m.row_count;
+    let col_count = m.col_count;
+    let row_pins = &m.row_pins;
+    let col_pins = &m.col_pins;
 
-  let mut multiplexers = quote! {};
+    matrix = quote! {
+      pub const MATRIX_ROW_COUNT: usize = #row_count as usize;
+      pub const MATRIX_COL_COUNT: usize = #col_count as usize;
+      pub const MATRIX_ROW_PINS: [&str; #row_count] = [#(#row_pins),*];
+      pub const MATRIX_COL_PINS: [&str; #col_count] = [#(#col_pins),*];
+    };
+  }
+
+  let mut multiplexers = quote! {
+    pub const MULTIPLEXER_COUNT: usize = 0;
+      pub const MULTIPLEXER_CHANNELS: usize = 0;
+      pub const MULTIPLEXER_SEL_COUNT: usize = 0;
+      pub const MULTIPLEXER_SEL_PINS: [&str; 0] = [];
+      pub const MULTIPLEXER_COM_COUNT: usize = 0;
+      pub const MULTIPLEXER_COM_PINS: [&str; 0] = [];
+  };
   if use_multiplexers {
-    let m = cfg.multiplexers.unwrap();
+    let m = config.multiplexers.unwrap();
     let count = m.count;
     let channels = m.channels;
     let sel = &m.sel;
@@ -72,7 +98,9 @@ pub fn generate(_input: TokenStream) -> TokenStream {
     multiplexers = quote! {
       pub const MULTIPLEXER_COUNT: usize = #count as usize;
       pub const MULTIPLEXER_CHANNELS: usize = #channels as usize;
+      pub const MULTIPLEXER_SEL_COUNT: usize = #sel_count as usize;
       pub const MULTIPLEXER_SEL_PINS: [&str; #sel_count] = [#(#sel),*];
+      pub const MULTIPLEXER_COM_COUNT: usize = #count as usize;
       pub const MULTIPLEXER_COM_PINS: [&str; #count] = [#(#com),*];
     };
   }

@@ -47,6 +47,7 @@ impl Key {
     self.press_time = 0;
   }
 
+  #[allow(unused)]
   fn read_state(&self) -> bool {
     let x = config::LAYOUT[self.index][0];
     let y = config::LAYOUT[self.index][1];
