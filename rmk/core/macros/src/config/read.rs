@@ -10,8 +10,8 @@ pub fn file(path: &str, optional: bool) -> String {
       if optional {
         return String::new();
       }
-      println!("{}Keycodes file does not exist!: {}{}", RED, path, RESET);
-      eprintln!("Warning: Failed to read keycodes file at '{}': {}", path, e);
+      println!("{}Config file does not exist!: {}{}", RED, path, RESET);
+      eprintln!("Warning: Failed to read Config file at '{}': {}", path, e);
       std::process::exit(1);
     }
   };

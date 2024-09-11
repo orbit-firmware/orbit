@@ -29,8 +29,8 @@ if [ ! -d "$CHIP_DIR" ]; then
 fi
 
 # build rmk
-mkdir -p $ROOT/tmp
-cp $KEYBOARD_CONFIG $ROOT/tmp/config.toml
+mkdir -p $ROOT/rmk/tmp
+cp $KEYBOARD_CONFIG $ROOT/rmk/tmp/config.toml
 cd $ROOT/rmk/core && cargo build --release
 
 if [ $? -ne 0 ]; then

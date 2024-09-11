@@ -20,6 +20,10 @@
       "name": "dev",
       "path": "./dev"
     },
+    {
+      "name": "worlflows",
+      "path": "./.github/workflows"
+    },
   ],
   "settings": {
     "explorer.excludeGitIgnore": true,

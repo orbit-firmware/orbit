@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["rmk/core", "rmk/chips/*"]
+members = ["core", "chips/*"]
 
 [profile.dev]
 debug = true

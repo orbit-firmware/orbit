@@ -28,7 +28,7 @@ jobs:
       - name: Checkout User Repository
         uses: actions/checkout@v4
         with:
-          path: user
+          path: rmk/user
           persist-credentials: false 
           fetch-depth: 0
 

@@ -25,20 +25,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Rust
-**/target
-**/Cargo.lock
-/.idea
-/.vscode
-/itm.txt
-
-# RMK dirs
-/tmp
-/user
-
-# Python
-/**/__pycache__
-
 *.bin
 *.elf
 *.hex

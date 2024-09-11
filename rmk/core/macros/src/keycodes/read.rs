@@ -20,7 +20,7 @@ fn valid_line(line: &str) -> bool {
 }
 
 pub fn file(path: &str, log: bool) -> Vec<KeyCode> {
-  let filepath = format!("rmk/keycodes/{}.k", path);
+  let filepath = format!("keycodes/{}.k", path);
 
   let content = match fs::read_to_string(&filepath) {
     Ok(content) => content,
