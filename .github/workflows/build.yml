@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     name: Firmware
+    runs-on: ubuntu-latest
     container: rmkfirmware/rmk:latest
     
     steps:
