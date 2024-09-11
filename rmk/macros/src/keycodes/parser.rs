@@ -1,7 +1,7 @@
 // borrow modifiers from original source
 // this is not the prefered way to use modules
 // but it ensuures we always use the same masks
-#[path = "../../../src/modifiers.rs"]
+#[path = "../../../core/src/modifiers.rs"]
 mod modifiers;
 
 use crate::keycodes::types::KeyCode;

@@ -7,13 +7,16 @@ chip = "stm32f303cbtx"
 key_count = 42
 debounce_ms = 50 
 
+
 [multiplexers]
+analogue_read = true # default false
 count = 3
 channels = 16
 sel = ["PB3", "PB4", "PB6", "PB5"]
 com = ["PA13", "PA10", "PA9"]
 
 # [matrix]
+# analogue_read = true # default false
 # row_count = 3
 # col_count = 12
 # row_pins = ["PA0", "PA1", "PA2"]

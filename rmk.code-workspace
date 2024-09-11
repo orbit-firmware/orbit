@@ -1,28 +1,7 @@
 {
   "folders": [
     {
-      "name": "rmk",
-      "path": "./rmk/core"
-    },
-    {
-      "name": "chips",
-      "path": "./rmk/chips"
-    },
-    {
-      "name": "keyboards",
-      "path": "./rmk/keyboards"
-    },
-    {
-      "neme": "example",
-      "path": "../rmk-user-example"
-    },
-    {
-      "name": "dev",
-      "path": "./dev"
-    },
-    {
-      "name": "worlflows",
-      "path": "./.github/workflows"
+      "path": "."
     },
   ],
   "settings": {
