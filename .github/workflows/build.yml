@@ -16,6 +16,8 @@ jobs:
     container: rmkfirmware/rmk:latest
     
     steps:
+      - name: Rustup
+        run: rustup default stable
       - name: Checkout rmk
         uses: actions/checkout@v4
         with:
