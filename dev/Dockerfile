@@ -24,6 +24,9 @@ RUN apt-get update && apt-get install -y \
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+# Rust
+RUN rustup default stable
+
 # Install cargo-binutils and llvm-tools-preview
 RUN cargo install cargo-binutils
 RUN rustup component add llvm-tools-preview

@@ -14,14 +14,14 @@ if [ -z "$KEYBOARD" ]; then
     exit 1
 fi
 
-KEYBOARD_CONFIG=$ROOT/definitions/keyboards/$KEYBOARD.toml
+KEYBOARD_CONFIG=$ROOT/rmk/keyboards/$KEYBOARD.toml
 if [ ! -f "$KEYBOARD_CONFIG" ]; then
     echo -e "${RED}Keyboard $KEYBOARD not found!${RESET}"
     exit 1
 fi
 
 CHIP=$(grep "chip = " $KEYBOARD_CONFIG | cut -d '"' -f 2)
-CHIP_DIR=$ROOT/definitions/chips/$CHIP
+CHIP_DIR=$ROOT/rmk/chips/$CHIP
 
 if [ ! -d "$CHIP_DIR" ]; then
     echo -e "${RED}Chip $CHIP not found!${RESET}"
@@ -31,7 +31,7 @@ fi
 # build rmk
 mkdir -p $ROOT/tmp
 cp $KEYBOARD_CONFIG $ROOT/tmp/config.toml
-cd $ROOT/rmk && cargo build --release
+cd $ROOT/rmk/core && cargo build --release
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}RMK Compilation failed!${RESET}"
