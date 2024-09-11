@@ -1,5 +1,10 @@
 // generates markdown files for all keycodes
 
+
+//  should translate codes
+
+
+
 import fs from 'fs';
 import path from 'path';
 

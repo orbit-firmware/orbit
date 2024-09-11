@@ -31,7 +31,10 @@ Temporary Items
 /.idea
 /.vscode
 /itm.txt
+
+# RMK dirs
 /tmp
+/user
 
 # Python
 /**/__pycache__

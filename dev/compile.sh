@@ -56,18 +56,18 @@ if [ $? -ne 0 ]; then
 fi
 
 # bin
-RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.bin
+RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.bin >> /dev/null
 if [ $? -ne 0 ]; then
-    echo -e "${RED}.bin creation Failed!${RESET}"
+    echo -e "    ${RED}.bin creation Failed!${RESET}"
     exit 1
 fi
-echo -e "${GREEN}Created firmware.bin${RESET}"
+echo -e "${GREEN}    Created firmware.bin${RESET}"
 
-# hex
-RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.hex
+# # hex
+RMK_KEYBOARD=$KEYBOARD cargo objcopy --release -- -O binary $ROOT/firmware.hex >> /dev/null
 if [ $? -ne 0 ]; then
-    echo -e "${RED}.hex creation Failed!${RESET}"
+    echo -e "    ${RED}.hex creation Failed!${RESET}"
     exit 1
 fi
-echo -e "${GREEN}Created firmware.hex${RESET}"
+echo -e "${GREEN}    Created firmware.hex${RESET}"
  

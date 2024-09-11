@@ -4,6 +4,7 @@
 
 mod fmt;
 
+use defmt::println;
 #[cfg(not(feature = "defmt"))]
 use panic_halt as _;
 #[cfg(feature = "defmt")]
@@ -16,13 +17,11 @@ use embassy_stm32::{
   gpio::{Input, Output},
   peripherals::USB,
   usb::{Driver, InterruptHandler},
-  Config,
+  // Config,
 };
 use embassy_time::{Duration, Timer};
 use fmt::info;
 use static_cell::StaticCell;
-
-use rmk::config::{self, Config};
 
 bind_interrupts!(struct Irqs {
   USB_LP_CAN_RX0 => InterruptHandler<USB>;
@@ -33,10 +32,7 @@ async fn main(_spawner: Spawner) {
   let p = embassy_stm32::init(Default::default());
   let usb_driver = Driver::new(p.USB, Irqs, p.PA12, p.PA11);
 
-  let mut config = Config::new();
-  // config.set_usb_driver(usb_driver);
+  let pinout = rmk::config::Pinout::new(p);
 
-  loop {
-    // info!("{}", KeyCode::from_alias("a") as u16);
-  }
+  rmk::run(usb_driver, pinout).await
 }

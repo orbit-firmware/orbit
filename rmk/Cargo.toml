@@ -7,9 +7,19 @@ repository = "https://github.com/rmk-firmware/rmk"
 publish = false
 edition = "2021"
 
+[lib]
+name = "rmk"
+path = "src/rmk.rs"
+
 [dependencies]
 macros = { path = "macros" }
-
+embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
+embassy-usb = { version = "0.3", features = [
+  "defmt",
+  "usbd-hid",
+  "max-interface-count-8",
+  "max-handler-count-8",
+] }
 
 [features]
 default = ["keycodes_us"]
