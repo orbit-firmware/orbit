@@ -10,4 +10,5 @@
 
 [behaviors]
 press = true
-hold = false
+hold = true
+modding = true
