@@ -19,26 +19,26 @@ fn valid_line(line: &str) -> bool {
   true
 }
 
-pub fn file(path: &str, log: bool) -> Vec<KeyCode> {
-  let filepath = format!("keycodes/{}.k", path);
-
-  let content = match fs::read_to_string(&filepath) {
+pub fn get_file_content(path: &str, optional: bool) -> String {
+  let content = match fs::read_to_string(&path) {
     Ok(content) => content,
     Err(e) => {
-      println!(
-        "{}Keycodes file does not exist!: {}{}",
-        RED, filepath, RESET
-      );
-      eprintln!(
-        "Warning: Failed to read keycodes file at '{}': {}",
-        filepath, e
-      );
-      std::process::exit(1);
+      if optional {
+        return String::new();
+      }
+      println!("{}Keycodes file does not exist!: {}{}", RED, path, RESET);
+      println!("{}{}{}", RED, e, RESET);
+      "".to_string()
     }
   };
+  content
+}
+
+pub fn file(path: &str, log: bool) -> Vec<KeyCode> {
+  let content = get_file_content(format!("keycodes/{}.k", path).as_str(), false);
 
   if log {
-    println!("{}Using Keycodes: {}{}", GREEN, filepath, RESET);
+    println!("{}Using Keycodes: {}{}", GREEN, path, RESET);
   }
 
   let mut keycodes: Vec<KeyCode> = vec![];

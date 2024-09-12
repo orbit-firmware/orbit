@@ -35,7 +35,19 @@ shifted    | ---    ---    ---           ---           ---                  \   
 held       | ---    ---    ---           ml(1)         ml(2)                ---    ---    ---
 mac        | lgui   lctl   ---           ---           ---                  ---    ---    ---
 ```
-  
+
+
+## Prerequisits
+install rust
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+install probe-rs
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
+```
+
   
 To get started, check out the 📖 [Docs](https://rmk-firmware.github.io/rmk).
 

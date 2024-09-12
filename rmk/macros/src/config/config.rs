@@ -1,3 +1,4 @@
+use syn::Ident;
 use toml::Table;
 
 use crate::config::parser;
@@ -5,7 +6,6 @@ use crate::config::parser;
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 
-#[allow(unused)]
 #[derive(Debug)]
 pub struct Keyboard {
   pub product_id: u16,
@@ -17,7 +17,12 @@ pub struct Keyboard {
   pub debounce_ms: u32,
 }
 
-#[allow(unused)]
+#[derive(Debug)]
+pub struct Behaviors {
+  pub count: usize,
+  pub list: Vec<Ident>,
+}
+
 #[derive(Debug)]
 pub struct Matrix {
   pub row_count: usize,
@@ -26,7 +31,6 @@ pub struct Matrix {
   pub col_pins: Vec<String>,
 }
 
-#[allow(unused)]
 #[derive(Debug)]
 pub struct Multiplexers {
   pub count: usize,
@@ -35,10 +39,10 @@ pub struct Multiplexers {
   pub com: Vec<String>,
 }
 
-#[allow(unused)]
 #[derive(Debug)]
 pub struct Config {
   pub keyboard: Keyboard,
+  pub behaviors: Behaviors,
   pub use_matrix: bool,
   pub matrix: Option<Matrix>,
   pub use_multiplexers: bool,
@@ -57,6 +61,10 @@ impl Config {
         chip: "".to_string(),
         key_count: 0,
         debounce_ms: 10,
+      },
+      behaviors: Behaviors {
+        count: 0,
+        list: Vec::new(),
       },
       use_matrix: false,
       matrix: None,
@@ -86,33 +94,26 @@ impl Config {
       std::process::exit(1);
     }
 
-    if let Some(multiplexers) = toml.get("multiplexers").and_then(|v| v.as_table()) {
-      cfg.use_multiplexers = true;
+    if let Some(behaviors) = toml.get("behaviors").and_then(|v| v.as_table()) {
+      let mut list: Vec<Ident> = vec![];
+      list.push(Ident::new("Press", proc_macro2::Span::call_site())); // Press is always enabled
 
-      let mp = Multiplexers {
-        count: parser::required_usize(multiplexers, "count"),
-        channels: parser::required_usize(multiplexers, "channels"),
-        sel: multiplexers
-          .get("sel")
-          .and_then(|v| v.as_array())
-          .map(|a| a.iter().map(|v| v.as_str().unwrap().to_string()).collect())
-          .unwrap_or_else(|| {
-            let msg = "Missing 'sel'!";
-            println!("{}{}{}", RED, msg, RESET);
-            std::process::exit(1);
-          }),
-        com: multiplexers
-          .get("com")
-          .and_then(|v| v.as_array())
-          .map(|a| a.iter().map(|v| v.as_str().unwrap().to_string()).collect())
-          .unwrap_or_else(|| {
-            let msg = "Missing 'com'!";
-            println!("{}{}{}", RED, msg, RESET);
-            std::process::exit(1);
-          }),
+      if parser::optional_bool(behaviors, "hold", false) {
+        list.push(Ident::new("Hold", proc_macro2::Span::call_site()));
+      }
+
+      if parser::optional_bool(behaviors, "tap", false) {
+        list.push(Ident::new("Tap", proc_macro2::Span::call_site()));
+      }
+
+      if parser::optional_bool(behaviors, "modding", false) {
+        list.push(Ident::new("Modding", proc_macro2::Span::call_site()));
+      }
+
+      cfg.behaviors = Behaviors {
+        count: list.len(),
+        list,
       };
-
-      cfg.multiplexers = Some(mp);
     }
 
     if let Some(matrix) = toml.get("matrix").and_then(|v| v.as_table()) {
@@ -141,6 +142,35 @@ impl Config {
           }),
       };
       cfg.matrix = Some(mat);
+    }
+
+    if let Some(multiplexers) = toml.get("multiplexers").and_then(|v| v.as_table()) {
+      cfg.use_multiplexers = true;
+
+      let mp = Multiplexers {
+        count: parser::required_usize(multiplexers, "count"),
+        channels: parser::required_usize(multiplexers, "channels"),
+        sel: multiplexers
+          .get("sel")
+          .and_then(|v| v.as_array())
+          .map(|a| a.iter().map(|v| v.as_str().unwrap().to_string()).collect())
+          .unwrap_or_else(|| {
+            let msg = "Missing 'sel'!";
+            println!("{}{}{}", RED, msg, RESET);
+            std::process::exit(1);
+          }),
+        com: multiplexers
+          .get("com")
+          .and_then(|v| v.as_array())
+          .map(|a| a.iter().map(|v| v.as_str().unwrap().to_string()).collect())
+          .unwrap_or_else(|| {
+            let msg = "Missing 'com'!";
+            println!("{}{}{}", RED, msg, RESET);
+            std::process::exit(1);
+          }),
+      };
+
+      cfg.multiplexers = Some(mp);
     }
 
     if let Some(layout) = toml.get("layout").and_then(|v| v.as_table()) {

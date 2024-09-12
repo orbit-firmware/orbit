@@ -13,6 +13,10 @@ path = "src/rmk.rs"
 
 [dependencies]
 macros = { path = "../macros" }
+defmt = { version = "0.3.8", optional = true }
+defmt-rtt = { version = "0.4.1", optional = true }
+panic-halt = "0.2.0"
+panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
 embedded-hal = { version = "1.0.0", features = ["defmt-03"] }
 embedded-hal-async = { version = "1.0.0", features = [
     "defmt-03",
@@ -25,11 +29,21 @@ embassy-usb = { version = "0.3", features = [
   "max-handler-count-8",
 ] }
 
+
 [features]
 default = ["keycodes_us"]
 
-# chips
-# chip_stm32f303cb = []
+# logging/debuging
+defmt = ["dep:defmt"]
+defmt-rtt = ["dep:defmt-rtt"]
+panic-probe = ["dep:panic-probe"]
+debug = [
+  "defmt",
+  "defmt-rtt",
+  "panic-probe",
+  "embassy-time/defmt",
+  "embassy-time/defmt-timestamp-uptime",
+]
 
 # features
 disable_combo_feature = []

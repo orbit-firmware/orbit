@@ -11,8 +11,9 @@ pub fn file(path: &str, optional: bool) -> String {
         return String::new();
       }
       println!("{}Config file does not exist!: {}{}", RED, path, RESET);
-      eprintln!("Warning: Failed to read Config file at '{}': {}", path, e);
-      std::process::exit(1);
+      println!("{}{}{}", RED, e, RESET);
+      // std::process::exit(1);
+      "".to_string()
     }
   };
   content

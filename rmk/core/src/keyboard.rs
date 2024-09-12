@@ -1,4 +1,4 @@
-use crate::config;
+use crate::config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT};
 use crate::time;
 
 #[derive(Copy, Clone)]
@@ -49,8 +49,10 @@ impl Key {
 
   #[allow(unused)]
   fn read_state(&self) -> bool {
-    let x = config::LAYOUT[self.index][0];
-    let y = config::LAYOUT[self.index][1];
+    let x = LAYOUT[self.index][0];
+    let y = LAYOUT[self.index][1];
+    // TODO: Read state of key from pins
+    // x/y are the row/column of the key or mux sel/channel
     false
   }
 
@@ -72,7 +74,7 @@ impl Key {
       if self.state != state {
         self.change_time = now;
       }
-      if time::elapsed(self.change_time) > config::DEBOUNCE_MS {
+      if time::elapsed(self.change_time) > DEBOUNCE_MS {
         self.debouncing = false;
         if self.state != state {
           self.state = state;
@@ -84,30 +86,35 @@ impl Key {
 
 pub struct Keyboard {
   pub key_count: usize,
-  pub keys: [Key; config::KEY_COUNT],
+  pub keys: [Key; KEY_COUNT],
 }
 
 impl Keyboard {
   pub fn new() -> Self {
-    assert!(config::KEY_COUNT > 0);
-    let mut keys = [Key::new(); config::KEY_COUNT];
-    for i in 0..config::KEY_COUNT {
+    assert!(KEY_COUNT > 0);
+    let mut keys = [Key::new(); KEY_COUNT];
+    for i in 0..KEY_COUNT {
       keys[i].set_index(i);
     }
 
     Keyboard {
-      key_count: config::KEY_COUNT,
+      key_count: KEY_COUNT,
       keys,
     }
   }
 
-  pub async fn scan(&mut self) {
+  fn scan(&mut self) {
     for key in self.keys.iter_mut() {
       key.update();
     }
   }
 
-  pub async fn send(&self) {
+  fn send(&self) {
     // Send the current state of the keyboard
+  }
+
+  pub async fn process(&mut self) {
+    self.scan();
+    self.send();
   }
 }

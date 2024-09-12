@@ -9,9 +9,11 @@ edition = "2021"
 
 [lib]
 proc-macro = true
+path = "src/_macros.rs"
 
 [dependencies]
 proc-macro2 = "1.0"
+prettyplease = "0.2.2"
 syn = "2.0"
 quote = "1.0"
 toml = "0.8"

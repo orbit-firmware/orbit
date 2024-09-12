@@ -84,3 +84,23 @@ pub fn optional_usize(table: &Table, key: &str, default: usize) -> usize {
     .map(|i| i as usize)
     .unwrap_or_else(|| default)
 }
+
+pub fn required_bool(table: &Table, key: &str) -> bool {
+  table
+    .get(key)
+    .and_then(|v| v.as_bool())
+    .map(|i| i as bool)
+    .unwrap_or_else(|| {
+      let msg = format!("Missing '{}'!", key);
+      println!("{}{}{}", RED, msg, RESET);
+      std::process::exit(1);
+    })
+}
+
+pub fn optional_bool(table: &Table, key: &str, default: bool) -> bool {
+  table
+    .get(key)
+    .and_then(|v| v.as_bool())
+    .map(|i| i as bool)
+    .unwrap_or_else(|| default)
+}

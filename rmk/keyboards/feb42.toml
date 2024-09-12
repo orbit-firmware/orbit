@@ -7,6 +7,9 @@ chip = "stm32f303cbtx"
 key_count = 42
 debounce_ms = 50 
 
+[behaviors]
+press = true
+hold = true
 
 [multiplexers]
 analogue_read = true # default false
