@@ -3,9 +3,9 @@
 📖 [Docs](https://rmk-firmware.github.io/rmk)
 
 The important files are:
- - `config.yml` - keyboard configuration
- - `hooks.rs` - can be used to extend keyboard functionality (optional)
- - `keymap.rmk` - Your own keymap
+ - `config.toml` - keyboard configuration
+ - `custom.rs` - can be used to extend keyboard functionality (optional)
+ - `keymap.rmk` - Your own keymap (not used for compile process)
 
  These files will be placed in the `user` directory of the firmware.  
  If present they will be available in the compile process.

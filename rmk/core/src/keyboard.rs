@@ -1,5 +1,5 @@
 use crate::config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT};
-use crate::time;
+use crate::{behaviors, time};
 
 #[derive(Copy, Clone)]
 pub struct Key {
@@ -103,18 +103,15 @@ impl Keyboard {
     }
   }
 
-  fn scan(&mut self) {
-    for key in self.keys.iter_mut() {
-      key.update();
-    }
-  }
-
   fn send(&self) {
     // Send the current state of the keyboard
   }
 
   pub async fn process(&mut self) {
-    self.scan();
+    for key in self.keys.iter_mut() {
+      key.update();
+      behaviors::process();
+    }
     self.send();
   }
 }

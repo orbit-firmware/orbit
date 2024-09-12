@@ -8,4 +8,13 @@ pub enum Behaviors {
   Modding,
 }
 
-pub struct Behavior {}
+pub trait Behavior {
+  fn process(&self);
+}
+
+mod hold;
+mod modding;
+mod press;
+mod tap;
+
+pub fn process() {}

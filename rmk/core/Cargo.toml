@@ -31,7 +31,7 @@ embassy-usb = { version = "0.3", features = [
 
 
 [features]
-default = ["keycodes_us"]
+default = []
 
 # logging/debuging
 defmt = ["dep:defmt"]

@@ -1,8 +1,8 @@
-use crate::behaviors::Behavior;
+use crate::behaviors::Behaviors;
 use crate::config::{BEHAVIOR_COUNT, KEY_COUNT};
 
 pub struct KeyMap<const LAYER_COUNT: usize> {
-  pub layers: [[[Behavior; BEHAVIOR_COUNT]; KEY_COUNT]; LAYER_COUNT],
+  pub layers: [[[Behaviors; BEHAVIOR_COUNT]; KEY_COUNT]; LAYER_COUNT],
   layer_state: [bool; LAYER_COUNT],
   default_layer: u8,
   layer_cache: [u8; KEY_COUNT],

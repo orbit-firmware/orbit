@@ -1,14 +1,12 @@
 # none    xxx
 # trans   ---
 
-keycodes german
-
 feature tap
-type keypress
+type press
 delay 120
 
 feature held
-type keypress
+type press
 trigger_after 200ms
 
 feature shifted

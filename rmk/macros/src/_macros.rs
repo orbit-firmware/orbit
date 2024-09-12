@@ -1,9 +1,6 @@
 // borrow from original source
 // this is not the prefered way to use modules
 // but it ensuures we always use the source code
-#[path = "../../core/src/behaviors.rs"]
-mod behaviors;
-
 #[path = "../../core/src/modifiers.rs"]
 mod modifiers;
 
@@ -16,20 +13,20 @@ mod keycodes;
 mod pinout;
 
 const DUMP_CONFIG: bool = true;
-const DUMP_KEYCODES: bool = false;
-const DUMP_PINOUT: bool = false;
+const DUMP_KEYCODES: bool = true;
+const DUMP_PINOUT: bool = true;
 
-fn dump(ts: &TokenStream) {
+fn dump(ts: &TokenStream, name: &str) {
   let parsed: File = parse_file(&ts.to_string()).unwrap();
   let code = unparse(&parsed).to_string();
-  println!("{}", code);
+  std::fs::write(format!("../dumps/{}.rs", name), code.as_bytes()).unwrap();
 }
 
 #[proc_macro]
 pub fn keycodes(input: TokenStream) -> TokenStream {
   let ts = keycodes::generate(input);
   if DUMP_KEYCODES {
-    dump(&ts);
+    dump(&ts, "keycodes");
   }
   ts
 }
@@ -38,7 +35,7 @@ pub fn keycodes(input: TokenStream) -> TokenStream {
 pub fn config(input: TokenStream) -> TokenStream {
   let ts = config::generate(input);
   if DUMP_CONFIG {
-    dump(&ts);
+    dump(&ts, "config");
   }
   ts
 }
@@ -47,7 +44,7 @@ pub fn config(input: TokenStream) -> TokenStream {
 pub fn pinout(input: TokenStream) -> TokenStream {
   let ts = pinout::generate(input);
   if DUMP_PINOUT {
-    dump(&ts);
+    dump(&ts, "pinout");
   }
   ts
 }

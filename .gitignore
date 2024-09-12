@@ -29,3 +29,5 @@ Temporary Items
 *.elf
 *.hex
 *.uf2
+
+/dumps

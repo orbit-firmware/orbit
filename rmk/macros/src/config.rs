@@ -30,12 +30,14 @@ pub fn merge(a: Table, b: Table) -> Table {
 }
 
 pub fn generate(_input: TokenStream) -> TokenStream {
-  let keyboard_config = read::file("tmp/config.toml", false)
+  let keyboard_config = read::file("keyboard_config.toml", false)
     .parse::<Table>()
     .unwrap();
-  let user_config = read::file("user/config.toml", true)
+  let user_config = read::file("../user/config.toml", false)
     .parse::<Table>()
     .unwrap();
+
+  println!("{:?}", user_config);
 
   let merged = merge(keyboard_config, user_config);
   let config = Config::from_toml(merged);

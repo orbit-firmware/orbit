@@ -16,7 +16,7 @@ flash: #/ [kb=keyboard]
 
 clean: #/ cleans cargo and build files
 	@cd rmk && cargo clean
-	@cd rmk && rm -rf tmp
+	@cd rmk && rm -rf keyboard_config.toml
 	@cd rmk && rm -rf user
 	@rm -rf firmware.bin
 	@rm -rf firmware.hex
