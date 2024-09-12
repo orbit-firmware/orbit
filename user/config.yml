@@ -1,0 +1,6 @@
+keycode_language: german
+enabled_features:
+  press
+  hold
+  underglow
+  rgb

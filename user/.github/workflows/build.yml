@@ -1,0 +1,13 @@
+name: Build
+
+on: [push, workflow_dispatch]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    uses: rmk-firmware/rmk/.github/workflows/build.yml@master
+    with:
+      keyboard: feb42
