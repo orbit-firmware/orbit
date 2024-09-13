@@ -13,18 +13,14 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::{exit, Command};
 use std::sync::{Arc, Mutex};
-use std::thread::sleep;
-use std::time::Duration;
 
 const RESET: &str = "\x1b[0m";
 const RED: &str = "\x1b[0;31m";
-const GREEN: &str = "\x1b[0;32m";
-const BLUE: &str = "\x1b[0;34m";
 
 mod toml {
   use ctoml::*;
   use std::fs;
-  use std::process::{exit, Command};
+  use std::process::exit;
   use stm::merge as tmerge;
   use RED;
   use RESET;
@@ -267,7 +263,6 @@ fn cleanup(chip_dir: &str) {
       }
     }
 
-    let backup_file = format!("bkp/{}", relative);
     if file_exists(&backup_file) {
       let dir = dirname(&root_file);
       if !directory_exists(&dir) {
@@ -284,7 +279,7 @@ fn cleanup(chip_dir: &str) {
 // TAKE CARE
 // this script assumes its ran from the root of the project!
 fn main() {
-  run("cargo", &["script", ".dev/scripts/setup.rs"]);
+  // run("cargo", &["script", ".dev/scripts/setup.rs"]);
 
   let keyboard: String = get_arg(1);
   let keyboard_file = format!("keyboards/{}.toml", keyboard);

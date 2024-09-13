@@ -1,14 +1,14 @@
-use crate::rmk::{
-  behaviors::Behaviors,
-  config::{BEHAVIOR_COUNT, KEY_COUNT},
-};
+// use crate::rmk::{
+//   behaviors::Behaviors,
+//   config::{BEHAVIOR_COUNT, KEY_COUNT},
+// };
 
-pub struct KeyMap<const LAYER_COUNT: usize> {
-  pub layers: [[[Behaviors; BEHAVIOR_COUNT]; KEY_COUNT]; LAYER_COUNT],
-  layer_state: [bool; LAYER_COUNT],
-  default_layer: u8,
-  layer_cache: [u8; KEY_COUNT],
-}
+// pub struct KeyMap<const LAYER_COUNT: usize> {
+//   pub layers: [[[Behaviors; BEHAVIOR_COUNT]; KEY_COUNT]; LAYER_COUNT],
+//   layer_state: [bool; LAYER_COUNT],
+//   default_layer: u8,
+//   layer_cache: [u8; KEY_COUNT],
+// }
 
 // impl<const LAYER_COUNT: usize> KeyMap<LAYER_COUNT> {
 //   // pub async fn create<F: NorFlash>(

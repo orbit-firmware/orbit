@@ -28,17 +28,17 @@ impl Key {
     self.index = index;
   }
 
-  pub fn is_pressed(&self) -> bool {
-    self.state
-  }
+  // pub fn is_pressed(&self) -> bool {
+  //   self.state
+  // }
 
-  pub fn is_released(&self) -> bool {
-    !self.state
-  }
+  // pub fn is_released(&self) -> bool {
+  //   !self.state
+  // }
 
-  pub fn get_held_time(&self) -> u32 {
-    time::elapsed(self.press_time)
-  }
+  // pub fn get_held_time(&self) -> u32 {
+  //   time::elapsed(self.press_time)
+  // }
 
   fn press(&mut self) {
     self.state = true;
@@ -88,7 +88,7 @@ impl Key {
 }
 
 pub struct Keyboard {
-  pub key_count: usize,
+  // pub key_count: usize,
   pub keys: [Key; KEY_COUNT],
 }
 
@@ -101,7 +101,7 @@ impl Keyboard {
     }
 
     Keyboard {
-      key_count: KEY_COUNT,
+      // key_count: KEY_COUNT,
       keys,
     }
   }

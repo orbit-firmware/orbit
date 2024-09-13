@@ -1,5 +1,4 @@
-// list of behaviors
-#[derive(Debug)]
+#[allow(dead_code)]
 #[repr(u8)]
 pub enum Behaviors {
   Press, // press is always enabled
@@ -8,13 +7,13 @@ pub enum Behaviors {
   Modding,
 }
 
-pub trait Behavior {
-  fn process(&self);
-}
+// pub trait Behavior {
+//   fn process(&self);
+// }
 
-mod hold;
-mod modding;
-mod press;
-mod tap;
+// mod hold;
+// mod modding;
+// mod press;
+// mod tap;
 
 pub fn process() {}
