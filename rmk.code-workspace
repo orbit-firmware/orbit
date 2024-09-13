@@ -5,6 +5,20 @@
     },
   ],
   "settings": {
-    "explorer.excludeGitIgnore": false,
+    "explorer.excludeGitIgnore": true,
+    "files.exclude": {
+      "**/.git": true,
+      "**/.build": true,
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/tmp": true
+    },
+    "search.exclude": {
+      "**/.git": true,
+      "**/.build": true,
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/tmp": true
+    }
   }
 }

@@ -14,11 +14,11 @@ use embassy_stm32::{
   usb::{Driver, InterruptHandler},
 };
 
-mod rmk;
-
 bind_interrupts!(struct Irqs {
   USB_LP_CAN_RX0 => InterruptHandler<USB>;
 });
+
+mod rmk;
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) -> ! {

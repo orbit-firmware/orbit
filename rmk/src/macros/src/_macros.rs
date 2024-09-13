@@ -12,9 +12,9 @@ mod config;
 mod keycodes;
 mod pinout;
 
-const DUMP_CONFIG: bool = false;
-const DUMP_KEYCODES: bool = false;
-const DUMP_PINOUT: bool = false;
+const DUMP_CONFIG: bool = true;
+const DUMP_KEYCODES: bool = true;
+const DUMP_PINOUT: bool = true;
 
 fn dump(ts: &TokenStream, name: &str) {
   let parsed: File = parse_file(&ts.to_string()).unwrap();

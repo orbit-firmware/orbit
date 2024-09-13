@@ -4,8 +4,6 @@ FROM ubuntu:latest
 # Install dependencies, including Python 3
 RUN apt-get update && apt-get install -y \
     rustc \
-    python3 \
-    python3-pip \
     curl \
     build-essential \
     libssl-dev \
@@ -25,10 +23,11 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Rust
-RUN rustup default stable
+RUN rustup default 1.80.1
 
-# Install cargo-binutils and llvm-tools-preview
+# Install dependencies
 RUN cargo install cargo-binutils
+RUN cargo install cargo-script
 RUN rustup component add llvm-tools-preview
 
 # Add all embedded targets

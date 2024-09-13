@@ -2,7 +2,6 @@
 //! [dependencies]
 //! toml = "0.8"
 //! serde-toml-merge = "0.3.8"
-//! ctrlc = "3.4.5"
 //! ```
 //!
 extern crate serde_toml_merge as stm;
@@ -12,10 +11,11 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::{exit, Command};
-use std::sync::{Arc, Mutex};
 
 const RESET: &str = "\x1b[0m";
 const RED: &str = "\x1b[0;31m";
+const BLUE: &str = "\x1b[0;34m";
+const GREEN: &str = "\x1b[0;32m";
 
 mod toml {
   use ctoml::*;
@@ -75,37 +75,37 @@ mod toml {
     exit(1);
   }
 
-  pub fn merge_cargo(source: &str, target: &str) {
-    let mut source_toml = read(source, true);
-    let mut target_toml = read(target, true);
+  pub fn required_string_list(table: &Table, key: &str) -> Vec<String> {
+    let mut keys = key.split('/');
+    let mut current = table;
 
-    if let Some(source_features) = source_toml.get_mut("features") {
-      if let Some(target_features) = target_toml.get_mut("features") {
-        target_features
-          .as_table_mut()
-          .unwrap()
-          .extend(source_features.as_table_mut().unwrap().clone());
-      } else {
-        target_toml["features"] = source_features.clone();
-      }
+    while let Some(part) = keys.next() {
+      current = match current.get(part) {
+        Some(Value::Table(t)) => t,
+        Some(Value::Array(a)) => {
+          return a
+            .iter()
+            .map(|v| match v {
+              Value::String(s) => s.to_string(),
+              _ => {
+                let msg = format!("Expected a string in '{}'", key);
+                println!("{}{}{}", RED, msg, RESET);
+                exit(1);
+              }
+            })
+            .collect();
+        }
+        _ => {
+          let msg = format!("Missing '{}'", key);
+          println!("{}{}{}", RED, msg, RESET);
+          exit(1);
+        }
+      };
     }
 
-    if let Some(source_deps) = source_toml.get_mut("dependencies") {
-      if let Some(target_deps) = target_toml.get_mut("dependencies") {
-        target_deps
-          .as_table_mut()
-          .unwrap()
-          .extend(source_deps.as_table_mut().unwrap().clone());
-      } else {
-        target_toml["dependencies"] = source_deps.clone();
-      }
-    }
-
-    fs::write(
-      target,
-      toml::to_string(&target_toml).expect("Failed to write TOML"),
-    )
-    .expect("Failed to write target file");
+    let msg = format!("Missing '{}'", key);
+    println!("{}{}{}", RED, msg, RESET);
+    exit(1);
   }
 
   pub fn merge(source: &str, target: &str) {
@@ -194,93 +194,227 @@ fn list_files(path: &Path) -> Vec<String> {
   files
 }
 
-fn ctrlc_handler(chip_dir: &String) {
-  let chip_dir_arc = Arc::new(Mutex::new(chip_dir.clone()));
-
-  ctrlc::set_handler({
-    let chip_dir_arc = Arc::clone(&chip_dir_arc);
-    move || {
-      let chip_dir = chip_dir_arc.lock().unwrap();
-      cleanup(&chip_dir);
-      exit(0);
-    }
-  })
-  .expect("Error setting Ctrl+C handler");
+pub fn replace_in_file(file_path: &str, target: &str, replacement: &str) {
+  let content = fs::read_to_string(file_path).expect("Failed to read file");
+  let new_content = content.replace(target, replacement);
+  fs::write(file_path, new_content).expect("Failed to write file");
 }
 
-fn prepare(chip_dir: &str) {
+fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
+  let rmk_dir = "rmk";
   let files = list_files(Path::new(&chip_dir));
+  let rmk_files = list_files(Path::new(&rmk_dir));
 
-  let backup_folder = Path::new("bkp");
-  if !directory_exists("bkp") {
-    fs::create_dir_all(&backup_folder).expect("Failed to create backup directory");
+  for file in rmk_files {
+    let prefix = format!("{}/", rmk_dir);
+    let relative = file.replacen(&prefix, "", 1);
+    let build_file = format!(".build/{}", relative);
+    let dir = dirname(&build_file);
+    if !directory_exists(&dir) {
+      fs::create_dir_all(&dir).expect("Failed to create output directory");
+    }
+    fs::copy(&file, &build_file).expect("Failed to copy file");
   }
 
   for file in files {
-    let mut relative = file.replace(&chip_dir, "");
-    relative = relative.strip_prefix("/").unwrap().to_string();
-    let backup_file = format!("bkp/{}", relative);
-    let root_file = relative.clone();
+    let prefix = format!("{}/", chip_dir);
+    let relative = file.replacen(&prefix, "", 1);
+    let build_file = format!(".build/{}", relative);
 
-    if file_exists(&root_file) {
-      let dir = dirname(&backup_file);
-      if !directory_exists(&dir) {
-        fs::create_dir_all(&dir).expect("Failed to create output directory");
-      }
-
-      fs::copy(&root_file, &backup_file).expect("Failed to copy file");
-    }
-
-    let dir = dirname(&root_file);
+    let dir = dirname(&build_file);
     if !directory_exists(&dir) {
       fs::create_dir_all(&dir).expect("Failed to create output directory");
     }
 
-    if relative == "Cargo.toml" {
-      toml::merge_cargo(&file, &root_file);
-    } else {
-      fs::copy(&file, &root_file).expect("Failed to copy file");
+    if file_exists(&build_file) {
+      if relative == "Cargo.toml" {
+        toml::merge(&file, &build_file);
+        replace_in_file(&build_file, &chip, &keyboard);
+        continue;
+      }
+
+      if relative == "rust-toolchain.toml" {
+        toml::merge(&file, &build_file);
+        continue;
+      }
+    }
+
+    fs::copy(&file, &build_file).expect("Failed to copy file");
+  }
+}
+
+fn install_rust_version(version: &str) {
+  let rust_version_installed = Command::new("rustup")
+    .args(&["toolchain", "list"])
+    .output()
+    .expect("Failed to check installed Rust versions")
+    .stdout;
+
+  let rust_version_installed = std::str::from_utf8(&rust_version_installed).unwrap();
+  if !rust_version_installed.contains(version) {
+    println!(
+      "{}Rust version {}{} is not installed. Installing...",
+      BLUE, version, RESET
+    );
+
+    let status = Command::new("rustup")
+      .args(&["toolchain", "install", version])
+      .stdout(std::process::Stdio::null())
+      .stderr(std::process::Stdio::null())
+      .status()
+      .expect("Failed to install Rust version");
+
+    if !status.success() {
+      println!(
+        "{}Failed to install Rust version {}!{}",
+        RED, version, RESET
+      );
+      exit(1);
+    }
+  }
+
+  let status = Command::new("rustup")
+    .args(&["default", version])
+    .stdout(std::process::Stdio::null())
+    .stderr(std::process::Stdio::null())
+    .status()
+    .expect("Failed to set Rust version as default");
+
+  if !status.success() {
+    println!(
+      "{}Failed to set Rust version {} as default.{}",
+      RED, version, RESET
+    );
+    exit(1);
+  }
+}
+
+fn install_targets(targets: Vec<String>) {
+  let target_installed = Command::new("rustup")
+    .args(&["target", "list", "--installed"])
+    .output()
+    .expect("Failed to check installed targets")
+    .stdout;
+
+  for target in &targets {
+    let target_installed = std::str::from_utf8(&target_installed).unwrap();
+    if !target_installed.contains(target.as_str()) {
+      println!("{}Installing target {}...{}", BLUE, target, RESET);
+      let status = Command::new("rustup")
+        .args(&["target", "add", target.as_str()])
+        .status()
+        .expect("Failed to install target");
+
+      if !status.success() {
+        println!("{}Failed to install target {}{}", RED, target, RESET);
+        exit(1);
+      }
     }
   }
 }
 
-fn cleanup(chip_dir: &str) {
-  let files = list_files(Path::new(&chip_dir));
+fn install_components(components: Vec<String>) {
+  let component_installed = Command::new("rustup")
+    .args(&["component", "list", "--installed"])
+    .output()
+    .expect("Failed to check installed components")
+    .stdout;
 
-  for file in files.clone() {
-    let mut relative = file.replace(&chip_dir, "");
-    relative = relative.strip_prefix("/").unwrap().to_string();
-    let root_file = relative.clone();
-    let backup_file = format!("bkp/{}", relative);
+  for component in &components {
+    let check_name = component.clone().replace("-preview", "");
+    let component_installed = std::str::from_utf8(&component_installed).unwrap();
+    if !component_installed.contains(check_name.as_str()) {
+      println!("{}Installing component {}...{}", BLUE, component, RESET);
+      let status = Command::new("rustup")
+        .args(&["component", "add", component.as_str()])
+        .status()
+        .expect("Failed to install component");
 
-    if file_exists(&root_file) {
-      fs::remove_file(&root_file).expect("Failed to remove file");
-    }
-    let dir = dirname(&root_file);
-    if directory_exists(&dir) {
-      if fs::read_dir(&dir).unwrap().next().is_none() {
-        fs::remove_dir(&dir).expect("Failed to remove directory");
+      if !status.success() {
+        println!("{}Failed to install component {}{}", RED, component, RESET);
+        exit(1);
       }
-    }
-
-    if file_exists(&backup_file) {
-      let dir = dirname(&root_file);
-      if !directory_exists(&dir) {
-        fs::create_dir_all(&dir).expect("Failed to create output directory");
-      }
-      fs::copy(&backup_file, &root_file).expect("Failed to copy file");
     }
   }
+}
 
-  fs::remove_dir_all("bkp").expect("Failed to remove backup directory");
-  fs::remove_file("keyboard.toml").expect("Failed to remove keyboard file");
+fn install_cargo_packages(packages: Vec<String>) {
+  let check_binutils = Command::new("cargo")
+    .args(&["install", "--list"])
+    .output()
+    .expect("Failed to list installed cargo tools");
+
+  for package in &packages {
+    let output = std::str::from_utf8(&check_binutils.stdout).unwrap_or("");
+
+    if !output.contains(package) {
+      println!(
+        "{}cargo package '{}' is not installed. Installing...{}",
+        BLUE, package, RESET
+      );
+
+      let status = Command::new("cargo")
+        .args(&["install", package])
+        .status()
+        .expect("Failed to install package");
+
+      if !status.success() {
+        println!("{}Failed to install package{}", RED, RESET);
+        exit(1);
+      }
+    }
+  }
+}
+
+fn install_toolchain() {
+  if !file_exists("rust-toolchain.toml") {
+    println!("{}Missing rust-toolchain.toml{}", RED, RESET);
+    exit(1);
+  }
+
+  let rust_toolchain = toml::read("rust-toolchain.toml", true);
+
+  let version = toml::required_string(&rust_toolchain, "toolchain/channel");
+  let targets = toml::required_string_list(&rust_toolchain, "toolchain/targets");
+  let components = toml::required_string_list(&rust_toolchain, "toolchain/components");
+  let cargo_packages = toml::required_string_list(&rust_toolchain, "cargo/packages");
+
+  install_rust_version(&version);
+  install_targets(targets);
+  install_components(components);
+  install_cargo_packages(cargo_packages);
+}
+
+fn compile() {
+  let status = run(
+    "cargo",
+    &[
+      "objcopy", "--release", "--", "-O", "binary", "../firmware.bin",
+    ],
+  );
+  if !status.success() {
+    eprintln!("The command failed with status: {}", status);
+  } else {
+    println!("{}    firmware.bin compiled successfully{}", GREEN, RESET);
+  }
+
+  let status = run(
+    "cargo",
+    &[
+      "objcopy", "--release", "--features", "keycodes_us", "--", "-O", "ihex", "../firmware.hex",
+    ],
+  );
+
+  if !status.success() {
+    eprintln!("The command failed with status: {}", status);
+  } else {
+    println!("{}    firmware.hex compiled successfully{}", GREEN, RESET);
+  }
 }
 
 // TAKE CARE
 // this script assumes its ran from the root of the project!
 fn main() {
-  // run("cargo", &["script", ".dev/scripts/setup.rs"]);
-
   let keyboard: String = get_arg(1);
   let keyboard_file = format!("keyboards/{}.toml", keyboard);
   if !file_exists(&keyboard_file) {
@@ -297,31 +431,17 @@ fn main() {
     exit(1);
   }
 
-  fs::copy(&keyboard_file, "keyboard.toml").expect("Failed to copy keyboard file");
+  if !directory_exists(".build") {
+    fs::create_dir(".build").expect("Failed to create build directory");
+  }
+
+  fs::copy(&keyboard_file, ".build/keyboard.toml").expect("Failed to copy keyboard file");
   if file_exists("user/keyboard.toml") {
-    toml::merge("user/keyboard.toml", "keyboard.toml");
+    toml::merge("user/keyboard.toml", ".build/keyboard.toml");
   }
+  prepare(&chip_dir, &chip, &keyboard.as_str());
+  std::env::set_current_dir(".build").expect("Failed to change to  build directory");
 
-  ctrlc_handler(&chip_dir);
-  prepare(&chip_dir);
-
-  let status = run(
-    "cargo",
-    &[
-      "objcopy", "--release", "--features", "keycodes_us", "--", "-O", "binary", "firmware.bin",
-    ],
-  );
-
-  let status = run(
-    "cargo",
-    &[
-      "objcopy", "--release", "--features", "keycodes_us", "--", "-O", "ihex", "firmware.hex",
-    ],
-  );
-
-  if !status.success() {
-    eprintln!("The command failed with status: {}", status);
-  }
-
-  cleanup(&chip_dir);
+  install_toolchain();
+  compile();
 }

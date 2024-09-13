@@ -35,7 +35,5 @@ Temporary Items
 **/.idea
 **/.vscode
 **/itm.txt
-/keyboard.toml
-/dumps
 /user
-/bkp
+/.build

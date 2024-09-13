@@ -1,0 +1,5 @@
+[toolchain]
+components = ["llvm-tools-preview"]
+
+[cargo]
+packages = ["cargo-binutils"]
