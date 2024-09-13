@@ -1,4 +1,4 @@
-# ![logo](https://github.com/rmk-firmware/rmk/blob/master/docs/public/logo-64x64.png?raw=true) RMK Firmware
+# ![logo](https://github.com/rmk-firmware/rmk/blob/master/.dev/docs/public/logo-64x64.png?raw=true) RMK Firmware
 
 RMK is a rust keyboard firmware built for ease.  
 The main selling points are:
