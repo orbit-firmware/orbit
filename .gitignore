@@ -25,9 +25,16 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-*.bin
-*.elf
-*.hex
-*.uf2
+**/*.bin
+**/*.elf
+**/*.hex
+**/*.uf2
 
+**/target
+**/Cargo.lock
+**/.idea
+**/.vscode
+**/itm.txt
+/keyboard.toml
 /dumps
+/bkp

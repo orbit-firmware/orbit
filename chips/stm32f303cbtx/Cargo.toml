@@ -1,18 +1,10 @@
-# This file was automatically generated.
-
 [package]
-edition = "2021"
 name = "stm32f303cbtx"
 version = "0.1.0"
+edition = "2021"
 
-[[bin]]
-name = "stm32f303cbtx"
-test = false
-bench = false
 
 [dependencies]
-rmk = { path = "../../core" }
-macros = { path = "../../macros" }
 cortex-m = { version = "0.7.7", features = [
   "inline-asm",
   "critical-section-single-core",

@@ -1,0 +1,9 @@
+[keyboard]
+name = "Feb42"
+manufacturer = "febreeze"
+debounce_ms = 10 
+keycodes = "german"
+
+[behaviors]
+press = true
+hold = false

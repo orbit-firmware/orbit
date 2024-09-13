@@ -1,7 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use toml::value::Table;
-use toml::Value;
 
 mod config;
 mod parser;
@@ -11,37 +10,13 @@ use config::Config;
 
 const MULTIPLEXER_SEL_DEVIDER: usize = 4;
 
-pub fn merge(a: Table, b: Table) -> Table {
-  let mut merged = a.clone();
-
-  for (key, value) in b {
-    if let Value::Table(b_table) = value {
-      if let Some(Value::Table(a_table)) = a.get(&key) {
-        merged.insert(key, Value::Table(merge(a_table.clone(), b_table.clone())));
-      } else {
-        merged.insert(key, Value::Table(b_table));
-      }
-    } else {
-      merged.insert(key, value);
-    }
-  }
-
-  merged
-}
-
 pub fn generate(_input: TokenStream) -> TokenStream {
-  let keyboard_config = read::file("keyboard_config.toml", false)
-    .parse::<Table>()
-    .unwrap();
-  let user_config = read::file("../user/config.toml", false)
-    .parse::<Table>()
-    .unwrap();
+  let keyboard_config = read::file("keyboard.toml", false).parse::<Table>().unwrap();
 
-  println!("{:?}", user_config);
+  let config = Config::from_toml(keyboard_config);
 
-  let merged = merge(keyboard_config, user_config);
-  let config = Config::from_toml(merged);
-
+  let product_id = config.keyboard.product_id;
+  let vendor_id = config.keyboard.vendor_id;
   let name = config.keyboard.name;
   let manufacturer = config.keyboard.manufacturer;
   let chip = config.keyboard.chip;
@@ -115,8 +90,10 @@ pub fn generate(_input: TokenStream) -> TokenStream {
   }
 
   let generated = quote! {
-    use crate::behaviors::Behaviors;
+    use crate::rmk::behaviors::Behaviors;
 
+    pub const PRODUCT_ID: u16 = #product_id;
+    pub const VENDOR_ID: u16 = #vendor_id;
     pub const NAME: &str = #name;
     pub const MANUFACTURER: &str = #manufacturer;
     pub const CHIP: &str = #chip;

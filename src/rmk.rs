@@ -1,6 +1,3 @@
-#![no_main]
-#![no_std]
-
 pub mod behaviors;
 pub mod config;
 pub mod keyboard;

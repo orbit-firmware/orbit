@@ -1,5 +1,8 @@
-use crate::config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT};
-use crate::{behaviors, time};
+use crate::rmk::{
+  behaviors,
+  config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT},
+  time,
+};
 
 #[derive(Copy, Clone)]
 pub struct Key {

@@ -1,5 +1,7 @@
-use crate::behaviors::Behaviors;
-use crate::config::{BEHAVIOR_COUNT, KEY_COUNT};
+use crate::rmk::{
+  behaviors::Behaviors,
+  config::{BEHAVIOR_COUNT, KEY_COUNT},
+};
 
 pub struct KeyMap<const LAYER_COUNT: usize> {
   pub layers: [[[Behaviors; BEHAVIOR_COUNT]; KEY_COUNT]; LAYER_COUNT],

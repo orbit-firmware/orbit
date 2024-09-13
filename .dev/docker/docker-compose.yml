@@ -5,6 +5,6 @@ services:
       dockerfile: Dockerfile
     container_name: rmk
     volumes:
-      - ../:/rmk
+      - ../../:/rmk
     command: /bin/bash
     working_dir: /rmk

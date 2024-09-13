@@ -1,7 +1,7 @@
 // borrow from original source
 // this is not the prefered way to use modules
 // but it ensuures we always use the source code
-#[path = "../../core/src/modifiers.rs"]
+#[path = "../../rmk/modifiers.rs"]
 mod modifiers;
 
 extern crate proc_macro;
@@ -19,7 +19,10 @@ const DUMP_PINOUT: bool = true;
 fn dump(ts: &TokenStream, name: &str) {
   let parsed: File = parse_file(&ts.to_string()).unwrap();
   let code = unparse(&parsed).to_string();
-  std::fs::write(format!("../dumps/{}.rs", name), code.as_bytes()).unwrap();
+  if !std::path::Path::new("dumps").exists() {
+    std::fs::create_dir("dumps").unwrap();
+  }
+  std::fs::write(format!("dumps/{}.rs", name), code.as_bytes()).unwrap();
 }
 
 #[proc_macro]

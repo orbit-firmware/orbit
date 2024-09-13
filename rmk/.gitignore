@@ -1,7 +1,0 @@
-**/target
-**/Cargo.lock
-/.idea
-/.vscode
-/itm.txt
-/keyboard_config.toml
-/user

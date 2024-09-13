@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // Mod bits:    43210
 //    bit 4      +----- LR flag (Left:0, Right:1)
 //    bit 3      |+---- Gui

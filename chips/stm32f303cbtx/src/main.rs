@@ -13,14 +13,15 @@ use embassy_stm32::{
   peripherals::USB,
   usb::{Driver, InterruptHandler},
 };
-// use macros;
+
+mod rmk;
 
 bind_interrupts!(struct Irqs {
   USB_LP_CAN_RX0 => InterruptHandler<USB>;
 });
 
 #[embassy_executor::main]
-async fn main(_spawner: Spawner) {
+async fn main(_spawner: Spawner) -> ! {
   let p = embassy_stm32::init(Default::default());
   let usb_driver = Driver::new(p.USB, Irqs, p.PA12, p.PA11);
 

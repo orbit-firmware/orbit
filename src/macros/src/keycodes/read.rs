@@ -35,7 +35,7 @@ pub fn get_file_content(path: &str, optional: bool) -> String {
 }
 
 pub fn file(path: &str, log: bool) -> Vec<KeyCode> {
-  let content = get_file_content(format!("keycodes/{}.k", path).as_str(), false);
+  let content = get_file_content(format!("src/rmk/keycodes/{}.k", path).as_str(), false);
 
   if log {
     println!("{}Using Keycodes: {}{}", GREEN, path, RESET);
