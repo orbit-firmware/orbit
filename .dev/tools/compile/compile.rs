@@ -12,7 +12,7 @@ pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
 
   let rmk_files = util::list_files(&rmk_dir);
   for file in rmk_files {
-    let bf = util::repath(&file, &rmk_dir, ".build");
+    let bf = util::repath(&file, &rmk_dir, ".bin");
     util::mkdir(util::dirname(&bf).as_str());
     util::copy(&file, &bf);
   }
@@ -20,7 +20,7 @@ pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
   let chip_files = util::list_files(&chip_dir);
 
   for file in chip_files {
-    let bf = util::repath(&file, &chip_dir, ".build");
+    let bf = util::repath(&file, &chip_dir, ".bin");
     util::mkdir(util::dirname(&bf).as_str());
 
     if util::file_exists(&bf) {
@@ -159,7 +159,7 @@ pub fn install() {
 
   let rust_toolchain = toml::read("rust-toolchain.toml", true);
 
-  let version = toml::string(&rust_toolchain, "toolchain/channel", true);
+  let version: String = toml::get(&rust_toolchain, "toolchain/channel", true);
   let targets = toml::required_string_list(&rust_toolchain, "toolchain/targets");
   let components = toml::required_string_list(&rust_toolchain, "toolchain/components");
   let cargo_packages = toml::required_string_list(&rust_toolchain, "cargo/packages");
@@ -183,9 +183,7 @@ pub fn run() {
 
   let status = util::run(
     "cargo",
-    &[
-      "objcopy", "--release", "--features", "keycodes_us", "--", "-O", "ihex", "../firmware.hex",
-    ],
+    &["objcopy", "--release", "--", "-O", "ihex", "../firmware.hex"],
   );
 
   if !status.success() {

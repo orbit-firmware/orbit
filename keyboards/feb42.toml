@@ -6,7 +6,7 @@ manufacturer = "febreeze"
 chip = "stm32f303cbtx"
 key_count = 42
 debounce_ms = 50 
-keycodes = "french" # changes keycodes to represent a french keyboard
+# keycodes = "french" # changes keycodes to represent a french keyboard
 
 [behaviors]
 press = true
@@ -16,8 +16,8 @@ hold = true
 analogue_read = true # default false
 count = 3
 channels = 16
-sel = ["PB3", "PB4", "PB6", "PB5"]
-com = ["PA13", "PA10", "PA9"]
+sel_pins = ["PB3", "PB4", "PB6", "PB5"]
+com_pins = ["PA13", "PA10", "PA9"]
 
 # [matrix]
 # analogue_read = true # default false

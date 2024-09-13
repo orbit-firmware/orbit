@@ -2,6 +2,7 @@
 // that's why we need underscores in front of it.
 
 mod compile;
+mod generate;
 mod toml;
 mod util;
 
@@ -33,7 +34,8 @@ fn main() {
   }
 
   let keyboard_toml = toml::read(&keyboard_file, true);
-  let chip = toml::string(&keyboard_toml, "keyboard/chip", true);
+  let keycodes: String = toml::get(&keyboard_toml, "keyboard/keycodes", false);
+  let chip: String = toml::get(&keyboard_toml, "keyboard/chip", true);
   let chip_dir = format!("chips/{}", chip);
 
   if !util::directory_exists(&chip_dir) {
@@ -41,16 +43,19 @@ fn main() {
     exit(1);
   }
 
-  util::mkdir(".build");
+  util::mkdir(".bin");
 
   // keyboard config
-  util::copy(&keyboard_file, ".build/keyboard.toml");
+  util::copy(&keyboard_file, ".bin/keyboard.toml");
   if util::file_exists("user/keyboard.toml") {
-    toml::merge("user/keyboard.toml", ".build/keyboard.toml");
+    toml::merge("user/keyboard.toml", ".bin/keyboard.toml");
   }
 
   compile::prepare(&chip_dir, &chip, &keyboard.as_str());
-  util::cd(".build");
+  util::copy(".dev/tools/compile/generate/modifiers.rs", ".bin/src/rmk/modifiers.rs");
+  util::cd(".bin");
+
+  generate::run(&root, &keycodes);
   compile::install();
   compile::run();
 }

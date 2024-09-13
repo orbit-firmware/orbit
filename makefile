@@ -2,7 +2,7 @@
 
 MAKEFLAGS += --no-print-directory
 
-PLAYDIR := .dev/play
+TOOLDIR := .dev/tools
 
 compile: #/ [kb=keyboard] [features="list of features"]
 ifeq ($(kb),)
@@ -42,5 +42,5 @@ help:
 
 play:
 	@make _ensure_cargo_play -B
-	@cd $(PLAYDIR) && cargo play $(shell cd $(PLAYDIR) && find $(target) -name '*.rs' | sort) -- $(args)
+	@cd $(TOOLDIR) && cargo play $(shell cd $(TOOLDIR) && find $(target) -name '*.rs' | sort) -- $(args)
 	
