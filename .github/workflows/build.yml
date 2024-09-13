@@ -16,8 +16,7 @@ jobs:
     container: rmkfirmware/rmk:latest
     
     steps:
-      - name: Rustup
-        run: rustup default stable
+
       - name: Checkout rmk
         uses: actions/checkout@v4
         with:
@@ -28,12 +27,12 @@ jobs:
       - name: Checkout User Repository
         uses: actions/checkout@v4
         with:
-          path: rmk/user
+          path: user
           persist-credentials: false 
           fetch-depth: 0
 
       - name: Compile Firmware
-        run: make compile kb=${{ inputs.keyboard }}
+        run: make kb=${{ inputs.keyboard }}
 
       - name: Generate Release
         uses: softprops/action-gh-release@v2

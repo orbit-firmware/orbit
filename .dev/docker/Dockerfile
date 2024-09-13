@@ -29,6 +29,8 @@ RUN rustup default 1.80.1
 RUN cargo install cargo-binutils
 RUN cargo install cargo-script
 RUN rustup component add llvm-tools-preview
+RUN rustup component add rust-src
+RUN rustup component add rustfmt
 
 # Add all embedded targets
 RUN rustup update
