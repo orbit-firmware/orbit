@@ -22,32 +22,36 @@ RUN apt-get update && apt-get install -y \
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+
 # Rust
-RUN rustup default 1.80.1
+RUN rustup default stable
 
 # Install dependencies
-RUN cargo install cargo-binutils
-RUN cargo install cargo-script
-RUN rustup component add llvm-tools-preview
-RUN rustup component add rust-src
-RUN rustup component add rustfmt
+RUN cargo install \
+    cargo-binutils \
+    cargo-play
+
+RUN rustup component add \
+    llvm-tools-preview \
+    rust-src \
+    rustfmt
 
 # Add all embedded targets
 RUN rustup update
-RUN rustup target add thumbv6m-none-eabi
-RUN rustup target add thumbv7m-none-eabi
-RUN rustup target add thumbv7em-none-eabi
-RUN rustup target add thumbv7em-none-eabihf
-RUN rustup target add thumbv8m.base-none-eabi
-RUN rustup target add thumbv8m.main-none-eabi
-RUN rustup target add thumbv8m.main-none-eabihf
-RUN rustup target add riscv32i-unknown-none-elf
-RUN rustup target add riscv32imc-unknown-none-elf
-RUN rustup target add riscv32imac-unknown-none-elf
-RUN rustup target add riscv64gc-unknown-none-elf
-RUN rustup target add riscv64imac-unknown-none-elf
+RUN rustup target add \
+    thumbv6m-none-eabi \
+    thumbv7m-none-eabi \
+    thumbv7em-none-eabi \
+    thumbv7em-none-eabihf \
+    thumbv8m.base-none-eabi \
+    thumbv8m.main-none-eabi \
+    thumbv8m.main-none-eabihf \
+    riscv32i-unknown-none-elf \
+    riscv32imc-unknown-none-elf \
+    riscv32imac-unknown-none-elf \
+    riscv64gc-unknown-none-elf \
+    riscv64imac-unknown-none-elf
 
-RUN curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
 
 RUN mkdir /rmk
 

@@ -2,23 +2,23 @@
 
 MAKEFLAGS += --no-print-directory
 
+PLAYDIR := .dev/play
 
 compile: #/ [kb=keyboard] [features="list of features"]
 ifeq ($(kb),)
 	@make help -B
 	@exit 1
 endif
-	@make _ensure_cargo_script -B
-	@cargo script .dev/scripts/compile.rs -- $(kb) $(features)
+	@make play target=compile args="$(kb) $(features)"
 	
 
-flash: #/ [kb=keyboard]
+flash: #/ flashes the firmware
 ifeq ($(kb),)
 	@make help -B
 	@exit 1
 endif
-	@make _ensure_cargo_script -B
-	# @cd .dev/scripts && chmod +x ./flash.sh && ./flash.sh
+	@make _ensure_cargo_play -B
+	@make play target=flash
 
 clean: #/ cleans build files
 	@rm -rf .build
@@ -31,11 +31,15 @@ docker: #/ runs the dev container
 docs: #/ starts the docs server
 	@cd .dev/docs && npm install && npm run docs:dev
 
-
-_ensure_cargo_script:
-	@if ! cargo install --list | grep -q cargo-script; then \
-		cargo install cargo-script; \
+_ensure_cargo_play:
+	@if ! cargo install --list | grep -q cargo-play; then \
+		cargo install cargo-play; \
 	fi
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+play:
+	@make _ensure_cargo_play -B
+	@cd $(PLAYDIR) && cargo play $(shell cd $(PLAYDIR) && find $(target) -name '*.rs' | sort) -- $(args)
+	
