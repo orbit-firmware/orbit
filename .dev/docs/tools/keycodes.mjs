@@ -8,8 +8,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const dir = '../rmk/keycodes';
-const files = fs.readdirSync('../rmk/keycodes').filter(file => file.endsWith('.k'));
+const dir = '../../src/rmk/keycodes';
+const files = fs.readdirSync(dir).filter(file => file.endsWith('.k'));
 
 
 
