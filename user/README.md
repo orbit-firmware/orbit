@@ -3,7 +3,7 @@
 📖 [Docs](https://rmk-firmware.github.io/rmk)
 
 The important files are:
- - `config.toml` - keyboard configuration
+ - `keyboard.toml` - keyboard configuration
  - `custom.rs` - can be used to extend keyboard functionality (optional)
  - `keymap.rmk` - Your own keymap (not used for compile process)
 
