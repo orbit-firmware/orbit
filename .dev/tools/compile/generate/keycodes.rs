@@ -1,5 +1,6 @@
 //# quote = "1.0"
 //# proc-macro2 = "1.0"
+//# syn = "2.0"
 
 use crate::error;
 use crate::generate::modifiers;

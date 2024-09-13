@@ -74,6 +74,16 @@ pub fn filename(path: &str) -> String {
   Path::new(&path).file_name().unwrap().to_str().unwrap().to_string()
 }
 
+pub fn remove_extension(path: &str) -> String {
+  let mut parts = path.split('.').collect::<Vec<&str>>();
+  parts.pop();
+  parts.join(".")
+}
+
+pub fn filename_no_ext(path: &str) -> String {
+  remove_extension(&filename(path))
+}
+
 pub fn dirname(path: &str) -> String {
   Path::new(&path).parent().unwrap().display().to_string()
 }
@@ -125,7 +135,7 @@ pub fn write(file_path: &str, content: &str) {
   std::fs::write(file_path, content).expect("Failed to write file");
 }
 
-pub fn list_files(path: &str) -> Vec<String> {
+pub fn list_files_recursive(path: &str) -> Vec<String> {
   let p = Path::new(path);
   let mut files = Vec::new();
   if p.is_dir() {
@@ -139,8 +149,35 @@ pub fn list_files(path: &str) -> Vec<String> {
                 if entry_path.file_name().unwrap() == ".git" {
                   continue;
                 }
-                files.extend(list_files(&entry_path.display().to_string()));
+                files.extend(list_files_recursive(&entry_path.display().to_string()));
               } else {
+                if entry_path.file_name().unwrap() == ".DS_Store" {
+                  continue;
+                }
+                files.push(entry_path.display().to_string());
+              }
+            }
+            Err(e) => eprintln!("Error reading entry: {:?}", e),
+          }
+        }
+      }
+      Err(e) => eprintln!("Error reading directory: {:?}", e),
+    }
+  }
+  files
+}
+
+pub fn list_files(path: &str) -> Vec<String> {
+  let p = Path::new(path);
+  let mut files = Vec::new();
+  if p.is_dir() {
+    match std::fs::read_dir(p) {
+      Ok(entries) => {
+        for entry in entries {
+          match entry {
+            Ok(entry) => {
+              let entry_path = entry.path();
+              if !entry_path.is_dir() {
                 if entry_path.file_name().unwrap() == ".DS_Store" {
                   continue;
                 }

@@ -19,6 +19,7 @@ embassy-usb = { version = "0.3", features = [
 [features]
 
 # features
+# should be genrated and activated based on config
 disable_combo_feature = []
 disable_hold_feature = []
 disable_modify_feature = []

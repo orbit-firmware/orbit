@@ -8,6 +8,15 @@ use std::process::{exit, Command};
 
 // merges together the chip and rmk directories
 pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
+  let rmk_src_dir = "rmk/src";
+
+  let rmk_files = util::list_files_recursive(&rmk_src_dir);
+  for file in rmk_files {
+    let bf = util::repath(&file, &rmk_src_dir, ".bin/src/rmk");
+    util::mkdir(util::dirname(&bf).as_str());
+    util::copy(&file, &bf);
+  }
+
   let rmk_dir = "rmk";
 
   let rmk_files = util::list_files(&rmk_dir);
@@ -17,7 +26,7 @@ pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
     util::copy(&file, &bf);
   }
 
-  let chip_files = util::list_files(&chip_dir);
+  let chip_files = util::list_files_recursive(&chip_dir);
 
   for file in chip_files {
     let bf = util::repath(&file, &chip_dir, ".bin");

@@ -27,6 +27,6 @@ async fn main(_spawner: Spawner) -> ! {
 
   loop {
     // macros::pinout! {};
-    rmk::run(usb_driver).await
+    rmk::processor::run(usb_driver).await
   }
 }

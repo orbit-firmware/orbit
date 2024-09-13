@@ -6,7 +6,7 @@ manufacturer = "febreeze"
 chip = "stm32f303cbtx"
 key_count = 42
 debounce_ms = 50 
-# keycodes = "french" # changes keycodes to represent a french keyboard
+# keycodes = "german" # changes keycodes to represent a french keyboard
 
 [behaviors]
 press = true
