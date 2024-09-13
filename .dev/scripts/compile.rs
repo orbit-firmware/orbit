@@ -395,7 +395,7 @@ fn compile() {
   if !status.success() {
     eprintln!("The command failed with status: {}", status);
   } else {
-    println!("{}    firmware.bin compiled successfully{}", GREEN, RESET);
+    println!("    🎉{}firmware.bin compiled successfully{}", GREEN, RESET);
   }
 
   let status = run(
@@ -408,7 +408,7 @@ fn compile() {
   if !status.success() {
     eprintln!("The command failed with status: {}", status);
   } else {
-    println!("{}    firmware.hex compiled successfully{}", GREEN, RESET);
+    println!("    🎉{}firmware.hex compiled successfully{}", GREEN, RESET);
   }
 }
 
