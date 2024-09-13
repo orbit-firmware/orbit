@@ -24,12 +24,20 @@ jobs:
           repository: rmk-firmware/rmk
           ref: master
 
+    
       - name: Checkout User Repository
         uses: actions/checkout@v4
         with:
           path: user
           persist-credentials: false 
           fetch-depth: 0
+
+      - name: Rustup
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+          PATH="/root/.cargo/bin:${PATH}"
+          rustup default stable
 
       - name: Compile Firmware
         run: make kb=${{ inputs.keyboard }}

@@ -32,7 +32,7 @@ docs: #/ starts the docs server
 	@cd .dev/docs && npm install && npm run docs:dev
 
 _ensure_cargo_play:
-	@rustup default stable
+	@rustup default stable 2>/dev/null
 	@if ! cargo install --list | grep -q cargo-play; then \
 		cargo install cargo-play; \
 	fi
