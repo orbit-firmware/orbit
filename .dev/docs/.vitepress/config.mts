@@ -33,13 +33,21 @@ export default defineConfig({
         items: keycodes
       },
       {
-        text: 'Features',
+        text: 'Behaviors',
         items: [
-          { text: 'Keypress', link: '/' },
-          { text: 'Layers', link: '/' },
+          { text: 'Press', link: '/' },
+          { text: 'Hold', link: '/' },
           { text: 'Modify', link: '/' },
           { text: 'Tap', link: '/' },
           { text: 'OS', link: '/' },
+        ]
+      },
+      {
+        text: 'Actions',
+        items: [
+          { text: 'Layers', link: '/' },
+          { text: 'Mouse', link: '/' },
+          { text: 'RGB', link: '/' },
         ]
       }
     ],
