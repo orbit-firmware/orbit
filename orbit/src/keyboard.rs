@@ -1,16 +1,18 @@
 use crate::orbit::{
   behaviors,
   actions,
-  config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT},
+  config::{DEBOUNCE_MS, KEY_COUNT},
   time,
+  peripherals::Peripherals,
+  log::dump,
 };
 
 #[derive(Copy, Clone)]
 pub struct Key {
   pub index: usize,
   pub state: bool,
-  pub press_time: u32,
-  pub change_time: u32,
+  pub press_time: u64,
+  pub change_time: u64,
   pub debouncing: bool,
 }
 
@@ -29,40 +31,36 @@ impl Key {
     self.index = index;
   }
 
-  // pub fn is_pressed(&self) -> bool {
-  //   self.state
-  // }
+  #[allow(unused)]
+  pub fn is_pressed(&self) -> bool {
+    self.state
+  }
 
-  // pub fn is_released(&self) -> bool {
-  //   !self.state
-  // }
+  #[allow(unused)]
+  pub fn is_released(&self) -> bool {
+    !self.state
+  }
 
-  // pub fn get_held_time(&self) -> u32 {
-  //   time::elapsed(self.press_time)
-  // }
+  #[allow(unused)]
+  pub fn get_held_time(&self) -> u64 {
+    time::elapsed(self.press_time)
+  }
 
   fn press(&mut self) {
     self.state = true;
     self.press_time = time::now();
+    dump!("Key {} is pressed", self.index);
   }
 
   fn release(&mut self) {
     self.state = false;
     self.press_time = 0;
+    dump!("Key {} is released", self.index);
   }
 
-  #[allow(unused)]
-  fn read_state(&self) -> bool {
-    let x = LAYOUT[self.index][0];
-    let y = LAYOUT[self.index][1];
-    println!("Reading state of key at ({}, {})", x, y);
-    // TODO: Read state of key from pins
-    // x/y are the row/column of the key or mux sel/channel
-    false
-  }
+  pub fn update(&mut self, peripherals: &Peripherals) {
+    let state = peripherals.key(self.index);
 
-  pub fn update(&mut self) {
-    let state = self.read_state();
     let now = time::now();
 
     if self.state != state && !self.debouncing {
@@ -83,6 +81,11 @@ impl Key {
         self.debouncing = false;
         if self.state != state {
           self.state = state;
+          if self.state {
+            self.press();
+          } else {
+            self.release();
+          }
         }
       }
     }
@@ -90,7 +93,7 @@ impl Key {
 }
 
 pub struct Keyboard {
-  // pub key_count: usize,
+  pub peripherals: Peripherals,
   pub keys: [Key; KEY_COUNT],
 }
 
@@ -103,7 +106,7 @@ impl Keyboard {
     }
 
     Keyboard {
-      // key_count: KEY_COUNT,
+      peripherals: Peripherals::new(),
       keys,
     }
   }
@@ -113,8 +116,9 @@ impl Keyboard {
   }
 
   pub async fn process(&mut self) {
+    self.peripherals.scan();
     for key in self.keys.iter_mut() {
-      key.update();
+      key.update(&self.peripherals);
       behaviors::process();
       actions::process();
     }

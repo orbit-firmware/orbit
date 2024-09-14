@@ -99,6 +99,18 @@ impl FromTomlValue for u32 {
   }
 }
 
+impl FromTomlValue for u64 {
+  fn from_value(value: &Value, required: bool) -> Option<Self> {
+    if let Value::Integer(i) = value {
+      Some(*i as u64)
+    } else if !required {
+      Some(0)
+    } else {
+      None
+    }
+  }
+}
+
 impl FromTomlValue for usize {
   fn from_value(value: &Value, required: bool) -> Option<Self> {
     if let Value::Integer(i) = value {

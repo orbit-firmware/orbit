@@ -52,10 +52,10 @@
   --vp-c-default-3: var(--vp-c-gray-3);
   --vp-c-default-soft: var(--vp-c-gray-soft);
 
-  --vp-c-brand-1: #e97c58;
-  --vp-c-brand-2: #ec6e44;
-  --vp-c-brand-3: #F1602F;
-  --vp-c-brand-soft: var(--vp-c-indigo-soft);
+  --vp-c-brand-1: #eaff4d;
+  --vp-c-brand-2: #9da84b;
+  --vp-c-brand-3: #889331;
+  --vp-c-brand-soft: #eaff4d;
 
   --vp-c-tip-1: var(--vp-c-brand-1);
   --vp-c-tip-2: var(--vp-c-brand-2);

@@ -43,10 +43,8 @@ fn main() {
     exit(1);
   }
 
-  info!("Compiling keyboard: {}", keyboard);
-  info!("Chip: {}", chip);
-
   util::mkdir(".bin");
+  util::write(".bin/.last_kb", &keyboard);
 
   // keyboard config
   util::copy(&keyboard_file, ".bin/keyboard.toml");
@@ -57,7 +55,7 @@ fn main() {
   compile::prepare(&chip_dir, &chip, &keyboard.as_str());
   util::cd(".bin");
 
-  let features: Vec<String> = generate::run(&root, &keycodes);
+  let features: Vec<String> = generate::run(&root, &chip, &keycodes);
   compile::install();
   compile::compile(features, &chip);
 }

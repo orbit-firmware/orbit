@@ -2,16 +2,16 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="256mm"
-   height="256mm"
-   viewBox="0 0 256 256"
+   width="300mm"
+   height="210mm"
+   viewBox="0 0 300 210"
    version="1.1"
    id="svg1"
    inkscape:export-filename="bitmap.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
-   sodipodi:docname="icon.svg"
+   sodipodi:docname="logo-full.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,30 +26,27 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="0.47092931"
-     inkscape:cx="530.86524"
-     inkscape:cy="483.08736"
+     inkscape:zoom="0.66599462"
+     inkscape:cx="863.37034"
+     inkscape:cy="237.98991"
      inkscape:window-width="1920"
      inkscape:window-height="1057"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
-     showguides="true">
+     showguides="true"
+     showgrid="false">
     <sodipodi:guide
-       position="281.27103,128"
-       orientation="0,1"
-       id="guide4"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
+       position="105,210"
+       orientation="1,0"
+       id="guide1"
+       inkscape:locked="false" />
     <sodipodi:guide
-       position="128,272.68556"
-       orientation="-1,0"
-       id="guide5"
-       inkscape:locked="false"
-       inkscape:label=""
-       inkscape:color="rgb(0,134,229)" />
+       position="210,105"
+       orientation="0,-1"
+       id="guide2"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <defs
      id="defs1">
@@ -67,7 +64,7 @@
      id="layer1">
     <g
        id="g10"
-       transform="matrix(4.9184077,0,0,4.9184077,-365.78771,-505.42653)">
+       transform="matrix(3.6600336,0,0,3.6600336,-262.45218,-366.36442)">
       <path
          id="path7"
          style="fill:#eaff4d;fill-opacity:1;stroke-width:0.264583"
@@ -79,5 +76,20 @@
          cy="113.91127"
          r="5.1067429" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:50.8px;letter-spacing:0px;fill:#eaff4d;stroke-width:0.264583"
+       x="188.73318"
+       y="119.09926"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:50.8px;font-family:Bahnschrift;-inkscape-font-specification:'Bahnschrift Semi-Bold';letter-spacing:0px;stroke-width:0.264583"
+         x="188.73318"
+         y="119.09926"><tspan
+   style="letter-spacing:-1.49225px"
+   id="tspan6">o</tspan>r<tspan
+   style="letter-spacing:-1.43933px"
+   id="tspan7">b</tspan>it</tspan></text>
   </g>
 </svg>

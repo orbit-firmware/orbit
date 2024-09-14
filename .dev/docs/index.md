@@ -9,7 +9,3 @@ But that's not all. Orbit is crafted with efficiency in mind. Its compact size m
 We’ve chosen a shrimp as our mascot, symbolizing the agility and precision of our firmware. Just as Rust's crab embodies safety and speed, our shrimp represents the nimbleness and simplicity that Orbit brings to your keyboard.
 
 Dive in, and let Orbit transform the way you interact with your keyboard—easy to set up, light on resources, and robust in performance!
-
-
-Have fun,
-![logo](https://github.com/orbit-firmware/orbit/blob/master/docs/public/logo-64x64.png?raw=true) 

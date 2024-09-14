@@ -1,6 +1,7 @@
 //# quote = "1.0"
 //# proc-macro2 = "1.0"
 //# syn = "2.0"
+const TARGET_FILE: &str = "src/orbit/keycodes.rs";
 
 use crate::error;
 use crate::generate::modifiers;
@@ -10,8 +11,6 @@ use quote::quote;
 use std::fs;
 use std::process::exit;
 use syn::Ident as SynIdent;
-
-const TARGET_FILE: &str = "src/orbit/keycodes.rs";
 
 #[derive(Debug, Clone)]
 pub struct KeyCode {

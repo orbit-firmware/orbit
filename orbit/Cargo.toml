@@ -8,6 +8,8 @@ publish = false
 edition = "2021"
 
 [dependencies]
+device_query = "2.0"
+crossterm = "0.28" 
 embassy-usb = { version = "0.3", features = [
   "defmt",
   "usbd-hid",
@@ -17,5 +19,5 @@ embassy-usb = { version = "0.3", features = [
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 
 [features]
-mock_enabled = []
+emulator_enabled = []
 defmt = []

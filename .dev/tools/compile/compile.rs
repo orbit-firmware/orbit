@@ -179,34 +179,37 @@ pub fn install() {
   install_cargo_packages(cargo_packages);
 }
 
-pub fn compile(features: Vec<String>, chip: &str) {
-  if chip == "__mock" {
-    info!("💾 Mock chip detected, running it");
+fn run_emulator(feature_list: Vec<String>) {
+  info!("💾 Emulator chip detected, running it");
 
-    let mut args: Vec<&str> = vec!["run", "--release"];
-    for f in features.clone() {
-      info!("Using Feature: {}", f);
-    }
-  
-    let features = features.join(" ");
-    if !features.is_empty() {
-      args.push("--features");
-      args.push(&features);
-    }
-    util::run("cargo", &args);
-    return;
+  let mut features: String = "emulator_enabled".to_string();
+  for f in feature_list.clone() {
+    features.push_str(",");
+    features.push_str(&f);
   }
 
-  let mut args: Vec<&str> = vec!["objcopy", "--release"];
-
-  for f in features.clone() {
-    info!("Using Feature: {}", f);
-  }
-
-  let features = features.join(" ");
+  let mut args: Vec<&str> = vec!["run", "--release"];
   if !features.is_empty() {
     args.push("--features");
-    args.push(&features);
+    args.push(&features.as_str());
+  }
+
+  util::run("cargo", &args);
+  return;
+}
+
+fn compile_firmware(feature_list: Vec<String>) {
+  let mut args: Vec<&str> = vec!["objcopy", "--release"];
+
+  let mut features: String = "".to_string();
+  for f in feature_list.clone() {
+    features.push_str(",");
+    features.push_str(&f);
+  }
+
+  if !features.is_empty() {
+    args.push("--features");
+    args.push(&features.as_str());
   }
 
   args.push("--");
@@ -231,4 +234,13 @@ pub fn compile(features: Vec<String>, chip: &str) {
   } else {
     ok!("    🎉firmware.hex compiled successfully");
   }
+}
+
+pub fn compile(feature_list: Vec<String>, chip: &str) {
+  if chip == "_emulator" {
+    run_emulator(feature_list);
+    return;
+  }
+
+  compile_firmware(feature_list);
 }

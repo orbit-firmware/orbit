@@ -9,6 +9,9 @@ ifeq ($(kb),)
 	@make help -B
 	@exit 1
 endif
+ifneq ($(shell cat .bin/.last_kb 2> /dev/null),$(kb))
+	@make clean -B
+endif	
 	@make play target=compile args="$(kb) $(features)"
 	
 

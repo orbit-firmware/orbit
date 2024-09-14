@@ -1,0 +1,38 @@
+# this is used to emulate the firmware on a computer
+# [features.emulator_enabled]
+# do NOT use this as a real chip
+
+
+[keyboard]
+product_id = 0x0000
+vendor_id = 0x0000
+name = "Emulator"
+manufacturer = "Emulator"
+chip = "_emulator"
+key_count = 5
+debounce_ms = 50 
+# keycodes = "german" # changes keycodes to represent a french keyboard
+
+[behaviors]
+press = true
+hold = true
+
+[matrix]
+row_count = 5
+col_count = 0
+# https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
+row_pins = ["Escape", "Q", "W", "E", "R"]
+col_pins = []
+
+[layout]
+keys = [
+  [0,1], [0,1], [0,3], [0,4], [0,5]
+]
+
+[rgb]
+data_pin = "PA7"
+
+[swd]
+swo = "PB2"
+swclk = "PA14"
+swdio = "PA15"
