@@ -1,4 +1,5 @@
-# ![logo](https://github.com/orbit-firmware/orbit/blob/master/.dev/docs/public/logo-64x64.png?raw=true) Orbit Firmware
+#  Orbit Firmware
+![logo](https://github.com/orbit-firmware/orbit/blob/master/.dev/resources/appicon/discord.png?raw=true)
 
 Orbit is a rust keyboard firmware built for ease.  
 The main selling points are:
