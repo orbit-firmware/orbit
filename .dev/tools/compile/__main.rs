@@ -57,5 +57,5 @@ fn main() {
 
   generate::run(&root, &keycodes);
   compile::install();
-  compile::run();
+  compile::run(); // TODO: need to pass or get active behaviors and actions and enable them as features
 }

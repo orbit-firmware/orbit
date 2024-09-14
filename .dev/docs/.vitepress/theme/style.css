@@ -141,7 +141,11 @@
 }
 
 .VPDoc.has-aside .content {
-  max-width: 800px;
+  max-width: 920px;
+}
+
+.VPDoc.has-aside .content .content-container {
+  max-width: 920px;
 }
 
 .content .content .content-container {

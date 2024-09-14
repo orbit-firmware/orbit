@@ -24,6 +24,7 @@ export default defineConfig({
         text: 'Setup',
         items: [
           { text: 'Getting Started', link: '/getting-started' },
+          { text: 'Configuration', link: '/configuration' },
         ],
       },
       {

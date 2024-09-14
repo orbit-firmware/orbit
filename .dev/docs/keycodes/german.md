@@ -24,9 +24,9 @@
 | Slash | s(Seven) | `slash` |
 | LeftParenthesis | s(Eight) | `leftparenthesis` |
 | RightParenthesis | s(Nine) | `rightparenthesis` |
-| Equal | s(Zero) | `equal` |
+| Equal | s(Zero) # ?? this should not happen | `equal` |
 | QuestionMark | s(Minus) | `questionmark` |
-| Grave | s(Equal) | `grave` |
+| Grave | s(Equal) # ?? this should not happen | `grave` |
 | Asterisk | s(RightBracket) | `asterisk` |
 | Quote | s(NonUsHash) | `quote` |
 | Semicolon | s(Comma) | `semicolon` |
