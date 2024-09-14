@@ -1,5 +1,6 @@
 use crate::rmk::{
   behaviors,
+  actions,
   config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT},
   time,
 };
@@ -114,6 +115,7 @@ impl Keyboard {
     for key in self.keys.iter_mut() {
       key.update();
       behaviors::process();
+      actions::process();
     }
     self.send();
   }

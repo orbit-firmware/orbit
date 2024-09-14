@@ -7,13 +7,19 @@ pub enum Behaviors {
   Modding,
 }
 
-// pub trait Behavior {
-//   fn process(&self);
-// }
+#[cfg(feature = "behavior_tap_enabled")]
+mod press;
 
-// mod hold;
-// mod modding;
-// mod press;
-// mod tap;
+#[cfg(feature = "behavior_combo_enabled")]
+mod combo;
+
+#[cfg(feature = "behavior_hold_enabled")]
+mod hold;
+
+#[cfg(feature = "behavior_modding_enabled")]
+mod modding;
+
+#[cfg(feature = "behavior_tap_enabled")]
+mod tap;
 
 pub fn process() {}

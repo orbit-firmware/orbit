@@ -5,7 +5,7 @@ use crate::error;
 use serde_toml_merge::merge as toml_merge;
 use std::fs;
 use std::process::exit;
-use toml::{Table, Value};
+pub use toml::{Table, Value};
 
 pub fn read(path: &str, required: bool) -> Table {
   let content = match fs::read_to_string(&path) {
@@ -71,6 +71,10 @@ pub fn merge(source: &str, target: &str) {
 
   fs::write(target, toml::to_string(&merged_toml).expect("Failed to serialize TOML"))
     .expect("Failed to write target file");
+}
+
+pub fn write(path: &str, table: &Value) {
+  fs::write(path, toml::to_string(&table).expect("Failed to serialize TOML")).expect("Failed to write target file");
 }
 
 pub trait FromTomlValue: Sized {

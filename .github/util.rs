@@ -6,8 +6,7 @@ use prettyplease::unparse;
 use proc_macro2::TokenStream;
 use std::io::{self, BufRead};
 use std::path::Path;
-use std::process::{exit, Command, Stdio};
-use std::thread;
+use std::process::exit;
 use syn::{parse_file, File};
 
 #[macro_export]
@@ -196,40 +195,23 @@ pub fn list_files(path: &str) -> Vec<String> {
 }
 
 pub fn run(cmd: &str, args: &[&str]) -> std::process::ExitStatus {
-  let mut command = Command::new(cmd)
+  let mut command = std::process::Command::new(cmd)
     .args(args)
-    .stdin(Stdio::null())
-    .stdout(Stdio::piped())
-    .stderr(Stdio::piped())
+    .stdin(std::process::Stdio::null())
+    .stdout(std::process::Stdio::piped())
     .spawn()
     .expect("Failed to start command");
 
-  let stdout = command.stdout.take().expect("Failed to capture stdout");
-  let stdout_thread = thread::spawn(move || {
+  if let Some(stdout) = command.stdout.as_mut() {
     let reader = io::BufReader::new(stdout);
     for line in reader.lines() {
       match line {
         Ok(line) => println!("{}", line),
-        Err(e) => eprintln!("Error reading stdout line: {}", e),
+        Err(e) => eprintln!("Error reading line: {}", e),
       }
     }
-  });
-
-  let stderr = command.stderr.take().expect("Failed to capture stderr");
-  let stderr_thread = thread::spawn(move || {
-    let reader = io::BufReader::new(stderr);
-    for line in reader.lines() {
-      match line {
-        Ok(line) => eprintln!("{}", line),
-        Err(e) => eprintln!("Error reading stderr line: {}", e),
-      }
-    }
-  });
+  }
 
   let status = command.wait().expect("Command failed to run");
-
-  stdout_thread.join().expect("Failed to join stdout thread");
-  stderr_thread.join().expect("Failed to join stderr thread");
-
   status
 }

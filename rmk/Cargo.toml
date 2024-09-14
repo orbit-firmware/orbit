@@ -14,13 +14,3 @@ embassy-usb = { version = "0.3", features = [
   "max-interface-count-8",
   "max-handler-count-8",
 ] }
-
-
-[features]
-
-# features
-# should be genrated and activated based on config
-disable_combo_feature = []
-disable_hold_feature = []
-disable_modify_feature = []
-disable_mouse_feature = []
