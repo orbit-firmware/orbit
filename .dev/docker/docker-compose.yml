@@ -1,10 +1,10 @@
 services:
-  rmk:
+  orbit:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: rmk
+    container_name: orbit
     volumes:
-      - ../../:/rmk
+      - ../../:/orbit
     command: /bin/bash
-    working_dir: /rmk
+    working_dir: /orbit

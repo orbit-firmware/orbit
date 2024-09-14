@@ -7,10 +7,11 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::Ident as SynIdent;
 
-const TARGET_FILE: &str = "src/rmk.rs";
+const TARGET_FILE: &str = "src/orbit.rs";
 
-pub fn generate() {
-  let files = util::list_files("src/rmk");
+#[allow(unused_variables)]
+pub fn generate(feature_list: &mut Vec<String>) {
+  let files = util::list_files("src/orbit");
 
   let mut modules = vec![];
   for file in files {

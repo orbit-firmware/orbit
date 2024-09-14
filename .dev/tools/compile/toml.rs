@@ -5,7 +5,7 @@ use crate::error;
 use serde_toml_merge::merge as toml_merge;
 use std::fs;
 use std::process::exit;
-pub use toml::{Table, Value};
+pub use toml::{map::Map, Table, Value};
 
 pub fn read(path: &str, required: bool) -> Table {
   let content = match fs::read_to_string(&path) {
@@ -32,36 +32,6 @@ pub fn read_as_value(path: &str) -> Value {
     }
   };
   content.parse::<Value>().unwrap()
-}
-
-pub fn required_string_list(table: &Table, key: &str) -> Vec<String> {
-  let mut keys = key.split('/');
-  let mut current = table;
-
-  while let Some(part) = keys.next() {
-    current = match current.get(part) {
-      Some(Value::Table(t)) => t,
-      Some(Value::Array(a)) => {
-        return a
-          .iter()
-          .map(|v| match v {
-            Value::String(s) => s.to_string(),
-            _ => {
-              error!("Expected a string in '{}'", key);
-              exit(1);
-            }
-          })
-          .collect();
-      }
-      _ => {
-        error!("Missing '{}'", key);
-        exit(1);
-      }
-    };
-  }
-
-  error!("Missing '{}'", key);
-  exit(1);
 }
 
 pub fn merge(source: &str, target: &str) {

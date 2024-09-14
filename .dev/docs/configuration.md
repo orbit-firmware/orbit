@@ -8,7 +8,7 @@ There are two places where this file can be placed.
  - `user/keyboard.toml`:  
   Your own independent configuration
 
-If you compile with an official configuration [`keyboards/..`](https://github.com/rmk-firmware/rmk/tree/master/keyboards) but also provide a `user` configuration,  
+If you compile with an official configuration [`keyboards/..`](https://github.com/orbit-firmware/orbit/tree/master/keyboards) but also provide a `user` configuration,  
 the contents will be merged.  
 You can also use this to adjust official configurations to your taste.  
 
@@ -19,8 +19,8 @@ Here is an example configuration:
 product_id = 0x0000 # your product id
 vendor_id = 0x0000 # your vendor id
 name = "My Keyboard" # The keyboards name
-manufacturer = "RMK Inc." # the keyboards manufacturer
-chip = "stm32f303cbtx" # What main mcu/chip the keyboard is using https://github.com/rmk-firmware/rmk/tree/master/chips
+manufacturer = "Orbit Inc." # the keyboards manufacturer
+chip = "stm32f303cbtx" # What main mcu/chip the keyboard is using https://github.com/orbit-firmware/orbit/tree/master/chips
 key_count = 42 # How many total keys the keyboard has
 debounce_ms = 50 # how many ms the key debounce should last 
 keycodes = "french" # changes keycodes to represent a french keyboard

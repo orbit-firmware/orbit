@@ -1,4 +1,4 @@
-use crate::rmk::{
+use crate::orbit::{
   behaviors,
   actions,
   config::{DEBOUNCE_MS, KEY_COUNT, LAYOUT},
@@ -55,6 +55,7 @@ impl Key {
   fn read_state(&self) -> bool {
     let x = LAYOUT[self.index][0];
     let y = LAYOUT[self.index][1];
+    println!("Reading state of key at ({}, {})", x, y);
     // TODO: Read state of key from pins
     // x/y are the row/column of the key or mux sel/channel
     false

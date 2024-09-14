@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build -t rmk .
+docker build -t orbit .
 docker login
-docker tag rmk rmkfirmware/rmk:latest
-docker push rmkfirmware/rmk:latest
+docker tag orbit orbitfirmware/orbit:latest
+docker push orbitfirmware/orbit:latest

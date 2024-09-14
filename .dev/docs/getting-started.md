@@ -7,25 +7,25 @@
 
 2. Clone the main repository:
 ```shell
-git clone https://github.com/rmk-firmware/rmk.git rmk
+git clone https://github.com/orbit-firmware/orbit.git orbit
 ```
 
 3. Then run:
 *(if [gnu make](https://www.gnu.org/software/make/) is installed)*
 ```shell
-cd rmk
+cd orbit
 make kb=MY_KEYBOARD
 ```
 else
 ```shell
-chmod +x rmk/dev/compile.sh
-rmk/dev/compile.sh MY_KEYBOARD 
+chmod +x orbit/dev/compile.sh
+orbit/dev/compile.sh MY_KEYBOARD 
 ```
 
 `MY_KEYBOARD` should be replaced with the keyboard of your choice.  
-A full list is available [here](https://github.com/rmk-firmware/rmk/tree/master/keyboards)
+A full list is available [here](https://github.com/orbit-firmware/orbit/tree/master/keyboards)
 
-4. this should produce `firmware.hex/bin` in the rmk directory.
+4. this should produce `firmware.hex/bin` in the orbit directory.
 
 
 ## Locally (Docker)
@@ -37,4 +37,4 @@ A full list is available [here](https://github.com/rmk-firmware/rmk/tree/master/
 
 ## Github Actions
 
-An example can be found [here](https://github.com/rmk-firmware/rmk-user-example).
+An example can be found [here](https://github.com/orbit-firmware/orbit-user-example).

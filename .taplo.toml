@@ -1,4 +1,4 @@
-include = ["rmk/**/Cargo.toml", "rmk/keyboards/**/*.toml"]
+include = ["orbit/**/Cargo.toml", "orbit/keyboards/**/*.toml"]
 
 [formatting]
 align_entries = true          # Align entries vertically. Entries that have table headers, comments, or blank lines between them are not aligned.	false

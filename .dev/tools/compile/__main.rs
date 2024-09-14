@@ -12,7 +12,7 @@ use std::process::exit;
 fn validate_root_dir() {
   let e1 = util::directory_exists("chips");
   let e2 = util::directory_exists("keyboards");
-  let e3 = util::directory_exists("rmk");
+  let e3 = util::directory_exists("orbit");
   let e4 = util::directory_exists(".dev");
 
   if !e1 || !e2 || !e3 || !e4 {
@@ -43,6 +43,9 @@ fn main() {
     exit(1);
   }
 
+  info!("Compiling keyboard: {}", keyboard);
+  info!("Chip: {}", chip);
+
   util::mkdir(".bin");
 
   // keyboard config
@@ -52,10 +55,9 @@ fn main() {
   }
 
   compile::prepare(&chip_dir, &chip, &keyboard.as_str());
-  util::copy(".dev/tools/compile/generate/modifiers.rs", ".bin/src/rmk/modifiers.rs");
   util::cd(".bin");
 
-  generate::run(&root, &keycodes);
+  let features: Vec<String> = generate::run(&root, &keycodes);
   compile::install();
-  compile::run(); // TODO: need to pass or get active behaviors and actions and enable them as features
+  compile::compile(features, &chip);
 }

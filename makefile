@@ -21,12 +21,12 @@ endif
 	@make play target=flash
 
 clean: #/ cleans build files
-	@rm -rf .build
+	@rm -rf .bin
 	@rm -rf firmware.bin
 	@rm -rf firmware.hex
 
 docker: #/ runs the dev container
-	@cd .dev/docker && docker-compose up -d && docker exec -it rmk bash
+	@cd .dev/docker && docker-compose up -d && docker exec -it orbit bash
 
 docs: #/ starts the docs server
 	@cd .dev/docs && npm install && npm run docs:dev

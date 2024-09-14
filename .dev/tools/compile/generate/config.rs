@@ -8,10 +8,11 @@ use quote::quote;
 use std::process::exit;
 use syn::Ident as SynIdent;
 
-const TARGET_FILE: &str = "src/rmk/config.rs";
+const TARGET_FILE: &str = "src/orbit/config.rs";
 const MULTIPLEXER_SEL_DEVIDER: usize = 4;
 
-pub fn generate() {
+#[allow(unused_variables)]
+pub fn generate(feature_list: &mut Vec<String>) {
   let config = toml::read("keyboard.toml", true);
 
   let product_id: u16 = toml::get(&config, "keyboard/product_id", true);
@@ -58,10 +59,14 @@ pub fn generate() {
   behaviors.push(quote! {
     Behaviors::Press
   });
+  feature_list.push("behavior_press_enabled".to_string());
+
   for b in behaviors_list {
     if b.0 == "press" || b.0 == "Press" {
       continue;
     }
+    feature_list.push(format!("behavior_{}_enabled", b.0));
+
     let behavior = util::capitalize_first(&b.0);
     if b.1 {
       let ident = SynIdent::new(&behavior, proc_macro2::Span::call_site());
@@ -120,7 +125,7 @@ pub fn generate() {
   let generated = quote! {
     #![allow(dead_code)]
 
-    use crate::rmk::behaviors::Behaviors;
+    use crate::orbit::behaviors::Behaviors;
 
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;

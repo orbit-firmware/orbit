@@ -1,0 +1,48 @@
+# this is used to emulate the firmware on a computer
+# [features.mock_enabled]
+# do NOT use this as a real chip
+
+
+[keyboard]
+product_id = 0x0000
+vendor_id = 0x0000
+name = "Mock"
+manufacturer = "Mock"
+chip = "__mock"
+key_count = 42
+debounce_ms = 50 
+# keycodes = "german" # changes keycodes to represent a french keyboard
+
+[behaviors]
+press = true
+hold = true
+
+[multiplexers]
+analogue_read = true # default false
+count = 3
+channels = 16
+sel_pins = ["PB3", "PB4", "PB6", "PB5"]
+com_pins = ["PA13", "PA10", "PA9"]
+
+# [matrix]
+# analogue_read = true # default false
+# row_count = 3
+# col_count = 12
+# row_pins = ["PA0", "PA1", "PA2"]
+# col_pins = ["PA3", "PA4", "PA5", "PA6", "PA8", "PA9", "PA10", "PA15", "PB0", "PB1", "PB2", "PB10"]
+
+[layout]
+keys = [
+  [0,9], [0,1], [0,3], [0,4], [1,0], [1,1], [1,2], [1,5], [2,0], [2,1], [2,2], [2,4],
+  [0,8], [0,2], [0,5], [1,9], [1,8], [1,3], [1,4], [2,9], [2,8], [2,3], [0,6],
+  [0,7], [0,0], [1,5], [1,4], [1,3], [1,0], [2,6], [2,5], [2,3], [2,0], [0,3],
+  [0,2], [0,1], [0,1], [1,2], [1,1], [2,4], [2,2], [2,1],
+]
+
+[rgb]
+data_pin = "PA7"
+
+[swd]
+swo = "PB2"
+swclk = "PA14"
+swdio = "PA15"

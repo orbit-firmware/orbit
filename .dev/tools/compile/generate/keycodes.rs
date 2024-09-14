@@ -11,7 +11,7 @@ use std::fs;
 use std::process::exit;
 use syn::Ident as SynIdent;
 
-const TARGET_FILE: &str = "src/rmk/keycodes.rs";
+const TARGET_FILE: &str = "src/orbit/keycodes.rs";
 
 #[derive(Debug, Clone)]
 pub struct KeyCode {
@@ -194,7 +194,8 @@ fn merge(a: Vec<KeyCode>, b: Vec<KeyCode>) -> Vec<KeyCode> {
   merged
 }
 
-pub fn generate(root: &str, remaps: &str) {
+#[allow(unused_variables)]
+pub fn generate(feature_list: &mut Vec<String>, root: &str, remaps: &str) {
   let mut keycodes = read("us", root, false);
   let remapcodes = read(remaps, root, true);
   keycodes = merge(keycodes, remapcodes);

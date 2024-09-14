@@ -53,8 +53,8 @@ RUN rustup target add \
     riscv64imac-unknown-none-elf
 
 
-RUN mkdir /rmk
+RUN mkdir /orbit
 
-WORKDIR /rmk
+WORKDIR /orbit
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]

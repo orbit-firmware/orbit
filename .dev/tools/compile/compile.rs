@@ -6,22 +6,22 @@ use crate::util;
 
 use std::process::{exit, Command};
 
-// merges together the chip and rmk directories
+// merges together the chip and orbit directories
 pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
-  let rmk_src_dir = "rmk/src";
+  let orbit_src_dir = "orbit/src";
 
-  let rmk_files = util::list_files_recursive(&rmk_src_dir);
-  for file in rmk_files {
-    let bf = util::repath(&file, &rmk_src_dir, ".bin/src/rmk");
+  let orbit_files = util::list_files_recursive(&orbit_src_dir);
+  for file in orbit_files {
+    let bf = util::repath(&file, &orbit_src_dir, ".bin/src/orbit");
     util::mkdir(util::dirname(&bf).as_str());
     util::copy(&file, &bf);
   }
 
-  let rmk_dir = "rmk";
+  let orbit_dir = "orbit";
 
-  let rmk_files = util::list_files(&rmk_dir);
-  for file in rmk_files {
-    let bf = util::repath(&file, &rmk_dir, ".bin");
+  let orbit_files = util::list_files(&orbit_dir);
+  for file in orbit_files {
+    let bf = util::repath(&file, &orbit_dir, ".bin");
     util::mkdir(util::dirname(&bf).as_str());
     util::copy(&file, &bf);
   }
@@ -168,10 +168,10 @@ pub fn install() {
 
   let rust_toolchain = toml::read("rust-toolchain.toml", true);
 
-  let version: String = toml::get(&rust_toolchain, "toolchain/channel", true);
-  let targets = toml::required_string_list(&rust_toolchain, "toolchain/targets");
-  let components = toml::required_string_list(&rust_toolchain, "toolchain/components");
-  let cargo_packages = toml::required_string_list(&rust_toolchain, "cargo/packages");
+  let version: String = toml::get(&rust_toolchain, "toolchain/channel", false);
+  let targets: Vec<String> = toml::get(&rust_toolchain, "toolchain/targets", false);
+  let components: Vec<String> = toml::get(&rust_toolchain, "toolchain/components", false);
+  let cargo_packages: Vec<String> = toml::get(&rust_toolchain, "cargo/packages", false);
 
   install_rust_version(&version);
   install_targets(targets);
@@ -179,22 +179,53 @@ pub fn install() {
   install_cargo_packages(cargo_packages);
 }
 
-pub fn run() {
-  let status = util::run(
-    "cargo",
-    &["objcopy", "--release", "--", "-O", "binary", "../firmware.bin"],
-  );
+pub fn compile(features: Vec<String>, chip: &str) {
+  if chip == "__mock" {
+    info!("💾 Mock chip detected, running it");
+
+    let mut args: Vec<&str> = vec!["run", "--release"];
+    for f in features.clone() {
+      info!("Using Feature: {}", f);
+    }
+  
+    let features = features.join(" ");
+    if !features.is_empty() {
+      args.push("--features");
+      args.push(&features);
+    }
+    util::run("cargo", &args);
+    return;
+  }
+
+  let mut args: Vec<&str> = vec!["objcopy", "--release"];
+
+  for f in features.clone() {
+    info!("Using Feature: {}", f);
+  }
+
+  let features = features.join(" ");
+  if !features.is_empty() {
+    args.push("--features");
+    args.push(&features);
+  }
+
+  args.push("--");
+  args.push("-O");
+
+  let mut bin_args = args.clone();
+  bin_args.push("binary");
+  bin_args.push("../firmware.bin");
+  let status = util::run("cargo", &bin_args);
   if !status.success() {
     error!("The command failed with status: {}", status);
   } else {
     ok!("    🎉firmware.bin compiled successfully");
   }
 
-  let status = util::run(
-    "cargo",
-    &["objcopy", "--release", "--", "-O", "ihex", "../firmware.hex"],
-  );
-
+  let mut hex_args = args.clone();
+  hex_args.push("ihex");
+  hex_args.push("../firmware.hex");
+  let status = util::run("cargo", &hex_args);
   if !status.success() {
     error!("The command failed with status: {}", status);
   } else {

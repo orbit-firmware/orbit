@@ -1,6 +1,6 @@
-# ![logo](https://github.com/rmk-firmware/rmk/blob/master/.dev/docs/public/logo-64x64.png?raw=true) RMK Firmware
+# ![logo](https://github.com/orbit-firmware/orbit/blob/master/.dev/docs/public/logo-64x64.png?raw=true) Orbit Firmware
 
-RMK is a rust keyboard firmware built for ease.  
+Orbit is a rust keyboard firmware built for ease.  
 The main selling points are:
   - You can configure your keyboard directly through the keyboard's flash drive.
   - It’s fast and reliable, as it's built in Rust.
@@ -10,7 +10,7 @@ The main selling points are:
 
 
 Here is an example keymap:  
-```rmk
+```orbit
 layer 0
 ____________________________________________________________________________________________________
 press      | esc    q      w      e      r      t      y      u      i      o      p      =
@@ -41,14 +41,14 @@ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/relea
 ```
 
   
-To get started, check out the 📖 [Docs](https://rmk-firmware.github.io/rmk).
+To get started, check out the 📖 [Docs](https://orbit-firmware.github.io/orbit).
 
 If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
 
 
 ## License
 
-RMK is licensed under either of your choice
+Orbit is licensed under either of your choice
 
 - Apache License, Version 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
 - MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
