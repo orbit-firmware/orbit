@@ -9,7 +9,7 @@ export default defineConfig({
   base: '/orbit/',
   head: [['link', { rel: 'icon', href: 'favicon.ico' }]],
   themeConfig: {
-    logo: 'logo.svg',
+    logo: '/logo.svg',
     search: {
       provider: 'local'
     },
