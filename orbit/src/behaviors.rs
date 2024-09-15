@@ -35,6 +35,10 @@ pub fn process(key: &Key) {
     dump!("taps {}", key.taps());
   }
 
+  if (key.time() > 30000) {
+    dump!("held");
+  }
+
   // #[cfg(feature = "behavior_modding_enabled")]
   // if (!modding::process(&key)) {
   //   return;
