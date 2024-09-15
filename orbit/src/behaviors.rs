@@ -26,18 +26,20 @@ mod modding;
 #[cfg(feature = "behavior_tap_enabled")]
 mod tap;
 
-#[allow(dead_code)]
-#[allow(unused)]
-pub fn process(key: &Key) {
+pub fn process(key: &Key) -> bool {
+  let mut finished = false;
   // Order of processing is important!
 
-  if (key.just_pressed()) {
-    dump!("taps {}", key.taps());
+  // if key.pressed() {
+  //   dump!("taps {}", key.taps());
+  // }
+
+  if (key.pressed() && key.time() > 300000) {
+    dump!("held");
+    finished = true;
   }
 
-  if (key.just_released() && key.time() > 300000) {
-    dump!("held");
-  }
+  finished
 
   // #[cfg(feature = "behavior_modding_enabled")]
   // if (!modding::process(&key)) {

@@ -2,6 +2,7 @@ use crate::orbit::config::DEBOUNCE_TIME;
 use crate::orbit::config::TAPPING_TERM;
 use crate::orbit::time;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Key {
   index: usize,        // Index of the physical key
   state: bool,         // Pressed state of the key
@@ -24,6 +25,20 @@ impl Key {
       taps: 0,
       tapping_term: TAPPING_TERM,
       timestamp: time::now(),
+      debounce_time: 0,
+      debouncing: false,
+    }
+  }
+
+  pub fn freeze(&self) -> Key {
+    Self {
+      index: self.index(),
+      state: self.pressed(),
+      just_pressed: self.just_pressed(),
+      just_released: self.just_released(),
+      taps: self.taps(),
+      tapping_term: self.tapping_term(),
+      timestamp: self.timestamp(),
       debounce_time: 0,
       debouncing: false,
     }
@@ -59,20 +74,6 @@ impl Key {
 
   pub fn taps(&self) -> u16 {
     self.taps
-  }
-
-  pub fn freeze(&self) -> Key {
-    Self {
-      index: self.index(),
-      state: self.pressed(),
-      just_pressed: self.just_pressed(),
-      just_released: self.just_released(),
-      taps: self.taps(),
-      tapping_term: self.tapping_term(),
-      timestamp: self.timestamp(),
-      debounce_time: 0,
-      debouncing: false,
-    }
   }
 
   pub fn tapping_term(&self) -> u64 {
