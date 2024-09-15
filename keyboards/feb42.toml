@@ -5,7 +5,7 @@ name = "Feb42"
 manufacturer = "febreeze"
 chip = "stm32f303cbtx"
 key_count = 42
-debounce_ms = 50 
+debounce_micros_secs = 50 
 # keycodes = "german" # changes keycodes to represent a french keyboard
 
 [behaviors]

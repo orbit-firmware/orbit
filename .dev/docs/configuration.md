@@ -22,7 +22,7 @@ name = "My Keyboard" # The keyboards name
 manufacturer = "Orbit Inc." # the keyboards manufacturer
 chip = "stm32f303cbtx" # What main mcu/chip the keyboard is using https://github.com/orbit-firmware/orbit/tree/master/chips
 key_count = 42 # How many total keys the keyboard has
-debounce_ms = 50 # how many ms the key debounce should last 
+debounce_micro_secs = 50 # how many ms the key debounce should last 
 keycodes = "french" # changes keycodes to represent a french keyboard
 
 # which behaviors are active

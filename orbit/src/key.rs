@@ -1,4 +1,5 @@
-use crate::orbit::config::DEBOUNCE_MS;
+use crate::orbit::config::DEBOUNCE_MICRO_SECS;
+use crate::orbit::log::dump;
 use crate::orbit::peripherals::Peripherals;
 use crate::orbit::time;
 
@@ -46,13 +47,21 @@ impl Key {
   }
 
   #[allow(dead_code)]
-  pub fn get_current_time(&self) -> u64 {
+  pub fn get_time(&self) -> u64 {
     time::elapsed(self.timestamp)
   }
 
   fn eval(&mut self, state: bool, now: u64) {
     self.state = state;
+    let time = self.get_time();
     if state {
+      dump!(
+        "Key {} pressed after {} micros, {} ms, {} sec",
+        self.index,
+        time,
+        time / 1000,
+        time / 1000 / 1000
+      );
       self.just_pressed = true;
     } else {
       self.just_released = true;
@@ -60,8 +69,7 @@ impl Key {
     self.timestamp = now;
   }
 
-  pub fn update(&mut self, peripherals: &Peripherals) {
-    let state = peripherals.key(self.index);
+  pub fn update(&mut self, state: bool) {
     let now = time::now();
     self.just_pressed = false;
     self.just_released = false;
@@ -70,10 +78,13 @@ impl Key {
       self.eval(state, now);
       self.debounce_time = now;
       self.debouncing = true;
-    } else if self.debouncing && time::elapsed(self.debounce_time) > DEBOUNCE_MS {
-      self.debouncing = false;
-      if self.state != state {
-        self.eval(state, now);
+    } else if self.debouncing {
+      let debounce_time = time::elapsed(self.debounce_time);
+      if debounce_time >= DEBOUNCE_MICRO_SECS {
+        self.debouncing = false;
+        if self.state != state {
+          self.eval(state, now);
+        }
       }
     }
   }

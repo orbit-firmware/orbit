@@ -29,10 +29,8 @@ impl Keyboard {
   pub async fn process(&mut self) {
     self.peripherals.scan();
     for key in self.keys.iter_mut() {
-      key.update(&self.peripherals);
-      if key.just_pressed() {
-        dump!("Key {} is active", key.index());
-      }
+      let state = self.peripherals.key(key.index());
+      key.update(state);
       behaviors::process(&key);
       actions::process(&key);
     }
