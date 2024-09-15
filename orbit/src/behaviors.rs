@@ -1,4 +1,5 @@
 use crate::orbit::key::Key;
+use crate::orbit::log::dump;
 
 #[allow(dead_code)]
 #[repr(u8)]
@@ -28,8 +29,11 @@ mod tap;
 #[allow(dead_code)]
 #[allow(unused)]
 pub fn process(key: &Key) {
-  let a = 0;
   // Order of processing is important!
+
+  if (key.just_pressed()) {
+    dump!("taps {}", key.taps());
+  }
 
   // #[cfg(feature = "behavior_modding_enabled")]
   // if (!modding::process(&key)) {

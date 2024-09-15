@@ -10,8 +10,12 @@ name = "Emulator"
 manufacturer = "Emulator"
 chip = "_emulator"
 key_count = 5
-debounce_micros_secs = 10 
 # keycodes = "german" # changes keycodes to represent a french keyboard
+
+
+[settings]
+debounce_time = 10
+tapping_term = 220
 
 [behaviors]
 press = true

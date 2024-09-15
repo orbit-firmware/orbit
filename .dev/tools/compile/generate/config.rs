@@ -21,7 +21,10 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let manufacturer: String = toml::get(&config, "keyboard/manufacturer", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
   let key_count: usize = toml::get(&config, "keyboard/key_count", true);
-  let debounce_micros_secs: u64 = toml::get(&config, "keyboard/debounce_micros_secs", true);
+
+  let debounce_time: u64 = toml::get(&config, "settings/debounce_time", true);
+  let tapping_term: u64 = toml::get(&config, "settings/tapping_term", true);
+
   let layout_list: Vec<(usize, usize)> = toml::get(&config, "layout/keys", true);
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
@@ -133,7 +136,12 @@ pub fn generate(feature_list: &mut Vec<String>) {
     pub const MANUFACTURER: &str = #manufacturer;
     pub const CHIP: &str = #chip;
     pub const KEY_COUNT: usize = #key_count;
-    pub const DEBOUNCE_MICRO_SECS: u64 = #debounce_micros_secs;
+
+    // settings
+    pub const DEBOUNCE_TIME: u64 = #debounce_time * 1000;
+    pub const TAPPING_TERM: u64 = #tapping_term * 1000;
+
+    // layout
     pub const USE_MATRIX: bool = #use_matrix;
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
     pub const BEHAVIORS: [Behaviors; #behavior_count] = [#(#behaviors),*];

@@ -11,7 +11,7 @@ use crossterm::ExecutableCommand;
 use crate::orbit::keyboard::Keyboard;
 use crate::orbit::log::dump;
 
-const CLEAR : bool = false;
+const CLEAR : bool = true;
 
 pub async fn emulate() -> ! {
   let mut stdout = io::stdout();
