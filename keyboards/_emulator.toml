@@ -10,7 +10,7 @@ name = "Emulator"
 manufacturer = "Emulator"
 chip = "_emulator"
 key_count = 5
-debounce_ms = 50 
+debounce_ms = 10 
 # keycodes = "german" # changes keycodes to represent a french keyboard
 
 [behaviors]

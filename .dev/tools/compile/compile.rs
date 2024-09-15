@@ -188,14 +188,15 @@ fn run_emulator(feature_list: Vec<String>) {
     features.push_str(&f);
   }
 
-  let mut args: Vec<&str> = vec!["run", "--release"];
-  if !features.is_empty() {
-    args.push("--features");
-    args.push(&features.as_str());
-  }
+  {
+    let mut args: Vec<&str> = vec!["run", "--release"];
+    if !features.is_empty() {
+      args.push("--features");
+      args.push(&features.as_str());
+    }
 
-  util::run("cargo", &args);
-  return;
+    util::run("cargo", &args);
+  }
 }
 
 fn compile_firmware(feature_list: Vec<String>) {
@@ -215,24 +216,28 @@ fn compile_firmware(feature_list: Vec<String>) {
   args.push("--");
   args.push("-O");
 
-  let mut bin_args = args.clone();
-  bin_args.push("binary");
-  bin_args.push("../firmware.bin");
-  let status = util::run("cargo", &bin_args);
-  if !status.success() {
-    error!("The command failed with status: {}", status);
-  } else {
-    ok!("    🎉firmware.bin compiled successfully");
+  {
+    let mut bin_args = args.clone();
+    bin_args.push("binary");
+    bin_args.push("../firmware.bin");
+    let status = util::run("cargo", &bin_args);
+    if !status.success() {
+      error!("The command failed with status: {}", status);
+    } else {
+      ok!("    🎉firmware.bin compiled successfully");
+    }
   }
 
-  let mut hex_args = args.clone();
-  hex_args.push("ihex");
-  hex_args.push("../firmware.hex");
-  let status = util::run("cargo", &hex_args);
-  if !status.success() {
-    error!("The command failed with status: {}", status);
-  } else {
-    ok!("    🎉firmware.hex compiled successfully");
+  {
+    let mut hex_args = args.clone();
+    hex_args.push("ihex");
+    hex_args.push("../firmware.hex");
+    let status = util::run("cargo", &hex_args);
+    if !status.success() {
+      error!("The command failed with status: {}", status);
+    } else {
+      ok!("    🎉firmware.hex compiled successfully");
+    }
   }
 }
 

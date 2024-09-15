@@ -1,96 +1,10 @@
-use crate::orbit::{
-  behaviors,
-  actions,
-  config::{DEBOUNCE_MS, KEY_COUNT},
-  time,
-  peripherals::Peripherals,
-  log::dump,
-};
-
-#[derive(Copy, Clone)]
-pub struct Key {
-  pub index: usize,
-  pub state: bool,
-  pub press_time: u64,
-  pub change_time: u64,
-  pub debouncing: bool,
-}
-
-impl Key {
-  pub fn new() -> Key {
-    Key {
-      index: 0,
-      state: false,
-      press_time: 0,
-      change_time: 0,
-      debouncing: false,
-    }
-  }
-
-  pub fn set_index(&mut self, index: usize) {
-    self.index = index;
-  }
-
-  #[allow(unused)]
-  pub fn is_pressed(&self) -> bool {
-    self.state
-  }
-
-  #[allow(unused)]
-  pub fn is_released(&self) -> bool {
-    !self.state
-  }
-
-  #[allow(unused)]
-  pub fn get_held_time(&self) -> u64 {
-    time::elapsed(self.press_time)
-  }
-
-  fn press(&mut self) {
-    self.state = true;
-    self.press_time = time::now();
-    dump!("Key {} is pressed", self.index);
-  }
-
-  fn release(&mut self) {
-    self.state = false;
-    self.press_time = 0;
-    dump!("Key {} is released", self.index);
-  }
-
-  pub fn update(&mut self, peripherals: &Peripherals) {
-    let state = peripherals.key(self.index);
-
-    let now = time::now();
-
-    if self.state != state && !self.debouncing {
-      if state {
-        self.press();
-      } else {
-        self.release();
-      }
-      self.change_time = now;
-      self.debouncing = true;
-    }
-
-    if self.debouncing {
-      if self.state != state {
-        self.change_time = now;
-      }
-      if time::elapsed(self.change_time) > DEBOUNCE_MS {
-        self.debouncing = false;
-        if self.state != state {
-          self.state = state;
-          if self.state {
-            self.press();
-          } else {
-            self.release();
-          }
-        }
-      }
-    }
-  }
-}
+use crate::orbit::behaviors;
+use crate::orbit::actions;
+use crate::orbit::key::Key;
+use crate::orbit::log::dump;
+use crate::orbit::config::KEY_COUNT;
+use crate::orbit::peripherals::Peripherals;
+use core::array::from_fn as populate;
 
 pub struct Keyboard {
   pub peripherals: Peripherals,
@@ -100,10 +14,7 @@ pub struct Keyboard {
 impl Keyboard {
   pub fn new() -> Self {
     assert!(KEY_COUNT > 0);
-    let mut keys = [Key::new(); KEY_COUNT];
-    for i in 0..KEY_COUNT {
-      keys[i].set_index(i);
-    }
+    let keys = populate(Key::new);
 
     Keyboard {
       peripherals: Peripherals::new(),
@@ -119,8 +30,11 @@ impl Keyboard {
     self.peripherals.scan();
     for key in self.keys.iter_mut() {
       key.update(&self.peripherals);
-      behaviors::process();
-      actions::process();
+      if key.just_pressed() {
+        dump!("Key {} is active", key.index());
+      }
+      behaviors::process(&key);
+      actions::process(&key);
     }
     self.send();
   }

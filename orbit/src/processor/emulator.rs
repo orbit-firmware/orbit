@@ -1,21 +1,26 @@
 use std::io;
-use device_query::{DeviceQuery, DeviceState, Keycode};
-use crossterm::{
-  cursor,
-  terminal::{self, enable_raw_mode, disable_raw_mode, ClearType},
-  ExecutableCommand,
-};
+use device_query::DeviceQuery;
+use device_query::DeviceState;
+use device_query::Keycode;
+use crossterm::cursor;
+use crossterm::terminal;
+use crossterm::terminal::enable_raw_mode;
+use crossterm::terminal::disable_raw_mode;
+use crossterm::terminal::ClearType;
+use crossterm::ExecutableCommand;
+use crate::orbit::keyboard::Keyboard;
+use crate::orbit::log::dump;
 
-use crate::orbit::{
-  keyboard::Keyboard,
-  log::dump,
-};
+const CLEAR : bool = false;
 
 pub async fn emulate() -> ! {
   let mut stdout = io::stdout();
 
-  stdout.execute(terminal::Clear(ClearType::All)).unwrap();
-  stdout.execute(cursor::MoveTo(0, 0)).unwrap();
+  if CLEAR {
+    stdout.execute(terminal::Clear(ClearType::All)).unwrap();
+    stdout.execute(cursor::MoveTo(0, 0)).unwrap();
+  }
+  
   stdout.execute(cursor::Hide).unwrap();
   enable_raw_mode().unwrap();
   let mut keyboard = Keyboard::new();
@@ -30,7 +35,6 @@ pub async fn emulate() -> ! {
       let lctrl = keys.contains(&Keycode::LControl);
       let rctrl = keys.contains(&Keycode::RControl);
       if (lctrl || rctrl) && keys.contains(&Keycode::C) {
-        dump!("Exiting...");
         disable_raw_mode().unwrap();
         stdout.execute(cursor::Show).unwrap();
         std::process::exit(0);
