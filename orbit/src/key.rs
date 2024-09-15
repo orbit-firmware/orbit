@@ -33,8 +33,12 @@ impl Key {
     self.index
   }
 
-  pub fn is_pressed(&self) -> bool {
+  pub fn pressed(&self) -> bool {
     self.state
+  }
+
+  pub fn released(&self) -> bool {
+    !self.state
   }
 
   pub fn just_pressed(&self) -> bool {
@@ -45,6 +49,10 @@ impl Key {
     self.just_released
   }
 
+  pub fn time(&self) -> u64 {
+    time::elapsed(self.timestamp)
+  }
+
   pub fn timestamp(&self) -> u64 {
     self.timestamp
   }
@@ -53,19 +61,28 @@ impl Key {
     self.taps
   }
 
+  pub fn freeze(&self) -> Key {
+    Self {
+      index: self.index(),
+      state: self.pressed(),
+      just_pressed: self.just_pressed(),
+      just_released: self.just_released(),
+      taps: self.taps(),
+      tapping_term: self.tapping_term(),
+      timestamp: self.timestamp(),
+      debounce_time: 0,
+      debouncing: false,
+    }
+  }
+
   pub fn tapping_term(&self) -> u64 {
     // TODO: tapping term per key
     self.tapping_term
   }
 
-  #[allow(dead_code)]
-  pub fn get_time(&self) -> u64 {
-    time::elapsed(self.timestamp)
-  }
-
   fn process(&mut self, state: bool, now: u64) {
     self.state = state;
-    let time = self.get_time();
+    let time = self.time();
     if state {
       if time <= self.tapping_term() {
         self.taps += 1;

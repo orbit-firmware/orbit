@@ -35,7 +35,7 @@ pub fn process(key: &Key) {
     dump!("taps {}", key.taps());
   }
 
-  if (key.time() > 30000) {
+  if (key.just_released() && key.time() > 300000) {
     dump!("held");
   }
 
