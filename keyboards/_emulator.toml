@@ -24,10 +24,12 @@ hold = true
 row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["Q","W","E","R"]
+row_pins = ["Q"]
+# ,"W","E","R"]
 col_pins = []
 layout = [
-  [0,1],[0,2],[0,3],[0,4]
+  [0,1]
+  # ,[0,2],[0,3],[0,4]
 ]
 
 [rgb]

@@ -46,7 +46,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let mut behaviors = vec![];
   // default behavior
   behaviors.push(quote! {
-    Behaviors::Press
+    Behavior::Press
   });
   feature_list.push("behavior_press_enabled".to_string());
 
@@ -60,7 +60,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     if b.1 {
       let ident = SynIdent::new(&behavior, proc_macro2::Span::call_site());
       behaviors.push(quote! {
-          Behaviors::#ident
+          Behavior::#ident
       });
     }
   }
@@ -125,7 +125,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let generated = quote! {
     #![allow(dead_code)]
 
-    use crate::orbit::behaviors::Behaviors;
+    use crate::orbit::behaviors::Behavior;
 
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;
@@ -141,7 +141,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     // layout
     pub const USE_MATRIX: bool = #use_matrix;
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
-    pub const BEHAVIORS: [Behaviors; #behavior_count] = [#(#behaviors),*];
+    pub const BEHAVIORS: [Behavior; #behavior_count] = [#(#behaviors),*];
     pub const LAYOUT: [[usize; 2]; #key_count] = [#(#layout),*];
 
     #matrix

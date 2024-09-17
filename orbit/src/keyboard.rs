@@ -6,9 +6,6 @@ use crate::orbit::config::KEY_COUNT;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::Peripherals;
 
-use crate::orbit::log::dump;
-
-
 static KEYBOARD_INIT: AtomicBool = AtomicBool::new(false);
 static mut KEYBOARD: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
 

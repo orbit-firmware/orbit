@@ -23,7 +23,7 @@ pub async fn emulate() -> ! {
   
   stdout.execute(cursor::Hide).unwrap();
   enable_raw_mode().unwrap();
-  let mut keyboard = Keyboard::instance();
+  let keyboard = Keyboard::instance();
   dump!("Emulating keyboard input...");
   dump!("Press 'Ctrl + C' to quit");
   dump!("Now listening for keypresses...");
