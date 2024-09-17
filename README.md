@@ -1,10 +1,6 @@
 #  Orbit Firmware
 
-<div style="max-width: 100px">
-
-![logo](https://github.com/orbit-firmware/orbit/blob/master/.dev/resources/logo.svg?raw=true)
-
-</div>
+![logo](https://github.com/orbit-firmware/orbit/blob/master/.dev/resources/logo.svg?raw=true | width=100)
 
 
 
