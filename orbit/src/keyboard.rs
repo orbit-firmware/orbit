@@ -12,8 +12,6 @@ use crate::orbit::log::dump;
 
 const MIN_BUFFER_SIZE: usize = 16;
 const BUFFER_SIZE: usize = if KEY_COUNT > MIN_BUFFER_SIZE { KEY_COUNT } else { MIN_BUFFER_SIZE };
-const MAX_KEY_PROCESS_TIME: u64 = 5000; // 5 sec
-
 
 pub struct Keyboard {
   peripherals: Peripherals,
@@ -40,6 +38,20 @@ impl Keyboard {
   pub async fn process(&mut self) {
     self.peripherals.scan();
 
+    self.process_keys();
+    self.process_buffer();
+
+    // this should set the event to sent
+    if let Some(ref mut key_event) = self.get_latest_key_event(0) {
+      if key_event.state() {
+        key_event.send();
+        dump!("{}", "send");
+      }
+      dump!("{}", key_event.state());
+    }
+  }
+
+  fn process_keys(&mut self) {
     for key in self.keys.iter_mut() {
       let state = self.peripherals.key(key.index());
       key.update(state);
@@ -55,7 +67,9 @@ impl Keyboard {
         }
       }
     }
+  }
 
+  fn process_buffer(&mut self) {
     for i in 0..self.buffer_count {
       if let Some(mut event) = self.buffer[i].take() {
         if !event.processed() {
@@ -64,16 +78,7 @@ impl Keyboard {
             actions::process(self, &mut event);
           }
         }
-        self.buffer[i] = Some(event);
       }
-    }
-
-    if let Some(ref mut key_event) = self.get_latest_key_event(0) {
-      if key_event.state() {
-        key_event.send();
-        dump!("{}", "send");
-      }
-      dump!("{}", key_event.state());
     }
   }
 
