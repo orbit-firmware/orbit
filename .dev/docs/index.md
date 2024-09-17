@@ -1,4 +1,11 @@
-# orbit Firmware
+
+<div style="max-width: 200px">
+
+![logo](/logo.svg)
+
+</div>
+
+# Orbit Firmware
 
 Welcome to Orbit, the keyboard firmware designed to make your typing experience as seamless and delightful as possible!
 
