@@ -66,7 +66,7 @@ pub fn generate(feature_list: &mut Vec<String>, chip: &str) {
         }
       }
 
-      pub fn scan(&mut self) {
+      pub async fn scan(&mut self) {
         #gpio_scan
         #key_scan
       }

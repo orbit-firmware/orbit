@@ -227,7 +227,8 @@ impl<'a> defmt::Format for Bytes<'a> {
 macro_rules! dump {
   ($($arg:tt)*) => {
     print!("\r");
-    println!($($arg)*);
+    let msg = format!($($arg)*).replace("\n", "\n\r");
+    println!("{}", msg);
   };
 }
 
