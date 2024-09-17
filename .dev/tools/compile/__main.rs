@@ -34,7 +34,7 @@ fn main() {
   }
 
   let keyboard_toml = toml::read(&keyboard_file, true);
-  let keycodes: String = toml::get(&keyboard_toml, "keyboard/keycodes", false);
+  let keycodes: String = toml::get(&keyboard_toml, "settings/keycodes", false);
   let chip: String = toml::get(&keyboard_toml, "keyboard/chip", true);
   let chip_dir = format!("chips/{}", chip);
 

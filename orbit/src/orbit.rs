@@ -1,10 +1,11 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+#[cfg(not(feature = "emulator_enabled"))]
 use crate::orbit::keyboard::Keyboard;
-
+#[cfg(not(feature = "emulator_enabled"))]
 use embassy_usb::driver::Driver;
-
+#[cfg(not(feature = "emulator_enabled"))]
 pub async fn run<D: Driver<'static>>(usb_driver: D) -> ! {
   let mut keyboard = Keyboard::new();
   loop {
@@ -17,6 +18,6 @@ pub async fn run<D: Driver<'static>>(usb_driver: D) -> ! {
 mod emulator;
 
 #[cfg(feature = "emulator_enabled")]
-pub async fn emulate() -> ! {
+pub async fn run() -> ! {
   emulator::emulate().await
 }

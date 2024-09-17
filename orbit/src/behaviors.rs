@@ -1,4 +1,5 @@
-use crate::orbit::key::Key;
+use crate::orbit::event::Event;
+use crate::orbit::keyboard::Keyboard;
 use crate::orbit::log::dump;
 
 #[allow(dead_code)]
@@ -26,43 +27,36 @@ mod modding;
 #[cfg(feature = "behavior_tap_enabled")]
 mod tap;
 
-pub fn process(key: &Key) -> bool {
-  let mut finished = false;
-  // Order of processing is important!
+pub fn process(keyboard: &mut Keyboard, event: &mut Event) {
+  
 
-  // if key.pressed() {
-  //   dump!("taps {}", key.taps());
-  // }
-
-  if (key.pressed() && key.time() > 300000) {
-    dump!("held");
-    finished = true;
+  #[cfg(feature = "behavior_modding_enabled")]
+  modding::process(&keyboard, &event);
+  if event.processed() {
+    return;
   }
 
-  finished
+  #[cfg(feature = "behavior_hold_enabled")]
+  hold::process(&keyboard, &event);
+  if event.processed() {
+    return;
+  }
 
-  // #[cfg(feature = "behavior_modding_enabled")]
-  // if (!modding::process(&key)) {
-  //   return;
-  // }
+  #[cfg(feature = "behavior_tap_enabled")]
+  tap::process(&keyboard, &event);
+  if event.processed() {
+    return;
+  }
 
-  // #[cfg(feature = "behavior_hold_enabled")]
-  // if (!hold::process(&key)) {
-  //   return;
-  // }
+  #[cfg(feature = "behavior_combo_enabled")]
+  combo::process(&keyboard, &event);
+  if event.processed() {
+    return;
+  }
 
-  // #[cfg(feature = "behavior_tap_enabled")]
-  // if (!tap::process(&key)) {
-  //   return;
-  // }
-
-  // #[cfg(feature = "behavior_combo_enabled")]
-  // if (!combo::process(&key)) {
-  //   return;
-  // }
-
-  // #[cfg(feature = "behavior_press_enabled")]
-  // if (!press::process(&key)) {
-  //   return;
-  // }
+  #[cfg(feature = "behavior_press_enabled")]
+  press::process(&keyboard, &event);
+  if event.processed() {
+    return;
+  }
 }

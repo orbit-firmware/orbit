@@ -20,23 +20,15 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let name: String = toml::get(&config, "keyboard/name", true);
   let manufacturer: String = toml::get(&config, "keyboard/manufacturer", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
-  let key_count: usize = toml::get(&config, "keyboard/key_count", true);
 
   let debounce_time: u64 = toml::get(&config, "settings/debounce_time", true);
   let tapping_term: u64 = toml::get(&config, "settings/tapping_term", true);
 
-  let layout_list: Vec<(usize, usize)> = toml::get(&config, "layout/keys", true);
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
   let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", true);
 
-  // validation
   {
-    if layout_list.len() != key_count {
-      error!("Layout does not match key count!");
-      exit(1);
-    }
-
     if !use_matrix && !use_multiplexers {
       error!("Missing matrix or multiplexers configuration!");
       exit(1);
@@ -49,13 +41,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   }
 
   let mut layout = vec![];
-  for key in layout_list {
-    let row: usize = key.0;
-    let col: usize = key.1;
-    layout.push(quote! {
-        [#row, #col]
-    });
-  }
+  let mut layout_list: Vec<(usize, usize)> = vec![];
 
   let mut behaviors = vec![];
   // default behavior
@@ -87,6 +73,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     pub const MATRIX_COL_PINS: [&str; 0] = [];
   };
   if use_matrix {
+    layout_list = toml::get(&config, "matrix/layout", true);
     let row_pins: Vec<String> = toml::get(&config, "matrix/row_pins", true);
     let col_pins: Vec<String> = toml::get(&config, "matrix/col_pins", true);
     let row_count = row_pins.len() as usize;
@@ -109,6 +96,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
       pub const MULTIPLEXER_COM_PINS: [&str; 0] = [];
   };
   if use_multiplexers {
+    layout_list = toml::get(&config, "multiplexers/layout", true);
     let count: usize = toml::get(&config, "multiplexers/count", true);
     let channels: usize = toml::get(&config, "multiplexers/channels", true);
     let sel_pins: Vec<String> = toml::get(&config, "multiplexers/sel_pins", true);
@@ -125,6 +113,15 @@ pub fn generate(feature_list: &mut Vec<String>) {
     };
   }
 
+  let key_count = layout_list.len();
+  for key in layout_list {
+    let row: usize = key.0;
+    let col: usize = key.1;
+    layout.push(quote! {
+        [#row, #col]
+    });
+  }
+
   let generated = quote! {
     #![allow(dead_code)]
 
@@ -138,8 +135,8 @@ pub fn generate(feature_list: &mut Vec<String>) {
     pub const KEY_COUNT: usize = #key_count;
 
     // settings
-    pub const DEBOUNCE_TIME: u64 = #debounce_time * 1000;
-    pub const TAPPING_TERM: u64 = #tapping_term * 1000;
+    pub const DEBOUNCE_TIME: u64 = #debounce_time;
+    pub const TAPPING_TERM: u64 = #tapping_term;
 
     // layout
     pub const USE_MATRIX: bool = #use_matrix;

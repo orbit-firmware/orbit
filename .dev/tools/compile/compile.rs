@@ -4,6 +4,7 @@ use crate::ok;
 use crate::toml;
 use crate::util;
 
+use std::fs;
 use std::process::{exit, Command};
 
 // merges together the chip and orbit directories
@@ -189,7 +190,7 @@ fn run_emulator(feature_list: Vec<String>) {
   }
 
   {
-    let mut args: Vec<&str> = vec!["run", "--release"];
+    let mut args: Vec<&str> = vec!["run"];
     if !features.is_empty() {
       args.push("--features");
       args.push(&features.as_str());
@@ -224,7 +225,19 @@ fn compile_firmware(feature_list: Vec<String>) {
     if !status.success() {
       error!("The command failed with status: {}", status);
     } else {
-      ok!("    🎉firmware.bin compiled successfully");
+      if !status.success() {
+        error!("The command failed with status: {}", status);
+      } else {
+        if let Ok(metadata) = fs::metadata("../firmware.bin") {
+          let size = metadata.len() as f64 / 1000.0;
+          ok!(
+            "    🎉firmware.bin ({}) compiled successfully",
+            format!("{:.1}kb", size)
+          );
+        } else {
+          ok!("    🎉firmware.bin compiled successfully");
+        }
+      }
     }
   }
 
@@ -236,7 +249,15 @@ fn compile_firmware(feature_list: Vec<String>) {
     if !status.success() {
       error!("The command failed with status: {}", status);
     } else {
-      ok!("    🎉firmware.hex compiled successfully");
+      if let Ok(metadata) = fs::metadata("../firmware.hex") {
+        let size = metadata.len() as f64 / 1000.0;
+        ok!(
+          "    🎉firmware.hex ({}) compiled successfully",
+          format!("{:.1}kb", size)
+        );
+      } else {
+        ok!("    🎉firmware.hex compiled successfully");
+      }
     }
   }
 }

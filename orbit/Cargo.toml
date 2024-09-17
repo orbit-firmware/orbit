@@ -8,8 +8,7 @@ publish = false
 edition = "2021"
 
 [dependencies]
-device_query = "2.0"
-crossterm = "0.28" 
+heapless = "0.8"
 embassy-usb = { version = "0.3", features = [
   "defmt",
   "usbd-hid",
@@ -21,3 +20,13 @@ embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 [features]
 emulator_enabled = []
 defmt = []
+
+[profile.release.package."*"]
+opt-level = "z"
+
+# https://github.com/johnthagen/min-sized-rust
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true  # Automatically strip symbols from the binary.

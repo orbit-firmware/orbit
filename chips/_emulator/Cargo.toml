@@ -7,6 +7,7 @@ edition = "2021"
 [dependencies]
 futures = "0.3"
 device_query = "2.0"
+crossterm = "0.28"
 
 [features]
 default = []

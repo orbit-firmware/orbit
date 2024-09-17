@@ -4,15 +4,14 @@ use crate::orbit::time;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Key {
-  index: usize,        // Index of the physical key
-  state: bool,         // Pressed state of the key
-  just_pressed: bool,  // Pressed state of the key, this tick
-  just_released: bool, // Released state of the key, this tick
-  taps: u16,           // How many times the key was tapped
-  tapping_term: u64,   // Time in which a repeated press counts as a tap
-  timestamp: u64,      // Last timestamp when the key state changed
-  debounce_time: u64,  // Timestamp when debouncing started
-  debouncing: bool,    // Whether the key is currently debouncing
+  index: usize,       // Index of the physical key
+  state: bool,        // Pressed state of the key
+  changed: bool,      // If the key has changed this frame
+  taps: u16,          // How many times the key was tapped
+  tapping_term: u64,  // Time in which a repeated press counts as a tap
+  timestamp: u64,     // Last timestamp when the key state changed
+  debounce_time: u64, // Timestamp when debouncing started
+  debouncing: bool,   // If the key is currently debouncing
 }
 
 impl Key {
@@ -20,25 +19,10 @@ impl Key {
     Key {
       index,
       state: false,
-      just_pressed: false,
-      just_released: false,
+      changed: false,
       taps: 0,
       tapping_term: TAPPING_TERM,
       timestamp: time::now(),
-      debounce_time: 0,
-      debouncing: false,
-    }
-  }
-
-  pub fn freeze(&self) -> Key {
-    Self {
-      index: self.index(),
-      state: self.pressed(),
-      just_pressed: self.just_pressed(),
-      just_released: self.just_released(),
-      taps: self.taps(),
-      tapping_term: self.tapping_term(),
-      timestamp: self.timestamp(),
       debounce_time: 0,
       debouncing: false,
     }
@@ -48,20 +32,12 @@ impl Key {
     self.index
   }
 
-  pub fn pressed(&self) -> bool {
+  pub fn state(&self) -> bool {
     self.state
   }
 
-  pub fn released(&self) -> bool {
-    !self.state
-  }
-
-  pub fn just_pressed(&self) -> bool {
-    self.just_pressed
-  }
-
-  pub fn just_released(&self) -> bool {
-    self.just_released
+  pub fn changed(&self) -> bool {
+    self.changed
   }
 
   pub fn time(&self) -> u64 {
@@ -90,17 +66,14 @@ impl Key {
       } else {
         self.taps = 0;
       }
-      self.just_pressed = true;
-    } else {
-      self.just_released = true;
     }
+    self.changed = true;
     self.timestamp = now;
   }
 
   pub fn update(&mut self, state: bool) {
     let now = time::now();
-    self.just_pressed = false;
-    self.just_released = false;
+    self.changed = false;
 
     if self.state != state && !self.debouncing {
       self.process(state, now);

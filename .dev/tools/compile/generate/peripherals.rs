@@ -10,13 +10,13 @@ mod emulator;
 pub fn generate(feature_list: &mut Vec<String>, chip: &str) {
   let config = toml::read("keyboard.toml", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
-  let key_count: usize = toml::get(&config, "keyboard/key_count", true);
-  let layout_list: Vec<(usize, usize)> = toml::get(&config, "layout/keys", true);
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
+  let mut layout_list: Vec<(usize, usize)> = vec![];
 
   let mut gpio_pins: Vec<String> = vec![];
   if use_matrix {
+    layout_list = toml::get(&config, "matrix/layout", true);
     let row_pins: Vec<String> = toml::get(&config, "matrix/row_pins", true);
     let col_pins: Vec<String> = toml::get(&config, "matrix/col_pins", true);
     gpio_pins = row_pins.clone();
@@ -24,13 +24,15 @@ pub fn generate(feature_list: &mut Vec<String>, chip: &str) {
   }
 
   if use_multiplexers {
+    layout_list = toml::get(&config, "multiplexers/layout", true);
     let sel_pins: Vec<String> = toml::get(&config, "multiplexers/sel_pins", true);
     let com_pins: Vec<String> = toml::get(&config, "multiplexers/com_pins", true);
     gpio_pins = sel_pins.clone();
     gpio_pins.extend(com_pins.clone());
   }
-  let gpio_count = gpio_pins.len();
 
+  let gpio_count = gpio_pins.len();
+  let key_count = layout_list.len();
   let mut gpio_scan = quote! {};
   let mut key_scan = quote! {};
 
@@ -59,8 +61,8 @@ pub fn generate(feature_list: &mut Vec<String>, chip: &str) {
         Self {
           #[cfg(feature = "emulator_enabled")]
           device_state: DeviceState::new(),
+          gpio: [false; #gpio_count],
           keys: [false; #key_count],
-          gpio: [false; 5],
         }
       }
 

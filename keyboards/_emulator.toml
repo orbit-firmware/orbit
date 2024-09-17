@@ -9,7 +9,6 @@ vendor_id = 0x0000
 name = "Emulator"
 manufacturer = "Emulator"
 chip = "_emulator"
-key_count = 5
 # keycodes = "german" # changes keycodes to represent a french keyboard
 
 
@@ -22,15 +21,13 @@ press = true
 hold = true
 
 [matrix]
-row_count = 5
+row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["Escape", "Q", "W", "E", "R"]
+row_pins = ["Q","W","E","R"]
 col_pins = []
-
-[layout]
-keys = [
-  [0,1], [0,1], [0,3], [0,4], [0,5]
+layout = [
+  [0,1],[0,2],[0,3],[0,4]
 ]
 
 [rgb]
