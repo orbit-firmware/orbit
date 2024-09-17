@@ -11,6 +11,7 @@ static mut KEYBOARD: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
 
 pub struct Keyboard {
   peripherals: Peripherals,
+  layer: usize,
   keys: [Key; KEY_COUNT],
 }
 
@@ -22,6 +23,7 @@ impl Keyboard {
     Self {
       peripherals: Peripherals::new(),
       keys,
+      layer: 0,
     }
   }
 
@@ -36,6 +38,13 @@ impl Keyboard {
     }
   }
   
+  pub fn set_layer(&mut self, layer: usize) {
+    self.layer = layer;
+  }
+
+  pub fn get_layer(&self) {
+    self.layer
+  }
 
   pub async fn process(&mut self) {
     let peripherals = &mut self.peripherals;
@@ -50,5 +59,7 @@ impl Keyboard {
     assert!(index < KEY_COUNT, "Index out of bounds");
     &mut self.keys[index]
   }
+
+  
 }
 
