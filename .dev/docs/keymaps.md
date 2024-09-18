@@ -6,20 +6,21 @@
 
 keycodes german
 
-feature tap
+behavior tap
 type keypress
+tap 1
 delay 120
 
-feature held
+behavior held
 type keypress
 trigger after
 delay 200
 
-feature shifted
+behavior shifted
 type modifier
 modifier_mask Shift
 
-feature mac
+behavior mac
 type os
 identifier MacOS
 

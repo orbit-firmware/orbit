@@ -17,8 +17,11 @@ debounce_time = 10
 tapping_term = 220
 
 [behaviors]
-press = true
 hold = true
+tap = true
+
+[actions]
+mouse = true
 
 [matrix]
 row_count = 1

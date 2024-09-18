@@ -1,33 +1,63 @@
-use crate::orbit::actions;
-use crate::orbit::behaviors::{self, Behavior};
-use crate::orbit::config::DEBOUNCE_TIME;
-use crate::orbit::config::TAPPING_TERM;
+// use crate::orbit::actions;
+// use crate::orbit::behaviors::{self, Behavior};
+use crate::orbit::config;
 use crate::orbit::keyboard::Keyboard;
+use crate::orbit::behaviors::Behavior;
+use crate::orbit::actions::Action;
 use crate::orbit::log::dump;
 use crate::orbit::time;
+
+// use crate::orbit::time;
 
 use heapless::String;
 
 #[rustfmt::skip]
 mod state {
-  pub const PRESSED:     u8 = 0b00000001;
-  pub const CHANGED:     u8 = 0b00000010;
-  pub const DEBOUNCING:  u8 = 0b00000100;
-  pub const SHOULD_SEND: u8 = 0b00001000;
-  pub const CUSTOM_SEND: u8 = 0b00010000;
-  pub const SEND_NEXT:   u8 = 0b00100000;
-  pub const SEND_NOW:    u8 = 0b01000000;
+  pub const PRESSED:      u8 = 0b00000001;
+  pub const CHANGED:      u8 = 0b00000010;
+  pub const DEBOUNCING:   u8 = 0b00000100;
+  pub const SEND_ENABLED: u8 = 0b00001000;
+  pub const SEND_RELEASE: u8 = 0b00010000;
+  pub const SEND_ONESHOT: u8 = 0b00100000;
+  pub const SEND_INSTANT: u8 = 0b01000000;
 }
+
+// should read in the keycodes/strings from the keymap here
+// so we can process them in the corresponding action
+// then in send, set the current behavior
+// in action resolve the code
+// we also need to tokenize the input code
+// lg(ls(la(x))) should become [x ,la, ls, lg]
+// so we can dequeue the code
+
 
 #[derive(Debug)]
 pub struct Key {
-  index: usize,       // Index of the physical key
-  state: u8,          // The encoded key state
-  taps: u16,          // How many times the key was tapped
-  tapping_term: u64,  // Time in which a repeated press counts as a tap
-  timestamp: u64,     // Last timestamp when the key state changed
-  debounce_time: u64, // Timestamp when debouncing started
-  code: String<32>,   // the key code
+  // physical index of the key
+  index: usize,
+
+  // The key code to send
+  code: String<32>,   
+
+  // The encoded key state
+  state: u8,          
+  
+  // How many times the key was tapped
+  #[cfg(feature = "behavior_tap_enabled")]
+  taps: u8,           
+  
+  // Time in which a repeated press counts as a tap
+  #[cfg(feature = "behavior_tap_enabled")]
+  tapping_term: u16,        
+  
+  // Delay for sends
+  delay: u16,
+  
+  // Timestamp when the key state was last changed
+  timestamp: u32,           
+  
+  // Timestamp when the key was last debounced
+  debounce_timestamp: u32,  
 }
 
 impl Key {
@@ -37,77 +67,88 @@ impl Key {
 
     Key {
       index,
-      state: 0,
-      taps: 0,
-      tapping_term: TAPPING_TERM,
-      timestamp: time::now(),
-      debounce_time: 0,
       code,
+      state: 0,
+      #[cfg(feature = "behavior_tap_enabled")]
+      taps: 0,
+      #[cfg(feature = "behavior_tap_enabled")]
+      tapping_term: config::TAPPING_TERM,
+      delay: 0,
+      timestamp: 0,
+      debounce_timestamp: 0,
     }
   }
 
   #[inline(always)]
-  pub fn index(&self) -> usize {
-    self.index
-  }
-
-  #[inline(always)]
-  pub fn pressed(&self) -> bool {
+  pub fn is_pressed(&self) -> bool {
     (self.state & state::PRESSED) != 0
   }
 
   #[inline(always)]
-  pub fn just_pressed(&self) -> bool {
-    (self.state & state::PRESSED) != 0 && self.changed()
+  pub fn just_changed(&self) -> bool {
+    (self.state & state::CHANGED) != 0
   }
 
   #[inline(always)]
-  pub fn released(&self) -> bool {
+  pub fn just_pressed(&self) -> bool {
+    (self.state & state::PRESSED) != 0 && self.just_changed()
+  }
+
+  #[inline(always)]
+  pub fn is_released(&self) -> bool {
     (self.state & state::PRESSED) == 0
   }
 
   #[inline(always)]
   pub fn just_released(&self) -> bool {
-    (self.state & state::PRESSED) == 0 && self.changed()
+    (self.state & state::PRESSED) == 0 && self.just_changed()
   }
 
   #[inline(always)]
-  pub fn changed(&self) -> bool {
-    (self.state & state::CHANGED) != 0
-  }
-
-  pub fn send_next(&mut self) {
-    self.state |= state::CUSTOM_SEND;
-    self.state &= !state::SEND_NOW;
-    self.state |= state::SEND_NEXT;
-  }
-
-  pub fn send_now(&mut self) {
-    self.state |= state::CUSTOM_SEND;
-    self.state |= state::SEND_NOW;
-    self.state &= !state::SEND_NEXT;
-  }
-
-  pub fn time(&self) -> u64 {
+  pub fn time(&self) -> u16 {
     time::elapsed(self.timestamp)
   }
 
-  #[inline(always)]
-  pub fn timestamp(&self) -> u64 {
-    self.timestamp
+  #[cfg(feature = "behavior_tap_enabled")]
+  pub fn tapping_term(&self) -> u16 {
+    // TODO: tapping term per key from keymap
+    self.tapping_term
   }
-
-  #[inline(always)]
-  pub fn taps(&self) -> u16 {
+  
+  #[cfg(feature = "behavior_tap_enabled")]
+  pub fn taps(&self) -> u8{
     self.taps
   }
 
-  pub fn tapping_term(&self) -> u64 {
-    // TODO: tapping term per key
-    self.tapping_term
+  pub fn send(&mut self) {
+    self.state |= state::SEND_INSTANT;
+    self.state &= !state::SEND_RELEASE;
+    self.state &= !state::SEND_ONESHOT;
+  }
+
+  pub fn send_oneshot(&mut self) {
+    self.send();
+    self.state |= state::SEND_ONESHOT;
+  }
+
+  pub fn send_delayed(&mut self, delay: u16) {
+    self.delay = delay;
+    self.send();
+  }
+
+  pub fn send_on_release(&mut self) {
+    self.state &= !state::SEND_INSTANT;
+    self.state |= state::SEND_RELEASE;
+    self.state |= state::SEND_ONESHOT;
+  }
+
+  pub fn send_on_release_delayed(&mut self, delay: u16) {
+    self.delay = delay;
+    self.send_on_release();
   }
 
   pub fn has_behavior(&self, behavior: Behavior) -> bool {
+    // TODO: get from keymap
     match behavior {
       Behavior::Hold => true,
       Behavior::Tap => true,
@@ -115,105 +156,111 @@ impl Key {
     }
   }
 
-  pub fn process(&mut self, state: bool) {
+  pub async fn process(&mut self, state: bool) {
+    self.set_pressed(state).await;
     let keyboard = Keyboard::instance();
-    self.update(state);
-    behaviors::process(keyboard, self);
-    if self.sendable() {
-      dump!("send");
-      self.state &= !state::SHOULD_SEND;
-      self.state &= !state::CUSTOM_SEND;
-      actions::process(keyboard, self);
+    Behavior::process(keyboard, self);
+    if self.is_sendable() {
+      if self.has_oneshot() {
+        self.state |= state::PRESSED;
+        Action::process(keyboard, self);
+        self.state &= !state::PRESSED;
+        Action::process(keyboard, self);
+      } else {
+        Action::process(keyboard, self);
+      }
+      self.state &= !state::SEND_ENABLED;
+      self.state &= !state::SEND_ONESHOT;
+      self.delay = 0;
     }
   }
 
-  fn sendable(&mut self) -> bool {
-    let should_send: bool = (self.state & state::SHOULD_SEND) != 0;
-    let send_next: bool = (self.state & state::SEND_NEXT) != 0;
-    let send_now: bool = (self.state & state::SEND_NOW) != 0;
-    let custom_send: bool = (self.state & state::SEND_NOW) != 0;
-
-    if send_now && should_send {
-      self.state &= !state::SEND_NOW;
-      return true;
-    }
-
-    if self.changed() && send_next {
-      self.state &= !state::SEND_NEXT;
-      return false;
-    }
-
-    if self.changed() && should_send && !custom_send {
-      return true;
-    }
-
-    false
-  }
-
-  fn get_code(&self, behavior: Behavior) -> &str {
-    if !self.has_behavior(behavior) {
-      return "";
-    }
-
-    return "a";
-  }
-
-  #[inline(always)]
-  fn set_state(&mut self, state: bool) {
-    if self.pressed() == state {
+  // 
+  // PRIVATES
+  // 
+  
+  async fn set_pressed(&mut self, state: bool) {
+    self.state &= !state::CHANGED;
+    let current = self.is_pressed();
+    let pressed = self.debounce(state);
+    if state == current {
       return;
     }
-    self.state |= state::CHANGED;
-    if state {
+
+    if pressed {
       self.state |= state::PRESSED;
+      #[cfg(feature = "behavior_tap_enabled")]
+      self.process_taps();
     } else {
       self.state &= !state::PRESSED;
     }
-  }
-
-  #[inline(always)]
-  fn debouncing(&self) -> bool {
-    (self.state & state::DEBOUNCING) != 0
-  }
-
-  #[inline(always)]
-  fn set_debouncing(&mut self, state: bool) {
-    if state {
-      self.state |= state::DEBOUNCING;
-    } else {
-      self.state &= !state::DEBOUNCING;
+    if current != pressed {
+      self.state |= state::SEND_ENABLED;
+      self.state |= state::CHANGED;
+      self.timestamp = time::now();
     }
   }
 
-  fn update(&mut self, state: bool) {
-    let now = time::now();
-    self.state &= !state::CHANGED;
-    if self.pressed() != state && !self.debouncing() {
-      self.evaluate(state, now);
-      self.debounce_time = now;
-      self.set_debouncing(true);
-    } else if self.debouncing() {
-      let debounce_time = time::elapsed(self.debounce_time);
-      if debounce_time >= DEBOUNCE_TIME {
-        self.set_debouncing(false);
-        if self.pressed() != state {
-          self.evaluate(state, now);
-        }
+  fn is_sendable(&mut self) -> bool {
+    if self.delay > 0 {
+      if time::elapsed(self.timestamp) < self.delay {
+        return false;
       }
     }
+
+    let sendable: bool = (self.state & state::SEND_ENABLED) != 0;
+    if !sendable {
+      return false;
+    }
+
+    let send_now: bool = (self.state & state::SEND_INSTANT) != 0;
+    if send_now {
+      self.state &= !state::SEND_INSTANT;
+      return true;
+    }
+
+    let send_release: bool = (self.state & state::SEND_RELEASE) != 0;
+    if send_release {
+      if self.is_released() {
+        self.state &= !state::SEND_RELEASE;
+        return true;
+      }
+      return false;
+    }
+    
+    sendable
   }
 
-  fn evaluate(&mut self, state: bool, now: u64) {
+  fn has_oneshot(&self) -> bool {
+    (self.state & state::SEND_ONESHOT) != 0
+  }
+
+  #[cfg(feature = "behavior_tap_enabled")]
+  fn process_taps(&mut self) {
     let time = self.time();
-    self.set_state(state);
-    self.timestamp = now;
-    if state {
-      self.state |= state::SHOULD_SEND;
-      if time <= self.tapping_term() {
-        self.taps += 1;
-      } else {
-        self.taps = 0;
-      }
+    if time <= self.tapping_term() {
+      self.taps += 1;
+    } else {
+      self.taps = 0;
     }
   }
+
+  fn debounce(&mut self, wanted_state: bool) -> bool {
+    if (self.state & state::DEBOUNCING) != 0 {
+      if time::elapsed(self.debounce_timestamp) >= config::DEBOUNCE_TIME {
+        self.state &= !state::DEBOUNCING;
+      } else {
+        return self.is_pressed();
+      }
+    }
+
+    if wanted_state != self.is_pressed() {
+      self.state |= state::DEBOUNCING;
+      self.debounce_timestamp = time::now();
+      return wanted_state;
+    }
+
+    self.is_pressed()
+  }
+
 }

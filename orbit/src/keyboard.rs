@@ -11,12 +11,23 @@ static mut KEYBOARD: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
 
 pub struct Keyboard {
   peripherals: Peripherals,
-  layer: usize,
+  layer: u32,
   keys: [Key; KEY_COUNT],
 }
 
 impl Keyboard {
-  pub fn new() -> Self {
+  // IMPORTANT: always use this to get the keyboard
+  pub fn instance() -> &'static mut Keyboard {
+    unsafe {
+      if !KEYBOARD_INIT.load(Ordering::SeqCst) {
+        KEYBOARD_INIT.store(true, Ordering::SeqCst);
+        (*KEYBOARD.get()) = Some(Keyboard::new());
+      }
+      (*KEYBOARD.get()).as_mut().expect("Singleton should be initialized")
+    }
+  }
+
+  fn new() -> Self {
     assert!(KEY_COUNT > 0);
     let keys = populate(Key::new);
 
@@ -26,23 +37,12 @@ impl Keyboard {
       layer: 0,
     }
   }
-
-  pub fn instance() -> &'static mut Keyboard {
-    unsafe {
-      if !KEYBOARD_INIT.load(Ordering::SeqCst) {
-        KEYBOARD_INIT.store(true, Ordering::SeqCst);
-        (*KEYBOARD.get()) = Some(Keyboard::new());
-      }
   
-      (*KEYBOARD.get()).as_mut().expect("Singleton should be initialized")
-    }
-  }
-  
-  pub fn set_layer(&mut self, layer: usize) {
+  pub fn set_layer(&mut self, layer: u32) {
     self.layer = layer;
   }
 
-  pub fn get_layer(&self) {
+  pub fn get_layer(&self) -> u32{
     self.layer
   }
 
@@ -51,7 +51,8 @@ impl Keyboard {
     peripherals.scan().await;
     let keys = &mut self.keys;
     for k in 0..KEY_COUNT {
-      keys[k].process(peripherals.key(k));
+      let state = peripherals.key(k);
+      keys[k].process(state).await;
     }
   }
 
@@ -59,7 +60,6 @@ impl Keyboard {
     assert!(index < KEY_COUNT, "Index out of bounds");
     &mut self.keys[index]
   }
-
   
 }
 

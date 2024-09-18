@@ -55,7 +55,7 @@ fn main() {
   compile::prepare(&chip_dir, &chip, &keyboard.as_str());
   util::cd(".bin");
 
-  let features: Vec<String> = generate::run(&root, &chip, &keycodes);
+  generate::run(&root, &chip, &keycodes);
   compile::install();
-  compile::compile(features, &chip);
+  compile::compile(&chip);
 }

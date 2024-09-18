@@ -21,12 +21,13 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let manufacturer: String = toml::get(&config, "keyboard/manufacturer", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
 
-  let debounce_time: u64 = toml::get(&config, "settings/debounce_time", true);
-  let tapping_term: u64 = toml::get(&config, "settings/tapping_term", true);
+  let debounce_time: u16 = toml::get(&config, "settings/debounce_time", true);
+  let tapping_term: u16 = toml::get(&config, "settings/tapping_term", true);
 
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
-  let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", true);
+  let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", false);
+  let actions_list: Vec<(String, bool)> = toml::get(&config, "actions", false);
 
   {
     if !use_matrix && !use_multiplexers {
@@ -44,27 +45,42 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let mut layout_list: Vec<(usize, usize)> = vec![];
 
   let mut behaviors = vec![];
-  // default behavior
-  behaviors.push(quote! {
-    Behavior::Press
-  });
-  feature_list.push("behavior_press_enabled".to_string());
-
   for b in behaviors_list {
     if b.0 == "press" || b.0 == "Press" {
       continue;
     }
-    feature_list.push(format!("behavior_{}_enabled", b.0));
-
-    let behavior = util::capitalize_first(&b.0);
     if b.1 {
-      let ident = SynIdent::new(&behavior, proc_macro2::Span::call_site());
-      behaviors.push(quote! {
-          Behavior::#ident
-      });
+      feature_list.push(format!("behavior_{}_enabled", b.0));
+
+      let behavior = util::capitalize_first(&b.0);
+      if b.1 {
+        let ident = SynIdent::new(&behavior, proc_macro2::Span::call_site());
+        behaviors.push(quote! {
+            Behavior::#ident
+        });
+      }
     }
   }
   let behavior_count: usize = behaviors.len();
+
+  let mut actions = vec![];
+  for a in actions_list {
+    if a.0 == "press" || a.0 == "Press" {
+      continue;
+    }
+    if a.1 {
+      feature_list.push(format!("action_{}_enabled", a.0));
+
+      let action = util::capitalize_first(&a.0);
+      if a.1 {
+        let ident = SynIdent::new(&action, proc_macro2::Span::call_site());
+        actions.push(quote! {
+            Action::#ident
+        });
+      }
+    }
+  }
+  let action_count: usize = actions.len();
 
   let mut matrix = quote! {
     pub const MATRIX_ROW_COUNT: usize = 0;
@@ -126,6 +142,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     #![allow(dead_code)]
 
     use crate::orbit::behaviors::Behavior;
+    use crate::orbit::actions::Action;
 
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;
@@ -135,13 +152,15 @@ pub fn generate(feature_list: &mut Vec<String>) {
     pub const KEY_COUNT: usize = #key_count;
 
     // settings
-    pub const DEBOUNCE_TIME: u64 = #debounce_time;
-    pub const TAPPING_TERM: u64 = #tapping_term;
+    pub const DEBOUNCE_TIME: u16 = #debounce_time;
+    pub const TAPPING_TERM: u16 = #tapping_term;
+    pub const BEHAVIORS: [Behavior; #behavior_count] = [#(#behaviors),*];
+    pub const ACTIONS: [Action; #action_count] = [#(#actions),*];
 
     // layout
     pub const USE_MATRIX: bool = #use_matrix;
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
-    pub const BEHAVIORS: [Behavior; #behavior_count] = [#(#behaviors),*];
+
     pub const LAYOUT: [[usize; 2]; #key_count] = [#(#layout),*];
 
     #matrix
