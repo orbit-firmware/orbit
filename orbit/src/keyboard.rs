@@ -1,4 +1,5 @@
 use core::array::from_fn as populate;
+use core::option::Option;
 use core::cell::UnsafeCell;
 use core::sync::atomic::{AtomicBool, Ordering};
 
@@ -8,6 +9,8 @@ use crate::orbit::peripherals::Peripherals;
 
 static KEYBOARD_INIT: AtomicBool = AtomicBool::new(false);
 static mut KEYBOARD: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
+
+use crate::orbit::log::dump;
 
 pub struct Keyboard {
   peripherals: Peripherals,
@@ -52,7 +55,7 @@ impl Keyboard {
     let keys = &mut self.keys;
     for k in 0..KEY_COUNT {
       let state = peripherals.key(k);
-      keys[k].process(state).await;
+      keys[k].process(state);
     }
   }
 
@@ -60,6 +63,6 @@ impl Keyboard {
     assert!(index < KEY_COUNT, "Index out of bounds");
     &mut self.keys[index]
   }
-  
+
 }
 

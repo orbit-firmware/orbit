@@ -15,7 +15,9 @@ impl Action {
   #[allow(dead_code)]
   #[allow(unused)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
-    dump!("Action::process: {}", key.is_pressed());
+    if key.is_pressed() {
+      dump!("KEY DOWN {}", key.index());
+    }
     // check if the keymapping has an action
     // if it does, call the action
     // otherwise send the keycode

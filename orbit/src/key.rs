@@ -1,21 +1,20 @@
+use crate::orbit::actions::Action;
+use crate::orbit::behaviors::Behavior;
 use crate::orbit::config;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::behaviors::Behavior;
-use crate::orbit::actions::Action;
 use crate::orbit::log::dump;
 use crate::orbit::time;
+use core::option::Option;
 use heapless::String;
 
-#[rustfmt::skip]
-mod state {
-  pub const PRESSED:      u8 = 0b00000001;
-  pub const CHANGED:      u8 = 0b00000010;
-  pub const DEBOUNCING:   u8 = 0b00000100;
-  pub const SEND_ENABLED: u8 = 0b00001000;
-  pub const SEND_RELEASE: u8 = 0b00010000;
-  pub const SEND_ONESHOT: u8 = 0b00100000;
-  pub const SEND_INSTANT: u8 = 0b01000000;
-}
+pub const PRESSED: u8 = 0b00000001;
+pub const CHANGED: u8 = 0b00000010;
+pub const DEBOUNCING: u8 = 0b00000100;
+pub const SEND_ENABLED: u8 = 0b00001000;
+pub const SEND_RELEASE: u8 = 0b00010000;
+pub const SEND_ONESHOT: u8 = 0b00100000;
+pub const SEND_INSTANT: u8 = 0b01000000;
+pub const INTERRUPT: u8 = 0b10000000;
 
 // should read in the keycodes/strings from the keymap here
 // so we can process them in the corresponding action
@@ -25,34 +24,33 @@ mod state {
 // lg(ls(la(x))) should become [x ,la, ls, lg]
 // so we can dequeue the code
 
-
 #[derive(Debug)]
 pub struct Key {
   // physical index of the key
   index: usize,
 
   // The key code to send
-  code: String<32>,   
+  code: String<32>,
 
   // The encoded key state
-  state: u8,          
-  
+  state: u8,
+
   // How many times the key was tapped
   #[cfg(feature = "behavior_tap_enabled")]
-  taps: u8,           
-  
+  taps: u8,
+
   // Time in which a repeated press counts as a tap
   #[cfg(feature = "behavior_tap_enabled")]
-  tapping_term: u16,        
-  
+  tapping_term: u16,
+
   // Delay for sends
   delay: u16,
-  
+
   // Timestamp when the key state was last changed
-  timestamp: u32,           
-  
+  timestamp: u32,
+
   // Timestamp when the key was last debounced
-  debounce_timestamp: u32,  
+  debounce_timestamp: u32,
 }
 
 impl Key {
@@ -75,33 +73,43 @@ impl Key {
   }
 
   #[inline(always)]
+  pub fn index(&self) -> usize {
+    self.index
+  }
+
+  #[inline(always)]
   pub fn is_pressed(&self) -> bool {
-    (self.state & state::PRESSED) != 0
+    self.has_state(PRESSED)
   }
 
   #[inline(always)]
   pub fn just_changed(&self) -> bool {
-    (self.state & state::CHANGED) != 0
+    self.has_state(CHANGED)
   }
 
   #[inline(always)]
   pub fn just_pressed(&self) -> bool {
-    (self.state & state::PRESSED) != 0 && self.just_changed()
+    self.is_pressed() && self.just_changed()
   }
 
   #[inline(always)]
   pub fn is_released(&self) -> bool {
-    (self.state & state::PRESSED) == 0
+    !self.is_pressed()
   }
 
   #[inline(always)]
   pub fn just_released(&self) -> bool {
-    (self.state & state::PRESSED) == 0 && self.just_changed()
+    self.is_released() && self.just_changed()
+  }
+
+  #[inline(always)]
+  pub fn timestamp(&self) -> u32 {
+    self.timestamp
   }
 
   #[inline(always)]
   pub fn time(&self) -> u16 {
-    time::elapsed(self.timestamp)
+    time::elapsed(self.timestamp())
   }
 
   #[cfg(feature = "behavior_tap_enabled")]
@@ -109,21 +117,21 @@ impl Key {
     // TODO: tapping term per key from keymap
     self.tapping_term
   }
-  
+
   #[cfg(feature = "behavior_tap_enabled")]
-  pub fn taps(&self) -> u8{
+  pub fn taps(&self) -> u8 {
     self.taps
   }
 
   pub fn send(&mut self) {
-    self.state |= state::SEND_INSTANT;
-    self.state &= !state::SEND_RELEASE;
-    self.state &= !state::SEND_ONESHOT;
+    self.add_state(SEND_INSTANT);
+    self.del_state(SEND_RELEASE);
+    self.del_state(SEND_ONESHOT);
   }
 
   pub fn send_oneshot(&mut self) {
     self.send();
-    self.state |= state::SEND_ONESHOT;
+    self.add_state(SEND_ONESHOT);
   }
 
   pub fn send_delayed(&mut self, delay: u16) {
@@ -131,10 +139,15 @@ impl Key {
     self.send();
   }
 
+  pub fn send_delayed_oneshot(&mut self, delay: u16) {
+    self.send_delayed(delay);
+    self.add_state(SEND_ONESHOT);
+  }
+
   pub fn send_on_release(&mut self) {
-    self.state &= !state::SEND_INSTANT;
-    self.state |= state::SEND_RELEASE;
-    self.state |= state::SEND_ONESHOT;
+    self.del_state(SEND_INSTANT);
+    self.add_state(SEND_RELEASE);
+    self.add_state(SEND_ONESHOT);
   }
 
   pub fn send_on_release_delayed(&mut self, delay: u16) {
@@ -151,31 +164,47 @@ impl Key {
     }
   }
 
-  pub async fn process(&mut self, state: bool) {
-    self.set_pressed(state).await;
+  pub fn process(&mut self, state: bool) {
     let keyboard = Keyboard::instance();
+    self.set_pressed(state);
     Behavior::process(keyboard, self);
-    if self.is_sendable() {
-      if self.has_oneshot() {
-        self.state |= state::PRESSED;
-        Action::process(keyboard, self);
-        self.state &= !state::PRESSED;
-        Action::process(keyboard, self);
+
+    if self.is_sendable(keyboard) {
+      if self.has_state(SEND_ONESHOT) {
+        self.send_key(keyboard, true);
+        self.send_key(keyboard, false);
       } else {
-        Action::process(keyboard, self);
+        self.send_key(keyboard, self.is_pressed());
       }
-      self.state &= !state::SEND_ENABLED;
-      self.state &= !state::SEND_ONESHOT;
+      self.state &= !SEND_ENABLED;
+      self.state &= !SEND_ONESHOT;
+      self.state &= !INTERRUPT;
       self.delay = 0;
+    }
+    self.detect_interrupt(keyboard);
+  }
+
+  //
+  // PRIVATES
+  //
+
+  fn send_key(&mut self, keyboard: &mut Keyboard, real_state: bool) {
+    let previous_state = self.is_pressed();
+    if real_state {
+      self.add_state(PRESSED);
+    } else {
+      self.del_state(PRESSED);
+    }
+    Action::process(keyboard, self);
+    if previous_state {
+      self.add_state(PRESSED);
+    } else {
+      self.del_state(PRESSED);
     }
   }
 
-  // 
-  // PRIVATES
-  // 
-  
-  async fn set_pressed(&mut self, state: bool) {
-    self.state &= !state::CHANGED;
+  fn set_pressed(&mut self, state: bool) {
+    self.del_state(CHANGED);
     let current = self.is_pressed();
     let pressed = self.debounce(state);
     if state == current {
@@ -183,74 +212,87 @@ impl Key {
     }
 
     if pressed {
-      self.state |= state::PRESSED;
+      self.add_state(PRESSED);
       #[cfg(feature = "behavior_tap_enabled")]
       self.process_taps();
     } else {
-      self.state &= !state::PRESSED;
+      self.del_state(PRESSED);
     }
     if current != pressed {
-      self.state |= state::SEND_ENABLED;
-      self.state |= state::CHANGED;
+      self.add_state(SEND_ENABLED);
+      self.add_state(CHANGED);
+      self.del_state(INTERRUPT);
       self.timestamp = time::now();
     }
   }
 
-  fn is_sendable(&mut self) -> bool {
+  fn detect_interrupt(&mut self, keyboard: &mut Keyboard) {
+    for k in 0..config::KEY_COUNT {
+      let key: &Key = keyboard.get_key(k);
+      if key.index != self.index && key.just_pressed() && !self.has_state(INTERRUPT) {
+        self.state |= INTERRUPT;
+      }
+    }
+  }
+
+  fn is_sendable(&mut self, keyboard: &mut Keyboard) -> bool {
+    if !self.has_state(SEND_ENABLED) {
+      return false;
+    }
+
+    if self.has_state(INTERRUPT) {
+      self.state &= !SEND_INSTANT;
+      self.state &= !SEND_RELEASE;
+      self.state &= !INTERRUPT;
+      self.delay = 0;
+      return true;
+    }
+
     if self.delay > 0 {
       if time::elapsed(self.timestamp) < self.delay {
         return false;
       }
     }
 
-    let sendable: bool = (self.state & state::SEND_ENABLED) != 0;
-    if !sendable {
-      return false;
-    }
-
-    let send_now: bool = (self.state & state::SEND_INSTANT) != 0;
-    if send_now {
-      self.state &= !state::SEND_INSTANT;
+    if self.has_state(SEND_INSTANT) {
+      self.del_state(SEND_INSTANT);
       return true;
     }
 
-    let send_release: bool = (self.state & state::SEND_RELEASE) != 0;
-    if send_release {
+    if self.has_state(SEND_RELEASE) {
       if self.is_released() {
-        self.state &= !state::SEND_RELEASE;
+        self.del_state(SEND_RELEASE);
         return true;
       }
       return false;
     }
-    
-    sendable
-  }
 
-  fn has_oneshot(&self) -> bool {
-    (self.state & state::SEND_ONESHOT) != 0
+    self.has_state(SEND_ENABLED)
   }
 
   #[cfg(feature = "behavior_tap_enabled")]
   fn process_taps(&mut self) {
     let time = self.time();
     if time <= self.tapping_term() {
-      self.taps += 1;
+      if self.taps < u8::MAX {
+        self.taps += 1;
+      }
     } else {
       self.taps = 0;
     }
   }
 
   fn debounce(&mut self, wanted_state: bool) -> bool {
-    if (self.state & state::DEBOUNCING) != 0 {
+    if self.has_state(DEBOUNCING) {
       if time::elapsed(self.debounce_timestamp) >= config::DEBOUNCE_TIME {
-        self.state &= !state::DEBOUNCING;
+        self.del_state(DEBOUNCING);
       } else {
         return self.is_pressed();
       }
     }
 
     if wanted_state != self.is_pressed() {
-      self.state |= state::DEBOUNCING;
+      self.add_state(DEBOUNCING);
       self.debounce_timestamp = time::now();
       return wanted_state;
     }
@@ -258,4 +300,15 @@ impl Key {
     self.is_pressed()
   }
 
+  fn has_state(&self, state: u8) -> bool {
+    (self.state & state) != 0
+  }
+
+  fn add_state(&mut self, state: u8) {
+    self.state |= state;
+  }
+
+  fn del_state(&mut self, state: u8) {
+    self.state &= !state;
+  }
 }
