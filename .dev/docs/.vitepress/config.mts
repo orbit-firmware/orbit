@@ -7,7 +7,7 @@ export default defineConfig({
   title: "Orbit Firmware",
   description: "Documentaion for the Orbit firmware",
   base: '/orbit/',
-  head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+  head: [['link', { rel: 'icon', href: 'favicon.ico' }]],
 
   themeConfig: {
     logo: '/logo.svg',
