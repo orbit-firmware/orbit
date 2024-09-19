@@ -3,7 +3,7 @@ use crate::orbit::keyboard::Keyboard;
 
 #[allow(dead_code)]
 #[repr(u8)]
-pub enum Behavior {
+pub enum Behaviors {
   Press,
   Hold,
   Tap,
@@ -19,16 +19,16 @@ mod tap;
 // normally key is sent directly after behaviors
 // if its set to send_next or send_now,
 // it will omit the normal press behavior
-impl Behavior {
+impl Behaviors {
   #[allow(unused_variables)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
     #[cfg(feature = "behavior_tap_enabled")]
-    if key.has_behavior(Behavior::Tap) {
+    if key.has_behavior(Behaviors::Tap) {
       tap::process(keyboard, key);
     }
 
     #[cfg(feature = "behavior_hold_enabled")]
-    if key.has_behavior(Behavior::Hold) {
+    if key.has_behavior(Behaviors::Hold) {
       hold::process(keyboard, key);
     }
   }

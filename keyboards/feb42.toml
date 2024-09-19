@@ -3,7 +3,7 @@ product_id = 0x0000
 vendor_id = 0x0000
 name = "Feb42"
 manufacturer = "febreeze"
-chip = "stm32f303cbtx"
+chip = "stm32f303cb"
 
 [settings]
 # keycodes = "german" # changes keycodes to represent a french keyboard

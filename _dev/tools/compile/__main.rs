@@ -13,7 +13,7 @@ fn validate_root_dir() {
   let e1 = util::directory_exists("chips");
   let e2 = util::directory_exists("keyboards");
   let e3 = util::directory_exists("orbit");
-  let e4 = util::directory_exists(".dev");
+  let e4 = util::directory_exists("_dev");
 
   if !e1 || !e2 || !e3 || !e4 {
     error!("Invalid root directory");
@@ -43,17 +43,17 @@ fn main() {
     exit(1);
   }
 
-  util::mkdir(".bin");
-  util::write(".bin/.last_kb", &keyboard);
+  util::mkdir("build");
+  util::write("build/.last_kb", &keyboard);
 
   // keyboard config
-  util::copy(&keyboard_file, ".bin/keyboard.toml");
+  util::copy(&keyboard_file, "build/keyboard.toml");
   if util::file_exists("user/keyboard.toml") {
-    toml::merge("user/keyboard.toml", ".bin/keyboard.toml");
+    toml::merge("user/keyboard.toml", "build/keyboard.toml");
   }
 
-  compile::prepare(&chip_dir, &chip, &keyboard.as_str());
-  util::cd(".bin");
+  compile::prepare(&chip_dir, &keyboard.as_str());
+  util::cd("build");
 
   generate::run(&root, &chip, &keycodes);
   compile::install();

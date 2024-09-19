@@ -6,9 +6,9 @@
 [keyboard]
 product_id = 0x0000
 vendor_id = 0x0000
-name = "Emulator"
-manufacturer = "Emulator"
-chip = "_emulator"
+name = "Devboard"
+manufacturer = "Devboard"
+chip = "stm32f411ceu"
 # keycodes = "german" # changes keycodes to represent a french keyboard
 
 
@@ -30,11 +30,9 @@ space_cadet = true
 row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["Q", "W", "E", "R"]
+row_pins = []
 col_pins = []
-layout = [
-  [0,1], [0,2], [0,3], [0,4]
-]
+layout = []
 
 [rgb]
 data_pin = "PA7"

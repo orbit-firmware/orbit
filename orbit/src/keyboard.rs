@@ -32,11 +32,9 @@ impl Keyboard {
 
   fn new() -> Self {
     assert!(KEY_COUNT > 0);
-    let keys = populate(Key::new);
-
     Self {
       peripherals: Peripherals::new(),
-      keys,
+      keys: populate(Key::new),
       layer: 0,
     }
   }

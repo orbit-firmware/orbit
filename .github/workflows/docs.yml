@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-      - '.dev/docs/**'
+      - '_dev/docs/**'
   workflow_dispatch:
 
 permissions:
@@ -29,13 +29,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: cd .dev/docs/ && npm ci
+        run: cd _dev/docs/ && npm ci
       - name: Build with VitePress
-        run: cd .dev/docs/ && npm run docs:build
+        run: cd _dev/docs/ && npm run docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .dev/docs/.vitepress/dist
+          path: _dev/docs/.vitepress/dist
 
   deploy:
     needs: build

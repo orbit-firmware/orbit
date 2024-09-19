@@ -28,6 +28,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
   let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", false);
   let actions_list: Vec<(String, bool)> = toml::get(&config, "actions", false);
+  let flavors_list: Vec<(String, bool)> = toml::get(&config, "flavors", false);
 
   {
     if !use_matrix && !use_multiplexers {
@@ -52,11 +53,11 @@ pub fn generate(feature_list: &mut Vec<String>) {
     if b.1 {
       feature_list.push(format!("behavior_{}_enabled", b.0));
 
-      let behavior = util::capitalize_first(&b.0);
+      let behavior = util::to_pascal_case(&b.0);
       if b.1 {
         let ident = SynIdent::new(&behavior, proc_macro2::Span::call_site());
         behaviors.push(quote! {
-            Behavior::#ident
+            Behaviors::#ident
         });
       }
     }
@@ -65,22 +66,35 @@ pub fn generate(feature_list: &mut Vec<String>) {
 
   let mut actions = vec![];
   for a in actions_list {
-    if a.0 == "press" || a.0 == "Press" {
-      continue;
-    }
     if a.1 {
       feature_list.push(format!("action_{}_enabled", a.0));
 
-      let action = util::capitalize_first(&a.0);
+      let action = util::to_pascal_case(&a.0);
       if a.1 {
         let ident = SynIdent::new(&action, proc_macro2::Span::call_site());
         actions.push(quote! {
-            Action::#ident
+            Actions::#ident
         });
       }
     }
   }
   let action_count: usize = actions.len();
+
+  let mut flavors = vec![];
+  for a in flavors_list {
+    if a.1 {
+      feature_list.push(format!("flavor_{}_enabled", a.0));
+
+      let flavor = util::to_pascal_case(&a.0);
+      if a.1 {
+        let ident = SynIdent::new(&flavor, proc_macro2::Span::call_site());
+        flavors.push(quote! {
+            Flavors::#ident
+        });
+      }
+    }
+  }
+  let flavor_count: usize = flavors.len();
 
   let mut matrix = quote! {
     pub const MATRIX_ROW_COUNT: usize = 0;
@@ -141,8 +155,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let generated = quote! {
     #![allow(dead_code)]
 
-    use crate::orbit::behaviors::Behavior;
-    use crate::orbit::actions::Action;
+    use crate::orbit::features::*;
 
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;
@@ -154,8 +167,12 @@ pub fn generate(feature_list: &mut Vec<String>) {
     // settings
     pub const DEBOUNCE_TIME: u16 = #debounce_time;
     pub const TAPPING_TERM: u16 = #tapping_term;
-    pub const BEHAVIORS: [Behavior; #behavior_count] = [#(#behaviors),*];
-    pub const ACTIONS: [Action; #action_count] = [#(#actions),*];
+    pub const BEHAVIOR_COUNT: usize = #behavior_count;
+    pub const BEHAVIORS: [Behaviors; #behavior_count] = [#(#behaviors),*];
+    pub const ACTION_COUNT: usize = #action_count;
+    pub const ACTIONS: [Actions; #action_count] = [#(#actions),*];
+    pub const FLAVOR_COUNT: usize = #flavor_count;
+    pub const FLAVORS: [Flavors; #flavor_count] = [#(#flavors),*];
 
     // layout
     pub const USE_MATRIX: bool = #use_matrix;

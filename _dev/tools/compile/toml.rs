@@ -166,7 +166,8 @@ impl FromTomlValue for Vec<(String, bool)> {
           .map(|(key, value)| match value {
             Value::Boolean(b) => (key.clone(), *b),
             _ => {
-              error!("Expected boolean value for key: {}", key);
+              if !required {}
+              error!("Expected Vec<(String, bool)> value for key: {}", key);
               exit(1);
             }
           })
@@ -244,4 +245,20 @@ pub fn contains(table: &Table, key: &str) -> bool {
   }
 
   true
+}
+
+pub fn set_package_name(filepath: &str, name: &str) {
+  let mut content = read_as_value(filepath);
+
+  if let toml::Value::Table(ref mut root_table) = content {
+    let package_table = root_table
+      .entry("package")
+      .or_insert_with(|| toml::Value::Table(toml::map::Map::new()));
+
+    if let toml::Value::Table(ref mut package_table) = package_table {
+      package_table.insert("name".to_string(), toml::Value::String(name.to_string()));
+    }
+  }
+
+  write(filepath, &content);
 }

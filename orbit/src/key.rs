@@ -1,11 +1,8 @@
-use crate::orbit::actions::Action;
-use crate::orbit::behaviors::Behavior;
 use crate::orbit::config;
+use crate::orbit::features::*;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::log::dump;
+use crate::orbit::keymap::KeyMap;
 use crate::orbit::time;
-use core::option::Option;
-use heapless::String;
 
 pub const PRESSED: u8 = 0b00000001;
 pub const CHANGED: u8 = 0b00000010;
@@ -28,9 +25,6 @@ pub const INTERRUPT: u8 = 0b10000000;
 pub struct Key {
   // physical index of the key
   index: usize,
-
-  // The key code to send
-  code: String<32>,
 
   // The encoded key state
   state: u8,
@@ -55,12 +49,8 @@ pub struct Key {
 
 impl Key {
   pub fn new(index: usize) -> Key {
-    let mut code = String::new();
-    code.push_str("xxx").unwrap();
-
     Key {
       index,
-      code,
       state: 0,
       #[cfg(feature = "behavior_tap_enabled")]
       taps: 0,
@@ -73,31 +63,37 @@ impl Key {
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn index(&self) -> usize {
     self.index
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn is_pressed(&self) -> bool {
     self.has_state(PRESSED)
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn just_changed(&self) -> bool {
     self.has_state(CHANGED)
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn just_pressed(&self) -> bool {
     self.is_pressed() && self.just_changed()
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn is_released(&self) -> bool {
     !self.is_pressed()
   }
 
   #[inline(always)]
+  #[allow(unused)]
   pub fn just_released(&self) -> bool {
     self.is_released() && self.just_changed()
   }
@@ -123,43 +119,49 @@ impl Key {
     self.taps
   }
 
+  #[allow(unused)]
   pub fn send(&mut self) {
     self.add_state(SEND_INSTANT);
     self.del_state(SEND_RELEASE);
     self.del_state(SEND_ONESHOT);
   }
 
+  #[allow(unused)]
   pub fn send_oneshot(&mut self) {
     self.send();
     self.add_state(SEND_ONESHOT);
   }
 
+  #[allow(unused)]
   pub fn send_delayed(&mut self, delay: u16) {
     self.delay = delay;
     self.send();
   }
 
+  #[allow(unused)]
   pub fn send_delayed_oneshot(&mut self, delay: u16) {
     self.send_delayed(delay);
     self.add_state(SEND_ONESHOT);
   }
 
+  #[allow(unused)]
   pub fn send_on_release(&mut self) {
     self.del_state(SEND_INSTANT);
     self.add_state(SEND_RELEASE);
     self.add_state(SEND_ONESHOT);
   }
 
+  #[allow(unused)]
   pub fn send_on_release_delayed(&mut self, delay: u16) {
     self.delay = delay;
     self.send_on_release();
   }
 
-  pub fn has_behavior(&self, behavior: Behavior) -> bool {
+  pub fn has_behavior(&self, behavior: Behaviors) -> bool {
     // TODO: get from keymap
     match behavior {
-      Behavior::Hold => true,
-      Behavior::Tap => true,
+      Behaviors::Hold => true,
+      Behaviors::Tap => true,
       _ => false,
     }
   }
@@ -167,9 +169,9 @@ impl Key {
   pub fn process(&mut self, state: bool) {
     let keyboard = Keyboard::instance();
     self.set_pressed(state);
-    Behavior::process(keyboard, self);
+    Behaviors::process(keyboard, self);
 
-    if self.is_sendable(keyboard) {
+    if self.is_sendable() {
       if self.has_state(SEND_ONESHOT) {
         self.send_key(keyboard, true);
         self.send_key(keyboard, false);
@@ -190,13 +192,13 @@ impl Key {
 
   fn send_key(&mut self, keyboard: &mut Keyboard, real_state: bool) {
     let previous_state = self.is_pressed();
-    if real_state {
-      self.add_state(PRESSED);
-    } else {
-      self.del_state(PRESSED);
-    }
-    Action::process(keyboard, self);
-    if previous_state {
+    self.force_pressed(real_state);
+    Actions::process(keyboard, self);
+    self.force_pressed(previous_state);
+  }
+
+  fn force_pressed(&mut self, state: bool) {
+    if state {
       self.add_state(PRESSED);
     } else {
       self.del_state(PRESSED);
@@ -235,7 +237,7 @@ impl Key {
     }
   }
 
-  fn is_sendable(&mut self, keyboard: &mut Keyboard) -> bool {
+  fn is_sendable(&mut self) -> bool {
     if !self.has_state(SEND_ENABLED) {
       return false;
     }

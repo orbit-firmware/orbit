@@ -45,20 +45,23 @@ pub fn get_arg(n: usize) -> String {
 
 pub fn get_root() -> String {
   let mut root = std::env::current_dir().unwrap().display().to_string();
-  if root.contains(".dev") {
-    root = root.split(".dev").collect::<Vec<&str>>()[0].to_string();
+  if root.contains("_dev") {
+    root = root.split("_dev").collect::<Vec<&str>>()[0].to_string();
   }
   root.strip_suffix('/').unwrap().to_string()
 }
 
-pub fn capitalize_first(s: &str) -> String {
-  if s.is_empty() {
-    return s.to_string();
-  }
-  let mut chars = s.chars();
-  let first = chars.next().unwrap().to_uppercase().to_string();
-  let rest: String = chars.collect();
-  first + &rest
+pub fn to_pascal_case(s: &str) -> String {
+  s.split(|c: char| c == '_' || c == ' ' || c.is_ascii_uppercase() && !c.is_ascii_alphabetic())
+    .flat_map(|word| {
+      if word.is_empty() {
+        None
+      } else {
+        let mut chars = word.chars();
+        Some(chars.next().unwrap().to_ascii_uppercase().to_string() + chars.as_str())
+      }
+    })
+    .collect()
 }
 
 pub fn file_exists(path: &str) -> bool {
@@ -118,12 +121,6 @@ pub fn copy(from: &str, to: &str) {
 
   mkdir(&dirname(to));
   std::fs::copy(from, to).expect("Failed to copy file");
-}
-
-pub fn replace_in_file(file_path: &str, target: &str, replacement: &str) {
-  let content = std::fs::read_to_string(file_path).expect("Failed to read file");
-  let new_content = content.replace(target, replacement);
-  write(file_path, &new_content);
 }
 
 pub fn quote_to_string(ts: TokenStream) -> String {

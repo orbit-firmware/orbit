@@ -2,6 +2,6 @@ use futures::executor::block_on;
 mod orbit;
 
 fn main() {
-  let processor = orbit::orbit::run();
+  let processor = orbit::process::run();
   block_on(processor);
 }

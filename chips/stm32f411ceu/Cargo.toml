@@ -1,5 +1,5 @@
 [package]
-name = "stm32f303cbtx"
+name = "stm32f411ceu6"
 version = "0.1.0"
 edition = "2021"
 
@@ -20,13 +20,14 @@ embassy-executor = { version = "0.6.0", features = [
 embassy-futures = "0.1.1"
 embassy-stm32 = { version = "0.1.0", features = [
   "memory-x",
-  "stm32f303cb",
+  "stm32f411ce",
   "time-driver-any",
   "exti",
   "unstable-pac",
 ] }
 embassy-sync = "0.6.0"
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
+static_cell = "2"
 panic-halt = "0.2.0"
 panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
 

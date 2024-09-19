@@ -8,47 +8,47 @@ use std::fs;
 use std::process::{exit, Command};
 
 // merges together the chip and orbit directories
-pub fn prepare(chip_dir: &str, chip: &str, keyboard: &str) {
+pub fn prepare(chip_dir: &str, keyboard: &str) {
   let orbit_src_dir = "orbit/src";
 
   let orbit_files = util::list_files_recursive(&orbit_src_dir);
   for file in orbit_files {
-    let bf = util::repath(&file, &orbit_src_dir, ".bin/src/orbit");
-    util::mkdir(util::dirname(&bf).as_str());
-    util::copy(&file, &bf);
+    let build_file = util::repath(&file, &orbit_src_dir, "build/src/orbit");
+    util::mkdir(util::dirname(&build_file).as_str());
+    util::copy(&file, &build_file);
   }
 
   let orbit_dir = "orbit";
 
   let orbit_files = util::list_files(&orbit_dir);
   for file in orbit_files {
-    let bf = util::repath(&file, &orbit_dir, ".bin");
-    util::mkdir(util::dirname(&bf).as_str());
-    util::copy(&file, &bf);
+    let build_file = util::repath(&file, &orbit_dir, "build");
+    util::mkdir(util::dirname(&build_file).as_str());
+    util::copy(&file, &build_file);
   }
 
   let chip_files = util::list_files_recursive(&chip_dir);
 
   for file in chip_files {
-    let bf = util::repath(&file, &chip_dir, ".bin");
-    util::mkdir(util::dirname(&bf).as_str());
+    let build_file = util::repath(&file, &chip_dir, "build");
+    util::mkdir(util::dirname(&build_file).as_str());
 
-    if util::file_exists(&bf) {
-      let name = util::filename(&bf);
+    if util::file_exists(&build_file) {
+      let name = util::filename(&build_file);
 
       if name == "Cargo.toml" {
-        toml::merge(&file, &bf);
-        util::replace_in_file(&bf, &chip, &keyboard);
+        toml::merge(&file, &build_file);
+        toml::set_package_name(&build_file, &keyboard);
         continue;
       }
 
       if name == "rust-toolchain.toml" {
-        toml::merge(&file, &bf);
+        toml::merge(&file, &build_file);
         continue;
       }
     }
 
-    util::copy(&file, &bf);
+    util::copy(&file, &build_file);
   }
 }
 
@@ -190,6 +190,8 @@ fn run_emulator() {
 }
 
 fn compile_firmware() {
+  util::run("cargo", &["build", "--release"]);
+
   let mut args: Vec<&str> = vec!["objcopy", "--release"];
 
   args.push("--");

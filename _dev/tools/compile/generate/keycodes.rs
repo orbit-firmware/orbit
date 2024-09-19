@@ -32,7 +32,7 @@ impl KeyCode {
 }
 
 fn read(path: &str, root: &str, optional: bool) -> Vec<KeyCode> {
-  let path = format!("{}/.dev/keycodes/{}.k", root, path);
+  let path = format!("{}/keycodes/{}.k", root, path);
 
   if optional && !util::file_exists(path.as_str()) {
     return vec![];

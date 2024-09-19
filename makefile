@@ -2,14 +2,14 @@
 
 MAKEFLAGS += --no-print-directory
 
-TOOLDIR := .dev/tools
+TOOLDIR := _dev/tools
 
 compile: #/ [kb=keyboard] [features="list of features"]
 ifeq ($(kb),)
 	@make help -B
 	@exit 1
 endif
-ifneq ($(shell cat .bin/.last_kb 2> /dev/null),$(kb))
+ifneq ($(shell cat build/.last_kb 2> /dev/null),$(kb))
 	@make clean -B
 endif	
 	@make play target=compile args="$(kb) $(features)"
@@ -24,15 +24,15 @@ endif
 	@make play target=flash
 
 clean: #/ cleans build files
-	@rm -rf .bin
+	@rm -rf build
 	@rm -rf firmware.bin
 	@rm -rf firmware.hex
 
 docker: #/ runs the dev container
-	@cd .dev/docker && docker-compose up -d && docker exec -it orbit bash
+	@cd _dev/docker && docker-compose up -d && docker exec -it orbit bash
 
 docs: #/ starts the docs server
-	@cd .dev/docs && npm install && npm run docs:dev
+	@cd _dev/docs && npm install && npm run docs:dev
 
 _ensure_cargo_play:
 	@rustup default stable 2>/dev/null
