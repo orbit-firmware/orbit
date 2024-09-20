@@ -12,7 +12,7 @@ endif
 ifneq ($(shell cat build/.last_kb 2> /dev/null),$(kb))
 	@make clean -B
 endif	
-	@make play target=compile args="$(kb) $(features)"
+	@make play target=compiler args="$(kb) $(features)"
 	
 
 flash: #/ flashes the firmware

@@ -23,7 +23,6 @@ pub fn prepare(chip_dir: &str, keyboard: &str) {
   let orbit_files = util::list_files(&orbit_dir);
   for file in orbit_files {
     let build_file = util::repath(&file, &orbit_dir, "build");
-    println!("{} {}", build_file, file);
     util::mkdir(util::dirname(&build_file).as_str());
     util::copy(&file, &build_file);
   }

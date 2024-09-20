@@ -9,7 +9,7 @@ mod peripherals;
 
 pub fn run(root: &str, chip: &str, remaps: &str) {
   let mut feature_list: Vec<String> = vec![];
-  util::copy("../_dev/tools/compile/generate/modifiers.rs", "src/orbit/modifiers.rs");
+  util::copy("../_dev/tools/compiler/generate/modifiers.rs", "src/orbit/modifiers.rs");
 
   config::generate(&mut feature_list);
   keycodes::generate(&mut feature_list, root, remaps);
