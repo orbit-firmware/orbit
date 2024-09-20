@@ -101,7 +101,7 @@ fn read(path: &str, root: &str, optional: bool) -> Vec<KeyCode> {
   return keycodes;
 }
 
-fn code(code_str: &str, list: &Vec<KeyCode>) -> u16 {
+fn parse_code(code_str: &str, list: &Vec<KeyCode>) -> u16 {
   let msg = format!("Failed to parse code {:?}", code_str);
 
   let token_collector = code_str.trim_end_matches(")").split("(");
@@ -144,53 +144,48 @@ fn code(code_str: &str, list: &Vec<KeyCode>) -> u16 {
   parsed_code
 }
 
-fn merge(a: Vec<KeyCode>, b: Vec<KeyCode>) -> Vec<KeyCode> {
-  fn validate_codes(list: Vec<KeyCode>) {
-    let mut used: Vec<(String, u16)> = vec![];
-    for i in &list {
-      let name = i.name.to_string();
-      for u in &used {
-        if u.1 == i.code {
-          error!("Duplicate code: {} and {}", i.name, u.0);
-          exit(1);
-        }
-      }
-      used.push((name, i.code));
-    }
+fn merge(target: Vec<KeyCode>, source: Vec<KeyCode>) -> Vec<KeyCode> {
+  let mut _target: Vec<KeyCode> = vec![];
+  let mut _source: Vec<KeyCode> = vec![];
+
+  for item in target.clone() {
+    let mut value = item.clone();
+    value.code = parse_code(&value.code_str, &_target);
+    _target.push(value);
   }
 
-  let mut merged: Vec<KeyCode> = vec![];
-
-  for j in a.clone() {
-    let mut v = j.clone();
-    v.code = code(&v.code_str, &merged);
-    merged.push(v);
+  for item in source.clone() {
+    let mut value = item.clone();
+    value.code = parse_code(&value.code_str, &_target);
+    _source.push(value);
   }
 
-  for i in b {
+  for source_item in _source.clone() {
     let mut found = false;
     let mut index = 0;
-    for j in a.clone() {
-      if i.name == j.name {
-        let mut v = j.clone();
-        v.code_str = i.code_str.clone();
-        v.code = code(&v.code_str, &merged);
-        merged[index] = v;
+    for target_item in _target.clone() {
+      if source_item.name == target_item.name {
+        _target[index] = source_item.clone();
         found = true;
         break;
       }
       index += 1;
     }
     if !found {
-      let mut v = i.clone();
-      v.code = code(&v.code_str, &merged);
-      merged.push(v);
+      _target.push(source_item.clone());
     }
   }
 
-  validate_codes(merged.clone());
+  let mut used: Vec<KeyCode> = vec![];
+  for i in _target.clone() {
+    let name = i.name.to_string();
+    if let Some(pos) = used.iter().position(|u| u.code == i.code) {
+      let removed = used.remove(pos);
+    }
+    used.push(i.clone());
+  }
 
-  merged
+  used
 }
 
 #[allow(unused_variables)]

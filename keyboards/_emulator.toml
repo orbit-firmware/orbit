@@ -9,10 +9,10 @@ vendor_id = 0x0000
 name = "Emulator"
 manufacturer = "Emulator"
 chip = "_emulator"
-# keycodes = "german" # changes keycodes to represent a french keyboard
 
 
 [settings]
+keycodes = "german"
 debounce_time = 10
 tapping_term = 220
 
