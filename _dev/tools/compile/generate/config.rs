@@ -120,6 +120,28 @@ pub fn generate(feature_list: &mut Vec<String>) {
       pub const MATRIX_ROW_PINS: [&str; #row_count] = [#(#row_pins),*];
       pub const MATRIX_COL_PINS: [&str; #col_count] = [#(#col_pins),*];
     };
+
+    key_count = layout_list.len();
+    for key in layout_list {
+      let mut row_ident = SynIdent::new("None", proc_macro2::Span::call_site());
+      if row_pins.len() > 0 {
+        let row: String = row_pins[key.0].clone();
+        row_ident = SynIdent::new(&row, proc_macro2::Span::call_site());
+      }
+
+      let mut col_ident = SynIdent::new("None", proc_macro2::Span::call_site());
+      if col_pins.len() > 0 {
+        let col: String = col_pins[key.0].clone();
+        col_ident = SynIdent::new(&col, proc_macro2::Span::call_site());
+      }
+
+      layout.push(quote! {
+          [
+            Peripheral::#row_ident,
+            Peripheral::#col_ident
+          ]
+      });
+    }
   }
 
   let mut multiplexers = quote! {
@@ -146,15 +168,28 @@ pub fn generate(feature_list: &mut Vec<String>) {
       pub const MULTIPLEXER_COM_COUNT: usize = #count;
       pub const MULTIPLEXER_COM_PINS: [&str; #count] = [#(#com_pins),*];
     };
-  }
 
-  key_count = layout_list.len();
-  for key in layout_list {
-    let row: usize = key.0;
-    let col: usize = key.1;
-    layout.push(quote! {
-        [#row, #col]
-    });
+    key_count = layout_list.len();
+    for key in layout_list {
+      let mut sel_ident = SynIdent::new("None", proc_macro2::Span::call_site());
+      if sel_pins.len() > 0 {
+        let sel: String = sel_pins[key.0].clone();
+        sel_ident = SynIdent::new(&sel, proc_macro2::Span::call_site());
+      }
+
+      let mut com_ident = SynIdent::new("None", proc_macro2::Span::call_site());
+      if com_pins.len() > 0 {
+        let com: String = com_pins[key.0].clone();
+        com_ident = SynIdent::new(&com, proc_macro2::Span::call_site());
+      }
+
+      layout.push(quote! {
+          [
+            Peripheral::#sel_ident,
+            Peripheral::#com_ident
+          ]
+      });
+    }
   }
 
   let generated = quote! {
@@ -195,7 +230,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     pub const USE_MATRIX: bool = #use_matrix;
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
 
-    pub const LAYOUT: [[usize; 2]; #key_count] = [#(#layout),*];
+    pub const LAYOUT: [[Peripheral; 2]; #key_count] = [#(#layout),*];
 
     #matrix
     #multiplexers

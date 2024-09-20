@@ -40,7 +40,7 @@ pub fn generate(feature_list: &mut Vec<String>, chip: &str) {
     &outputs,
   );
 
-  util::write(TARGET_FILE, util::quote_to_string(generated).as_str());
+  // util::write(TARGET_FILE, util::quote_to_string(generated).as_str());
 }
 
 fn generate_chip(chip: &str, inputs: &Vec<String>, outputs: &Vec<String>) -> TokenStream {
