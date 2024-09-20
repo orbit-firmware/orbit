@@ -38,6 +38,10 @@ macro_rules! info {
   };
 }
 
+pub fn os_path(path: &str) -> String {
+  path.replace("/", &std::path::MAIN_SEPARATOR.to_string())
+}
+
 pub fn get_arg(n: usize) -> String {
   let arg: String = std::env::args().nth(n).unwrap();
   arg.trim_matches('"').trim_matches('\'').to_string()
@@ -48,7 +52,11 @@ pub fn get_root() -> String {
   if root.contains("_dev") {
     root = root.split("_dev").collect::<Vec<&str>>()[0].to_string();
   }
-  root.strip_suffix('/').unwrap().to_string()
+  if root[0..1] == *"/" {
+    root = root[1..].to_string();
+  }
+
+  os_path(&root)
 }
 
 pub fn to_pascal_case(s: &str) -> String {
@@ -65,21 +73,25 @@ pub fn to_pascal_case(s: &str) -> String {
 }
 
 pub fn file_exists(path: &str) -> bool {
-  let metadata = std::fs::metadata(path);
+  let p = os_path(&path);
+  let metadata = std::fs::metadata(p);
   metadata.is_ok() && metadata.unwrap().is_file()
 }
 
 pub fn directory_exists(path: &str) -> bool {
-  let metadata = std::fs::metadata(path);
+  let p = os_path(&path);
+  let metadata = std::fs::metadata(p.to_string());
   metadata.is_ok() && metadata.unwrap().is_dir()
 }
 
 pub fn filename(path: &str) -> String {
-  Path::new(&path).file_name().unwrap().to_str().unwrap().to_string()
+  let p = os_path(&path);
+  Path::new(&p).file_name().unwrap().to_str().unwrap().to_string()
 }
 
 pub fn remove_extension(path: &str) -> String {
-  let mut parts = path.split('.').collect::<Vec<&str>>();
+  let p = os_path(&path);
+  let mut parts = p.split('.').collect::<Vec<&str>>();
   parts.pop();
   parts.join(".")
 }
@@ -89,23 +101,27 @@ pub fn filename_no_ext(path: &str) -> String {
 }
 
 pub fn dirname(path: &str) -> String {
-  Path::new(&path).parent().unwrap().display().to_string()
+  let p = os_path(&path);
+  Path::new(&p).parent().unwrap().display().to_string()
 }
 
 pub fn cd(path: &str) {
-  std::env::set_current_dir(path).expect("Failed to change directory");
+  let p = os_path(&path);
+  std::env::set_current_dir(p).expect("Failed to change directory");
 }
 
 pub fn mkdir(path: &str) {
-  if !directory_exists(path) {
-    std::fs::create_dir_all(path).expect("Failed to create directory");
+  let p = os_path(&path);
+  if !directory_exists(p.as_str()) {
+    std::fs::create_dir_all(p).expect("Failed to create directory");
   }
 }
 
 pub fn repath(file: &str, from: &str, to: &str) -> String {
   let prefix = format!("{}/", from);
   let rel = file.replacen(&prefix, "", 1);
-  format!("{}/{}", to, rel)
+  let ret = format!("{}/{}", to, rel);
+  os_path(&ret).to_string()
 }
 
 pub fn copy(from: &str, to: &str) {
