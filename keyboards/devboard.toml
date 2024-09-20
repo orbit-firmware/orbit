@@ -1,5 +1,5 @@
 # this is used to emulate the firmware on a computer
-# [features.emulator_enabled]
+# [features.family_EMULATOR]
 # do NOT use this as a real chip
 
 
@@ -30,9 +30,9 @@ space_cadet = true
 row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = []
+row_pins = ["PB8"]
 col_pins = []
-layout = []
+layout = [[0,0]]
 
 [rgb]
 data_pin = "PA7"

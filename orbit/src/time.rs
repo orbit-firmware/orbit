@@ -1,7 +1,7 @@
-#[cfg(not(feature = "emulator_enabled"))]
+#[cfg(not(feature = "family_EMULATOR"))]
 use embassy_time::Instant;
 
-#[cfg(feature = "emulator_enabled")]
+#[cfg(feature = "family_EMULATOR")]
 mod emulation_time {
   use core::option::Option;
   use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -24,9 +24,9 @@ mod emulation_time {
 }
 
 pub fn now() -> u32 {
-  #[cfg(feature = "emulator_enabled")]
+  #[cfg(feature = "family_EMULATOR")]
   return emulation_time::now() as u32;
-  #[cfg(not(feature = "emulator_enabled"))]
+  #[cfg(not(feature = "family_EMULATOR"))]
   return Instant::now().as_millis() as u32;
 }
 

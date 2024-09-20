@@ -223,7 +223,7 @@ impl<'a> defmt::Format for Bytes<'a> {
 }
 
 #[macro_export]
-#[cfg(feature = "emulator_enabled")]
+#[cfg(feature = "family_EMULATOR")]
 macro_rules! dump {
   ($($arg:tt)*) => {
     print!("\r");
@@ -233,7 +233,7 @@ macro_rules! dump {
 }
 
 #[macro_export]
-#[cfg(not(feature = "emulator_enabled"))]
+#[cfg(not(feature = "family_EMULATOR"))]
 macro_rules! dump {
   ($s:literal $(, $x:expr)* $(,)?) => {
     {

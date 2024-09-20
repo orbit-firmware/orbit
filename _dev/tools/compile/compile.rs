@@ -182,10 +182,7 @@ pub fn install() {
 
 fn run_emulator() {
   info!("💾 Emulator chip detected, running it");
-  let mut args: Vec<&str> = vec!["run"];
-  args.push("--features");
-  args.push("emulator_enabled");
-
+  let args: Vec<&str> = vec!["run"];
   util::run("cargo", &args);
 }
 

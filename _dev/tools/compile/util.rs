@@ -230,3 +230,21 @@ pub fn run(cmd: &str, args: &[&str]) -> std::process::ExitStatus {
 
   status
 }
+
+pub fn get_chip_family(chip: &str) -> String {
+  let mut family = "NONE";
+  if chip.starts_with("stm32") {
+    family = "STM32";
+  } else if chip.starts_with("nrf") {
+    family = "NRF";
+  } else if chip.starts_with("esp") {
+    family = "ESP";
+  } else if chip.starts_with("rp") {
+    family = "RP";
+  } else if chip.starts_with("ch") {
+    family = "CH";
+  } else if chip.starts_with("_emulator") {
+    family = "EMULATOR";
+  }
+  family.to_string()
+}

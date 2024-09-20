@@ -1,10 +1,11 @@
 // 
 // default mode
 // 
-#[cfg(not(feature = "emulator_enabled"))]
-mod default {
+#[cfg(not(feature = "family_EMULATOR"))]
+mod stm32 {
   use crate::orbit::keyboard::Keyboard;
   use embassy_usb::driver::Driver;
+
   pub async fn run<D: Driver<'static>>(usb_driver: D) -> ! {
     loop {
       Keyboard::instance().process().await;
@@ -12,13 +13,13 @@ mod default {
   }
 }
 
-#[cfg(not(feature = "emulator_enabled"))]
-pub use default::run;
+#[cfg(not(feature = "family_EMULATOR"))]
+pub use stm32::run;
 
 // 
 // emulator mode
 // 
-#[cfg(feature = "emulator_enabled")]
+#[cfg(feature = "family_EMULATOR")]
 mod emulator {
   use device_query::DeviceQuery;
   use device_query::DeviceState;
@@ -67,5 +68,5 @@ mod emulator {
   }
 }
 
-#[cfg(feature = "emulator_enabled")]
+#[cfg(feature = "family_EMULATOR")]
 pub use emulator::run;

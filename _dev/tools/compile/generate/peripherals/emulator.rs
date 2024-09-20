@@ -2,29 +2,67 @@ use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::Ident;
 
-pub fn generate(key_count: usize, gpio_pins: Vec<String>) -> (TokenStream, TokenStream) {
-  let mut device_keys = vec![];
+#[allow(unused_variables)]
+pub fn generate(inputs: &Vec<String>, outputs: &Vec<String>) -> TokenStream {
+  // *header = quote! {
+  //   use device_query::{DeviceQuery, DeviceState, Keycode};
 
-  let mut count = -1;
+  //   struct Input {
+  //     key: Keycode,
+  //     device_state: DeviceState,
+  //   }
 
-  for gpio in gpio_pins {
-    count += 1;
-    let ident = Ident::new(&gpio, Span::call_site());
-    device_keys.push(quote! {
-      self.gpio[#count as usize] = keys.contains(&Keycode::#ident);
-    });
-  }
+  //   impl Input {
+  //     pub fn new(key: Keycode) -> Self {
+  //       Self {
+  //         device_state: DeviceState::new(),
+  //         key,
+  //       }
+  //     }
 
-  let gpio_scan = quote! {
-    let keys: Vec<Keycode> = self.device_state.get_keys();
-    #(#device_keys)*
-  };
+  //     pub fn is_high(&self) -> bool {
+  //       let keys: Vec<Keycode> = self.device_state.get_keys();
+  //       keys.contains(&self.key)
+  //     }
 
-  let key_scan = quote! {
-    for i in 0..#key_count {
-      self.keys[i] = self.gpio[i];
-    }
-  };
+  //     pub fn is_low(&self) -> bool {
+  //       let keys: Vec<Keycode> = self.device_state.get_keys();
+  //       !keys.contains(&self.key)
+  //     }
+  //   }
 
-  (gpio_scan, key_scan)
+  //   struct Output {
+  //   }
+
+  //   impl Output {
+  //     pub fn new() -> Self {
+  //       Self {
+  //       }
+  //     }
+
+  //     pub fn read(&self) -> u16 {
+  //       0
+  //     }
+  //   }
+  // };
+
+  // for input in inputs {
+  //   let key = Ident::new(&input, Span::call_site());
+  //   let definition = quote! {
+  //     Input::new(p.#key)
+  //   };
+  //   input_definitions.push(definition);
+  // }
+
+  // for output in outputs {
+  //   // let pin = Ident::new(&output, Span::call_site());
+  //   let definition = quote! {
+  //     Output::new()
+  //   };
+  //   output_definitions.push(definition);
+  // }
+
+  let generated = quote! {};
+
+  generated
 }

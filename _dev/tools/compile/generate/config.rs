@@ -19,6 +19,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let vendor_id: u16 = toml::get(&config, "keyboard/vendor_id", true);
   let name: String = toml::get(&config, "keyboard/name", true);
   let manufacturer: String = toml::get(&config, "keyboard/manufacturer", true);
+  let config = toml::read("keyboard.toml", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
 
   let debounce_time: u16 = toml::get(&config, "settings/debounce_time", true);
@@ -29,6 +30,9 @@ pub fn generate(feature_list: &mut Vec<String>) {
   let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", false);
   let actions_list: Vec<(String, bool)> = toml::get(&config, "actions", false);
   let flavors_list: Vec<(String, bool)> = toml::get(&config, "flavors", false);
+
+  let fam = util::get_chip_family(&chip);
+  let family = SynIdent::new(&fam, proc_macro2::Span::call_site());
 
   {
     if !use_matrix && !use_multiplexers {
@@ -96,6 +100,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
   }
   let flavor_count: usize = flavors.len();
 
+  let mut key_count: usize = 0;
   let mut matrix = quote! {
     pub const MATRIX_ROW_COUNT: usize = 0;
     pub const MATRIX_COL_COUNT: usize = 0;
@@ -143,7 +148,7 @@ pub fn generate(feature_list: &mut Vec<String>) {
     };
   }
 
-  let key_count = layout_list.len();
+  key_count = layout_list.len();
   for key in layout_list {
     let row: usize = key.0;
     let col: usize = key.1;
@@ -156,12 +161,24 @@ pub fn generate(feature_list: &mut Vec<String>) {
     #![allow(dead_code)]
 
     use crate::orbit::features::*;
+    use crate::orbit::peripherals::*;
+
+    pub enum Family {
+      NONE,
+      STM32,
+      NRF,
+      ESP,
+      RP,
+      CH,
+      EMULATOR,
+    }
 
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;
     pub const NAME: &str = #name;
     pub const MANUFACTURER: &str = #manufacturer;
     pub const CHIP: &str = #chip;
+    pub const FAMILY: Family = Family::#family;
     pub const KEY_COUNT: usize = #key_count;
 
     // settings

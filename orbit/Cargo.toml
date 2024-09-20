@@ -9,6 +9,7 @@ edition = "2021"
 
 [dependencies]
 heapless = "0.8"
+embedded-hal = "1.0"
 embassy-usb = { version = "0.3", features = [
   "defmt",
   "usbd-hid",
@@ -18,7 +19,6 @@ embassy-usb = { version = "0.3", features = [
 embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
 
 [features]
-emulator_enabled = []
 defmt = []
 
 [profile.release.package."*"]

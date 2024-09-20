@@ -6,16 +6,15 @@ use panic_halt as _;
 #[cfg(feature = "defmt")]
 use {defmt_rtt as _, panic_probe as _};
 
+use crate::orbit::log::*;
 use embassy_executor::Spawner;
 use static_cell::StaticCell;
-use embassy_stm32::{
-  bind_interrupts,
-  flash::Flash,
-  gpio::{Input, Output},
-  peripherals::USB_OTG_FS,
-  usb_otg::{Driver, InterruptHandler},
-  Config,
-};
+use embassy_stm32::bind_interrupts;
+use embassy_stm32::flash::Flash;
+use embassy_stm32::peripherals::USB_OTG_FS;
+use embassy_stm32::usb_otg::{Driver, InterruptHandler};
+use embassy_stm32::Config;
+use embassy_time::Timer;
 
 bind_interrupts!(struct Irqs {
   OTG_FS => InterruptHandler<USB_OTG_FS>;
