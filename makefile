@@ -2,7 +2,6 @@
 
 MAKEFLAGS += --no-print-directory
 
-TOOLDIR := _dev/tools
 
 compile: #/ [kb=keyboard] [features="list of features"]
 ifeq ($(kb),)
@@ -12,16 +11,20 @@ endif
 ifneq ($(shell cat build/.last_kb 2> /dev/null),$(kb))
 	@make clean -B
 endif	
-	@make play target=compiler args="$(kb) $(features)"
-	
-
-flash: #/ flashes the firmware
-ifeq ($(kb),)
-	@make help -B
-	@exit 1
+	@make _prepare -B args="$(kb) $(features)"
+ifeq ($(kb),_emulator)
+	@echo -e "\x1b[34mEmulator detected, starting...\x1b[0m"
+	@cd build && cargo run --release
+else
+	@cd build && cargo build --release
 endif
-	@make _ensure_cargo_play -B
-	@make play target=flash
+
+flash: #/ flashes the firmware [debug=true/false]
+ifeq ($(debug),true)
+	cd build && cargo-embed --features debug
+else
+	cd build && cargo-embed
+endif
 
 clean: #/ cleans build files
 	@rm -rf build
@@ -34,16 +37,16 @@ docker: #/ runs the dev container
 docs: #/ starts the docs server
 	@cd _dev/docs && npm install && npm run docs:dev
 
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 _ensure_cargo_play:
 	@rustup default stable 2>/dev/null
 	@if ! cargo install --list | grep -q cargo-play; then \
 		cargo install cargo-play; \
 	fi
 
-help:
-	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-
-play:
+_prepare:
 	@make _ensure_cargo_play -B
-	@cd $(TOOLDIR) && cargo play $(shell cd $(TOOLDIR) && find $(target) -name '*.rs' | sort) -- $(args)
+	@cd orbit/dev/tools && cargo play $(shell cd orbit/dev/tools && find prepare -name '*.rs' | sort) -- $(args)
 	

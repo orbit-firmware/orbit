@@ -1,0 +1,13 @@
+[default.general]
+chip = "STM32F411CEUx"
+
+[default.rtt]
+enabled = true
+# channels = [
+#     { up = 0, name = "Defmt Output", up_mode = "NoBlockTrim", format = "Defmt" },
+# ]
+
+[connect.flashing]
+enabled = false
+
+[connect.reset]
