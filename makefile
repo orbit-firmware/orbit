@@ -20,6 +20,7 @@ else
 endif
 
 flash: #/ flashes the firmware [debug=true/false]
+	@make _prepare -B args="$(kb) $(features)"
 ifeq ($(debug),true)
 	cd build && cargo-embed --features debug
 else
@@ -48,5 +49,5 @@ _ensure_cargo_play:
 
 _prepare:
 	@make _ensure_cargo_play -B
-	@cd orbit/dev/tools && cargo play $(shell cd orbit/dev/tools && find prepare -name '*.rs' | sort) -- $(args)
+	@cd orbit/dev && cargo play $(shell cd orbit/dev && find tooling -name '*.rs' | sort) -- $(args)
 	

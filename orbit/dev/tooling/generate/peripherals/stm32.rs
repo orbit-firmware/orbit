@@ -33,7 +33,7 @@ pub fn generate(
   };
 
   let output_definition = quote! {
-    Input<'static, AnyPin>
+    Output<'static, AnyPin>
   };
 
   let output_declaration = quote! {

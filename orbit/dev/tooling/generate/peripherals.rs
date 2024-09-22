@@ -151,7 +151,9 @@ fn generate_peripherals(chip: &str, inputs: &Vec<Ident>, outputs: &Vec<Ident>) -
     #header
 
     pub struct Peripherals {
+      #[allow(dead_code)]
       inputs: [#input_definition; #input_count],
+      #[allow(dead_code)]
       outputs: [#output_definition; #output_count],
     }
 
@@ -164,11 +166,13 @@ fn generate_peripherals(chip: &str, inputs: &Vec<Ident>, outputs: &Vec<Ident>) -
         }
       }
 
+      #[allow(dead_code)]
       pub fn input(&mut self, pin: Peripheral) -> OrbitInputPin {
         let index = pin.index();
         OrbitInputPin(&mut self.inputs[index])
       }
 
+      #[allow(dead_code)]
       pub fn output(&mut self, pin: Peripheral) -> OrbitOutputPin {
         let index = pin.index();
         OrbitOutputPin(&mut self.outputs[index])
