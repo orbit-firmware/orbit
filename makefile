@@ -16,7 +16,8 @@ ifeq ($(kb),_emulator)
 	@echo -e "\x1b[34mEmulator detected, starting...\x1b[0m"
 	@cd build && cargo run --release
 else
-	@cd build && cargo build --release
+	@cd build && cargo objcopy --release -- -O binary ../firmware.bin
+	@cd build && cargo objcopy --release -- -O ihex ../firmware.hex
 endif
 
 flash: #/ flashes the firmware [debug=true/false]
@@ -33,10 +34,10 @@ clean: #/ cleans build files
 	@rm -rf firmware.hex
 
 docker: #/ runs the dev container
-	@cd _dev/docker && docker-compose up -d && docker exec -it orbit bash
+	@cd orbit/dev/docker && docker-compose up -d && docker exec -it orbit bash
 
 docs: #/ starts the docs server
-	@cd _dev/docs && npm install && npm run docs:dev
+	@cd orbit/dev/docs && npm install && npm run docs:dev
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?#/ .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?#/ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const dir = '../keycodes';
+const dir = '../../keycodes';
 const files = fs.readdirSync(dir).filter(file => file.endsWith('.k'));
 
 let available = [];
