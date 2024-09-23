@@ -21,6 +21,8 @@ git clone https://github.com/orbit-firmware/orbit.git orbit
 `MY_KEYBOARD` should be replaced with the keyboard of your choice.  
 A full list is available [here](https://github.com/orbit-firmware/orbit/tree/master/keyboards)
 
+<div class="c-spacer-small"></div>
+
 ### Compiling
 if [gnu make](https://www.gnu.org/software/make/) is installed
 ```shell
@@ -41,6 +43,7 @@ cargo objcopy --release -- -O ihex ../firmware.hex # [!code focus]
 
 This produces `firmware.hex/bin` in the orbit directory.
 
+<div class="c-spacer-small"></div>
 
 ### Flashing
 if [gnu make](https://www.gnu.org/software/make/) is installed
@@ -64,8 +67,7 @@ cargo embed --features debug
 
 ```
   
-
-
+<div class="c-spacer-large"></div>
 
 
 ## Locally (Docker)
@@ -75,6 +77,8 @@ cargo embed --features debug
 ```
 This produces `firmware.hex/bin` in the orbit directory.
 
+
+<div class="c-spacer-large"></div>
 
 ## Github Actions
 

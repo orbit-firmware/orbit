@@ -221,3 +221,13 @@ html {
   opacity: 0.5;
   filter: blur(0.05rem);
 }
+
+.c-spacer-small {
+  display: block;
+  height: 30px;
+}
+
+.c-spacer-large {
+  display: block;
+  height: 60px;
+}
