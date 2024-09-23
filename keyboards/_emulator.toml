@@ -1,5 +1,5 @@
 # this is used to emulate the firmware on a computer
-# [features.family_EMULATOR]
+# [features.chip_type_emulator]
 # do NOT use this as a real chip
 
 

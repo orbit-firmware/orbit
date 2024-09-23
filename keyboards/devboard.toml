@@ -1,7 +1,6 @@
 # this is used to emulate the firmware on a computer
-# [features.family_EMULATOR]
+# [features.chip_type_emulator]
 # do NOT use this as a real chip
-
 
 [keyboard]
 product_id = 0x0000
@@ -9,8 +8,7 @@ vendor_id = 0x0000
 name = "Devboard"
 manufacturer = "Devboard"
 chip = "stm32f411ceu"
-# keycodes = "german" # changes keycodes to represent a french keyboard
-
+keycodes = "german"
 
 [settings]
 debounce_time = 10
@@ -30,7 +28,7 @@ space_cadet = true
 row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["PB8"]
+row_pins = ["PB7"]
 col_pins = []
 layout = [[0,0]]
 

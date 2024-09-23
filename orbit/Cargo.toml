@@ -1,0 +1,60 @@
+[package]
+name = "orbit"
+version = "1.0.0"
+description = "Rust Keyboard Firmware"
+authors = ["yesitsfebreeze"]
+repository = "https://github.com/orbit-firmware/orbit"
+publish = false
+edition = "2021"
+
+[dependencies]
+orbit-macros = { path = "../orbit-macros", features = ["chip_type_none"] }
+embedded-hal = "1.0"
+embassy-usb = { version = "0.3", features = [
+  "defmt",
+  "usbd-hid",
+  "max-interface-count-8",
+  "max-handler-count-8",
+] }
+embassy-time = { version = "0.3.2", features = ["tick-hz-32_768"] }
+heapless = "0.8"
+defmt = { version = "0.3.8", optional = true }
+defmt-rtt = { version = "0.4.1", optional = true }
+panic-halt = "0.2.0"
+panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
+
+[features]
+default = []
+action_layers_enabled = []
+action_mouse_enabled = []
+behavior_combo_enabled = []
+behavior_hold_enabled = []
+behavior_modding_enabled = []
+behavior_tap_enabled = []
+chip_type_ch = []
+chip_type_emulator = []
+chip_type_esp = []
+chip_type_none = []
+chip_type_nrf = []
+chip_type_rp = []
+chip_type_stm32 = []
+flavor_space_cadet_enabled = []
+defmt = ["dep:defmt"]
+defmt-rtt = ["dep:defmt-rtt"]
+panic-probe = ["dep:panic-probe"]
+debug = [
+  "defmt",
+  "defmt-rtt",
+  "panic-probe",
+]
+
+
+[profile.release.package."*"]
+opt-level = "z"
+
+# https://github.com/johnthagen/min-sized-rust
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true  # Automatically strip symbols from the binary.

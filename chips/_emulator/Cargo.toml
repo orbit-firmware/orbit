@@ -1,0 +1,13 @@
+[package]
+name = "_emulator"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+futures = "0.3"
+device_query = "2.0"
+crossterm = "0.28"
+
+[features]
+default = ["chip_type_emulator"]
