@@ -1,20 +1,24 @@
-#  Orbit Firmware
+# Orbit Firmware
 
 <img src="https://github.com/orbit-firmware/orbit/blob/master/docs/public/logo.svg?raw=true" width="100" height="100">
 
 
-Orbit is a rust keyboard firmware built for ease.  
-The main selling points are:
+Orbit is a `rust keyboard firmware` built for ease.  
+  
+Its main selling points are:
   - You can configure your keyboard directly through the keyboard's flash drive.
   - It’s fast and reliable, as it's built in Rust.
   - Adding your own keyboard is as simple as creating a single configuration file.
   - It supports a wide variety of chipsets through [embassy](https://github.com/embassy-rs/embassy).
-    - All of the STM32 family
-    - The nRF52, nRF53 and nRF91
-    - Raspberry Pi RP2040
-    - The  ESP32 and the WCH 32-bit RISC-V(CH32V) series.
+    - All of the `STM32` family
+    - The `nRF52`, `nRF53` and `nRF91`
+    - Raspberry Pi `RP2040`
+    - The `ESP32` and the WCH 32-bit RISC-V(CH32V) series.
 
-To get started, check out the 📖 [Docs](https://orbit-firmware.github.io/orbit).
+# Documentation
+[Documentation](https://orbit-firmware.github.io/orbit).
+
+The docs are powered by VitePress. They are also viewable offline via `make docs`.
 
 If you need help, we have a friendly [Discord](https://discord.gg/SrESTtBKV5) server for you.
 
