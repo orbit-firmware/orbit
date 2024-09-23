@@ -9,11 +9,14 @@ The main selling points are:
   - It’s fast and reliable, as it's built in Rust.
   - Adding your own keyboard is as simple as creating a single configuration file.
   - It supports a wide variety of chipsets through [embassy](https://github.com/embassy-rs/embassy).
-    - all of the STM32 family, the nRF52, nRF53, nRF91, Raspberry Pi RP2040, ESP32 and the WCH 32-bit RISC-V(CH32V) series.
+    - All of the STM32 family
+    - The nRF52, nRF53 and nRF91
+    - Raspberry Pi RP2040
+    - The  ESP32 and the WCH 32-bit RISC-V(CH32V) series.
 
 To get started, check out the 📖 [Docs](https://orbit-firmware.github.io/orbit).
 
-If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
+If you need help, we have a friendly [Discord](https://discord.gg/SrESTtBKV5) server for you.
 
 ## License
 
