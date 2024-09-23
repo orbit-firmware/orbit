@@ -1,6 +1,10 @@
 //# fs_extra = "1.3.0"
 //# serde-toml-merge = "0.3.8"
 //# toml = "0.8"
+
+// IMPORTANT: this is not a normal build.rs file.
+// IMPORTANT: it gets executed via cargo-play
+
 use fs_extra::{copy_items, dir::CopyOptions};
 use serde_toml_merge::merge as toml_merge;
 use std::fs;
@@ -25,6 +29,138 @@ macro_rules! info {
   };
 }
 
+pub fn main() {
+  let args = std::env::args().collect::<Vec<String>>();
+  if args.len() < 2 {
+    error!("Please provide a keyboard name!");
+    std::process::exit(1);
+  }
+  let keyboard_name = args.get(1).unwrap();
+  let mut input_features: Vec<String> = vec![];
+  if args.len() == 3 {
+    let features = args.get(2).unwrap();
+    input_features = features.split(",").map(|s| s.to_string()).collect();
+  }
+  let (keyboard, keyboard_toml) = get_keyboard(&keyboard_name);
+  let (chip_name, chip_dir, chip_toml) = get_chip(&keyboard);
+
+  needs_clean(&keyboard_name, &chip_name);
+  copy_folder("orbit", "build", vec!["target", "Cargo.lock", "build.rs"]);
+  copy_folder(&chip_dir, "build", vec!["target", "Cargo.lock"]);
+  merge_toml("orbit/Cargo.toml", &chip_toml, "build/Cargo.toml", true);
+  merge_toml(
+    &keyboard_toml, "user/keyboard.toml", "build/keyboard.toml", false,
+  );
+  configure(&keyboard, &chip_name, &keyboard_name, &input_features);
+  prepare_orbit_module();
+  save_last_build_cfg(&keyboard_name, &chip_name);
+  ok!("Pre-Compile completed!");
+}
+
+fn configure(
+  keyboard: &Value,
+  chip_name: &str,
+  keyboard_name: &str,
+  input_features: &Vec<String>,
+) {
+  let chip_type: &str = get_chip_type(chip_name);
+
+  let mut content = read_toml("build/Cargo.toml");
+
+  content["package"]["name"] = Value::String(keyboard_name.to_string());
+  content["dependencies"]["orbit-macros"]["features"] =
+    Value::Array(vec![Value::String(chip_type.to_string())]);
+
+  let enabled_features = get_features(keyboard, &mut content);
+  let mut features = content["features"]["default"].as_array().unwrap().clone();
+  for feature in enabled_features {
+    features.push(Value::String(feature));
+  }
+  for feature in input_features {
+    features.push(Value::String(feature.to_string()));
+  }
+  content["features"]["default"] = Value::Array(features.clone());
+  write_toml("build/Cargo.toml", &content);
+}
+
+fn get_file_names(dir: &str) -> Vec<String> {
+  let mut file_names: Vec<String> = vec![];
+  fs::read_dir(dir).unwrap().for_each(|entry| {
+    let entry = entry.unwrap();
+    let filename = entry.file_name().into_string().unwrap();
+    let path = Path::new(&filename);
+
+    // Get the file name without the extension
+    if let Some(stem) = path.file_stem() {
+      file_names.push(stem.to_str().unwrap().to_string());
+    }
+  });
+
+  file_names
+}
+
+fn get_features(keyboard: &Value, content: &mut Value) -> Vec<String> {
+  let mut features: Vec<String> = vec![];
+
+  let actions = get_file_names("orbit/src/orbit/features/actions");
+  for action in keyboard["actions"].as_table().unwrap() {
+    let name = action.0;
+    let enabled = action.1.as_bool().unwrap();
+    if !actions.contains(&name) {
+      error!("Action not found: {}", name);
+      std::process::exit(1);
+    }
+    features.push(format!("action_{}_enabled", name));
+  }
+
+  let behaviors = get_file_names("orbit/src/orbit/features/behaviors");
+  for behavior in keyboard["behaviors"].as_table().unwrap() {
+    let name = behavior.0;
+    let enabled = behavior.1.as_bool().unwrap();
+    if !behaviors.contains(&name) {
+      error!("behavior not found: {}", name);
+      std::process::exit(1);
+    }
+    features.push(format!("behavior_{}_enabled", name));
+  }
+
+  let flavors = get_file_names("orbit/src/orbit/features/flavors");
+  for flavor in keyboard["flavors"].as_table().unwrap() {
+    let name = flavor.0;
+    let enabled = flavor.1.as_bool().unwrap();
+    if !flavors.contains(&name) {
+      error!("flavor not found: {}", name);
+      std::process::exit(1);
+    }
+    features.push(format!("flavor_{}_enabled", name));
+  }
+
+  features
+}
+
+fn get_chip_type(chip_name: &str) -> &str {
+  if chip_name.starts_with("stm") {
+    return "chip_type_stm32";
+  }
+  if chip_name.starts_with("nrf") {
+    return "chip_type_nrf";
+  }
+  if chip_name.starts_with("rp") {
+    return "chip_type_rp";
+  }
+  if chip_name.starts_with("esp") {
+    return "chip_type_esp";
+  }
+  if chip_name.starts_with("ch") {
+    return "chip_type_chw";
+  }
+  if chip_name.starts_with("_emulator") {
+    return "chip_type_emulator";
+  }
+
+  return "none";
+}
+
 fn read_toml(path: &str) -> Value {
   let content = match fs::read_to_string(&path) {
     Ok(content) => content,
@@ -37,7 +173,7 @@ fn read_toml(path: &str) -> Value {
   content.parse::<Value>().unwrap()
 }
 
-fn write_toml(target: &str, merged_toml: &toml::Value) {
+fn write_toml(target: &str, merged_toml: &Value) {
   let serialized = match toml::to_string(merged_toml) {
     Ok(s) => s,
     Err(e) => {
@@ -66,26 +202,6 @@ pub fn merge_toml(src1: &str, src2: &str, target: &str, src2_required: bool) {
   let merged_toml = toml_merge(src1_toml, src2_toml).unwrap();
 
   write_toml(&target, &merged_toml);
-}
-
-pub fn main() {
-  let args = std::env::args().collect::<Vec<String>>();
-  if args.len() < 2 {
-    error!("Please provide a keyboard name!");
-    std::process::exit(1);
-  }
-  let keyboard_name = args.get(1).unwrap();
-  let (keyboard, keyboard_toml) = get_keyboard(&keyboard_name);
-  let (chip_name, chip_dir, chip_toml) = get_chip(&keyboard);
-
-  needs_clean(&keyboard_name, &chip_name);
-  copy_folder("orbit", "build", vec!["target", "Cargo.lock", "build.rs"]);
-  copy_folder(&chip_dir, "build", vec!["target", "Cargo.lock"]);
-  merge_toml("orbit/Cargo.toml", &chip_toml, "build/Cargo.toml", true);
-  merge_toml(&keyboard_toml, "user/keyboard.toml", "build/keyboard.toml", false);
-  prepare_orbit_module();
-  save_last_build_cfg(&keyboard_name, &chip_name);
-  ok!("Pre-Compile completed!");
 }
 
 fn get_keyboard(kb: &str) -> (Value, String) {
@@ -152,10 +268,12 @@ fn copy_folder(source: &str, target: &str, exclude_patterns: Vec<&str>) {
     .unwrap()
     .filter_map(|entry| {
       let path = entry.unwrap().path();
-      if exclude_patterns
-        .iter()
-        .any(|pattern| path.file_name().map(|name| name == *pattern).unwrap_or(false))
-      {
+      if exclude_patterns.iter().any(|pattern| {
+        path
+          .file_name()
+          .map(|name| name == *pattern)
+          .unwrap_or(false)
+      }) {
         None
       } else {
         Some(path)

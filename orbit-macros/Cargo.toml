@@ -1,6 +1,6 @@
 [package]
 name = "orbit-macros"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 resolver = "2"
@@ -25,7 +25,7 @@ chip_type_stm32 = []
 chip_type_nrf = []
 chip_type_esp = []
 chip_type_rp = []
-chip_type_ch = []
+chip_type_chw = []
 default = []
 
 [lib]

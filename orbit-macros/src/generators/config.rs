@@ -2,7 +2,6 @@ use crate::toml;
 use crate::util;
 use proc_macro2::Ident;
 use quote::quote;
-use std::process::exit;
 
 const MULTIPLEXER_SEL_DEVIDER: usize = 4;
 
@@ -23,77 +22,29 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
-  let behaviors_list: Vec<(String, bool)> = toml::get(&config, "behaviors", false);
-  let actions_list: Vec<(String, bool)> = toml::get(&config, "actions", false);
-  let flavors_list: Vec<(String, bool)> = toml::get(&config, "flavors", false);
-
-  let fam = util::get_chip_family(&chip);
-  let family = Ident::new(&fam, proc_macro2::Span::call_site());
 
   {
     if !use_matrix && !use_multiplexers {
       println!("Missing matrix or multiplexers configuration!");
-      exit(1);
+      std::process::exit(1);
     }
 
     if use_matrix && use_multiplexers {
       println!("Choose either multiplexers or matrix!");
-      exit(1);
+      std::process::exit(1);
     }
   }
 
   let mut layout = vec![];
 
-  let mut behaviors = vec![];
-  for b in behaviors_list {
-    if b.0 == "press" || b.0 == "Press" {
-      continue;
-    }
-    if b.1 {
-      // feature_list.push(format!("behavior_{}_enabled", b.0));
-
-      let behavior = util::to_pascal_case(&b.0);
-      if b.1 {
-        let ident = Ident::new(&behavior, proc_macro2::Span::call_site());
-        behaviors.push(quote! {
-            Behaviors::#ident
-        });
-      }
+  // get the behavior count from the current configuration
+  let mut behavior_count: usize = 0;
+  let cargo_toml = toml::read("Cargo.toml", true);
+  for feature in cargo_toml["features"]["default"].as_array().unwrap() {
+    if feature.as_str().unwrap().starts_with("behavior_") {
+      behavior_count += 1;
     }
   }
-  let behavior_count: usize = behaviors.len();
-
-  let mut actions = vec![];
-  for a in actions_list {
-    if a.1 {
-      // feature_list.push(format!("action_{}_enabled", a.0));
-
-      let action = util::to_pascal_case(&a.0);
-      if a.1 {
-        let ident = Ident::new(&action, proc_macro2::Span::call_site());
-        actions.push(quote! {
-            Actions::#ident
-        });
-      }
-    }
-  }
-  let action_count: usize = actions.len();
-
-  let mut flavors = vec![];
-  for a in flavors_list {
-    if a.1 {
-      // feature_list.push(format!("flavor_{}_enabled", a.0));
-
-      let flavor = util::to_pascal_case(&a.0);
-      if a.1 {
-        let ident = Ident::new(&flavor, proc_macro2::Span::call_site());
-        flavors.push(quote! {
-            Flavors::#ident
-        });
-      }
-    }
-  }
-  let flavor_count: usize = flavors.len();
 
   let mut key_count: usize = 0;
   let mut matrix = quote! {
@@ -191,33 +142,17 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     use crate::orbit::features::*;
     use crate::orbit::peripherals::*;
 
-    pub enum Family {
-      NONE,
-      STM32,
-      NRF,
-      ESP,
-      RP,
-      CH,
-      EMULATOR,
-    }
-
     pub const PRODUCT_ID: u16 = #product_id;
     pub const VENDOR_ID: u16 = #vendor_id;
     pub const NAME: &str = #name;
     pub const MANUFACTURER: &str = #manufacturer;
     pub const CHIP: &str = #chip;
-    pub const FAMILY: Family = Family::#family;
     pub const KEY_COUNT: usize = #key_count;
 
     // settings
     pub const DEBOUNCE_TIME: u16 = #debounce_time;
     pub const TAPPING_TERM: u16 = #tapping_term;
     pub const BEHAVIOR_COUNT: usize = #behavior_count;
-    pub const BEHAVIORS: [Behaviors; #behavior_count] = [#(#behaviors),*];
-    pub const ACTION_COUNT: usize = #action_count;
-    pub const ACTIONS: [Actions; #action_count] = [#(#actions),*];
-    pub const FLAVOR_COUNT: usize = #flavor_count;
-    pub const FLAVORS: [Flavors; #flavor_count] = [#(#flavors),*];
 
     // layout
     pub const USE_MATRIX: bool = #use_matrix;

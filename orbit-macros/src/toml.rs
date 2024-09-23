@@ -35,12 +35,19 @@ pub fn merge(source: &str, target: &str) {
   let target_toml = read_as_value(target);
   let merged_toml = toml_merge(target_toml, source_toml).unwrap();
 
-  fs::write(target, toml::to_string(&merged_toml).expect("Failed to serialize TOML"))
-    .expect("Failed to write target file");
+  fs::write(
+    target,
+    toml::to_string(&merged_toml).expect("Failed to serialize TOML"),
+  )
+  .expect("Failed to write target file");
 }
 
 pub fn write(path: &str, table: &Value) {
-  fs::write(path, toml::to_string(&table).expect("Failed to serialize TOML")).expect("Failed to write target file");
+  fs::write(
+    path,
+    toml::to_string(&table).expect("Failed to serialize TOML"),
+  )
+  .expect("Failed to write target file");
 }
 
 pub trait FromTomlValue: Sized {
@@ -252,7 +259,8 @@ pub fn set_package_name(filepath: &str, name: &str) {
       .or_insert_with(|| toml::Value::Table(toml::map::Map::new()));
 
     if let toml::Value::Table(ref mut package_table) = package_table {
-      package_table.insert("name".to_string(), toml::Value::String(name.to_string()));
+      package_table
+        .insert("name".to_string(), toml::Value::String(name.to_string()));
     }
   }
 
