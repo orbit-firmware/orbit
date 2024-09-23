@@ -171,7 +171,7 @@ for (const file of FILES) {
       let ident = line[0];
       let code = parse_keycode(line[1]);
       let alias = line.length < 3 ? "" : line[2].join(', ');
-      let adjusted = line.adjusted ? '<span style="color:var(--vp-code-color)">✔</span>' : "";
+      let adjusted = line.adjusted ? '✔' : "";
 
       if (name === 'us') {
         markdown += `| ${ident} | ${code} | ${alias} |\n`;
