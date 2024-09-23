@@ -1,6 +1,6 @@
 #  Orbit Firmware
 
-<img src="https://github.com/orbit-firmware/orbit/blob/master/orbit/dev/resources/logo.svg?raw=true" width="100" height="100">
+<img src="https://github.com/orbit-firmware/orbit/blob/master/orbit/docs/public/logo.svg?raw=true" width="100" height="100">
 
 
 Orbit is a rust keyboard firmware built for ease.  
