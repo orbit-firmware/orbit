@@ -27,6 +27,7 @@ let keycode_files = [
   { text: convert_name("us"), link: '/keycodes/' + "us" }
 ];
 let base_keycodes = {};
+let us_pushed = false;
 
 const merge_keycodes = (base, adjustments) => {
   let merged = JSON.parse(JSON.stringify(base));
@@ -157,13 +158,25 @@ for (const file of FILES) {
   }
   markdown += '\n\n';
 
+
+
+  markdown += '## Usage\n\n';
+  if (name === 'us') {
+    markdown += 'Optional, since this is the default.  \n';
+  }
+  markdown += '```toml\n';
+  markdown += `# keyboard.toml\n`;
+  markdown += `[settings]\n`;
+  markdown += `keycodes = "${name}"\n`;
+  markdown += '```\n\n';
+
   for (const section in merged) {
     markdown += `## ${section}\n\n`;
     if (name === 'us') {
       markdown += '| Key | Code | Alias |\n';
       markdown += '| --- | --- | --- |\n';
     } else {
-      markdown += '| Key | Code | Alias | Adjusted |\n';
+      markdown += '| Key | Code | Alias | Language Specific |\n';
       markdown += '| --- | --- | --- | --: |\n';
     }
 
@@ -171,7 +184,7 @@ for (const file of FILES) {
       let ident = line[0];
       let code = parse_keycode(line[1]);
       let alias = line.length < 3 ? "" : line[2].join(', ');
-      let adjusted = line.adjusted ? '✔' : "";
+      let adjusted = line.adjusted ? "<span style='color: var(--vp-c-brand-1)'>yes</span>" : "<span style='color: var(--vp-c-gray-1)'>-</span>";
 
       if (name === 'us') {
         markdown += `| ${ident} | ${code} | ${alias} |\n`;
@@ -186,12 +199,15 @@ for (const file of FILES) {
     fs.mkdirSync('keycodes');
   }
   fs.writeFileSync(path.join('keycodes', name + '.md'), markdown);
-  keycode_files.push({ text: convert_name(name), link: '/keycodes/' + name });
+
+  if (name !== 'us') {
+    keycode_files.push({ text: convert_name(name), link: '/keycodes/' + name });
+  }
 }
 
 
 let template = `export default [
-  ${keycode_files.map(item => `{ text: '${item.text}', link: '${item.link}' },`).join('\n  ')}
+  ${keycode_files.map(item => `{ text: '${item.text == "US" ? "US (Default)" : item.text}', link: '${item.link}' },`).join('\n  ')}
 ];`;
 
 fs.writeFileSync('.vitepress/keycodes.mts', template);

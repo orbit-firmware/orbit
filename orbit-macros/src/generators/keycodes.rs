@@ -188,7 +188,7 @@ pub fn get_config_keycode_remaps() -> String {
   let root = util::get_root();
   let path = format!("{}/build/keyboard.toml", root);
   let config = toml::read(&path, true);
-  let remaps: String = toml::get(&config, "keyboard/keycodes", false);
+  let remaps: String = toml::get(&config, "settings/keycodes", false);
   remaps
 }
 

@@ -1,7 +1,7 @@
 
 
 Pow2             -> Grave        -> ²
-Amprsand         -> One
+Ampersand         -> One
 Eacu             -> Two          -> É
 DoubleQuote      -> Three
 Quote            -> Four

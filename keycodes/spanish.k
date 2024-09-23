@@ -14,7 +14,7 @@ DoubleQuote         -> s(Two)
 Bullet              -> s(Three)             -> bult, ·
 Dollar              -> s(Four)
 Percent             -> s(Five)
-Amprsand            -> s(Six)
+Ampersand            -> s(Six)
 Slash               -> s(Seven)
 LeftParenthesis     -> s(Eight)
 RightParenthesis    -> s(Nine)

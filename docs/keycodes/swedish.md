@@ -1,11 +1,11 @@
-# Spanish
+# Swedish
 
 ## Usage
 
 ```toml
 # keyboard.toml
 [settings]
-keycodes = "spanish"
+keycodes = "swedish"
 ```
 
 ## Core
@@ -45,6 +45,9 @@ keycodes = "spanish"
 | X | 0x001B | `x` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | Y | 0x001C | `y` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | Z | 0x001D | `z` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Ae | 0x0034 | `ae`, `Å`, `Ä` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| De | 0x0030 | `de`, `¨` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Oe | 0x0033 | `oe`, `Ö` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 
 ## Numbers
 
@@ -99,40 +102,47 @@ keycodes = "spanish"
 
 | Key | Code | Alias | Language Specific |
 | --- | --- | --- | --: |
-| Minus | 0x002D | `minus`, `-`, `mns` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Equal | 0x002E | `equal`, `=`, `eql` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| LeftBracket | 0x002F | `leftbracket`, `[`, `lbrc` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| RightBracket | 0x0030 | `rightbracket`, `]`, `rbrc` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Backslash | 0x0031 | `backslash`, `\`, `bslsh`, `bsls` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Quote | 0x0034 | `quote`, `'`, `quot` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Grave | 0x0035 | `grave`, `` ` ``, `gr` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Minus | 0x0038 | `minus`, `-`, `mns` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Equal | 0x1227 | `equal`, `=`, `eql` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| LeftBracket | 0x1425 | `leftbracket`, `[`, `lbrc` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| RightBracket | 0x1426 | `rightbracket`, `]`, `rbrc` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Backslash | 0x142D | `backslash`, `\`, `bslsh`, `bsls` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Quote | 0x0032 | `quote`, `'`, `quot` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Grave | 0x122E | `grave`, `` ` ``, `gr` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 | Comma | 0x0036 | `comma`, `,` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | Dot | 0x0037 | `dot`, `.` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Slash | 0x0038 | `slash`, `/`, `slsh`, `sls` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Tilde | 0x1235 | `tilde`, `~` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Slash | 0x1224 | `slash`, `/`, `slsh`, `sls` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Tilde | 0x1430 | `tilde`, `~` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 | Exlm | 0x121E | `exlm`, `!` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| At | 0x121F | `at`, `@` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| At | 0x141F | `at`, `@` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 | Hash | 0x1220 | `hash`, `#` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Dollar | 0x1221 | `dollar`, `dlr`, `$` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Dollar | 0x1421 | `dollar`, `dlr`, `$`, `€` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 | Percent | 0x1222 | `percent`, `perc`, `%` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Circumflex | 0x1223 | `circumflex`, `circ`, `^` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Ampersand | 0x1224 | `ampersand`, `ampr`, `&` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Asterisk | 0x1225 | `asterisk`, `astr`, `*` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| LeftParenthesis | 0x1226 | `leftparenthesis`, `lprn`, `(` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| RightParenthesis | 0x1227 | `rightparenthesis`, `rprn`, `)` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Underscore | 0x122D | `underscore`, `unds`, `_` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Plus | 0x122E | `plus`, `+` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| LeftCurlyBracket | 0x122F | `leftcurlybracket`, `lcbr`, `{` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| RightCurlyBracket | 0x1230 | `rightcurlybracket`, `rcbr`, `}` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Pipe | 0x1231 | `pipe`, `\|` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Semicolon | 0x0033 | `semicolon`, `;`, `scln`, `scoln` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| Colon | 0x1233 | `colon`, `cln`, `:` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| DoubleQuote | 0x1234 | `doublequote`, `dquot`, `"` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| LeftAngleBracket | 0x1236 | `leftanglebracket`, `labk`, `<` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| RightAngleBracket | 0x1237 | `rightanglebracket`, `rabk`, `>` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-| QuestionMark | 0x1238 | `questionmark`, `ques`, `?` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Circumflex | 0x1230 | `circumflex`, `circ`, `^` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Ampersand | 0x1223 | `ampersand`, `ampr`, `&` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Asterisk | 0x1232 | `asterisk`, `astr`, `*` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| LeftParenthesis | 0x1225 | `leftparenthesis`, `lprn`, `(` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| RightParenthesis | 0x1226 | `rightparenthesis`, `rprn`, `)` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Underscore | 0x1238 | `underscore`, `unds`, `_` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Plus | 0x002D | `plus`, `+` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| LeftCurlyBracket | 0x1424 | `leftcurlybracket`, `lcbr`, `{` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| RightCurlyBracket | 0x1427 | `rightcurlybracket`, `rcbr`, `}` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Pipe | 0x1464 | `pipe`, `\|` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Semicolon | 0x1236 | `semicolon`, `;`, `scln`, `scoln` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Colon | 0x1237 | `colon`, `cln`, `:` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| DoubleQuote | 0x121F | `doublequote`, `dquot`, `"` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| LeftAngleBracket | 0x0064 | `leftanglebracket`, `labk`, `<` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| RightAngleBracket | 0x1264 | `rightanglebracket`, `rabk`, `>` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| QuestionMark | 0x122D | `questionmark`, `ques`, `?` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 | NonUsBackSlash | 0x0064 | `nonusbackslash` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | NonUsHash | 0x0032 | `nonushash` | <span style='color: var(--vp-c-gray-1)'>-</span> |
+| Section | 0x0035 | `section`, `§` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Acute | 0x002E | `acute`, `´` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Half | 0x1235 | `half`, `½` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Currency | 0x1221 | `currency`, `¤` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Pound | 0x1420 | `pound`, `£` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Euro | 0x1422 | `euro`, `€` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
+| Micro | 0x1410 | `micro`, `µ` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 
 ## Function keys
 
@@ -274,48 +284,4 @@ keycodes = "spanish"
 | Assistant | 0x00C0 | `assistant`, `assist` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | MissionControl | 0x00C1 | `missioncontrol` | <span style='color: var(--vp-c-gray-1)'>-</span> |
 | Launchpad | 0x00C2 | `launchpad`, `lpad` | <span style='color: var(--vp-c-gray-1)'>-</span> |
-
-## 
-
-| Key | Code | Alias | Language Specific |
-| --- | --- | --- | --: |
-| Mord | 0x0035 | `mord`, `º` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Accent | 0x0034 | `accent`, `´` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Quote | 0x002D | `quote` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| InversExclamation | 0x002E | `inversexclamation`, `¡` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Grave | 0x002F | `grave`, `` ` `` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Plus | 0x0030 | `plus` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| NTilde | 0x0033 | `ntilde`, `ñ` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Cced | 0x0032 | `cced`, `Ç` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| LeftAngleBracket | 0x0064 | `leftanglebracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| RightAngleBracket | 0x1236 | `rightanglebracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Minus | 0x0038 | `minus` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Ford | 0x1200 | `ford`, `ª` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| DoubleQuote | 0x121F | `doublequote` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Bullet | 0x1220 | `bullet`, `bult`, `·` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Dollar | 0x1221 | `dollar` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Percent | 0x1222 | `percent` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Ampersand | 0x1223 | `ampersand` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Slash | 0x1224 | `slash` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| LeftParenthesis | 0x1225 | `leftparenthesis` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| RightParenthesis | 0x1226 | `rightparenthesis` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Equal | 0x1227 | `equal` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| QuestionMark | 0x1234 | `questionmark` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| InverseQuestionMark | 0x1200 | `inversequestionmark`, `¿` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Circumflex | 0x1235 | `circumflex` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Asterisk | 0x122E | `asterisk` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Diae | 0xBECE | `diae`, `¨` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Semicolon | 0x1236 | `semicolon` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Colon | 0x1237 | `colon` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Backslash | 0x1400 | `backslash` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Pipe | 0x141E | `pipe` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| At | 0x141F | `at` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Hash | 0x1420 | `hash` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Tilde | 0x140F | `tilde` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Euro | 0x1422 | `euro` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| Not | 0x1423 | `not`, `¬` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| LeftBracket | 0x1435 | `leftbracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| RightBracket | 0x162E | `rightbracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| LeftCurlyBracket | 0xBCCE | `leftcurlybracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
-| RightCurlyBracket | 0xDCED | `rightcurlybracket` | <span style='color: var(--vp-c-brand-1)'>yes</span> |
 

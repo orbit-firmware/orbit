@@ -8,9 +8,9 @@ vendor_id = 0x0000
 name = "Devboard"
 manufacturer = "Devboard"
 chip = "stm32f411ceu"
-keycodes = "german"
 
 [settings]
+keycodes = "german"
 debounce_time = 10
 tapping_term = 220
 

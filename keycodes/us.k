@@ -1,7 +1,6 @@
 ### Core
 None -> 0x0000 -> xxx
 Trough -> 0x0001 -> ---
-Choose -> 0x0002 -> yes, yup, yep
 
 ### Alphas
 A -> 0x0004
@@ -89,7 +88,7 @@ Hash -> s(Three) -> #
 Dollar -> s(Four) -> dlr, $
 Percent -> s(Five) -> perc, %
 Circumflex -> s(Six) -> circ, ^
-Amprsand -> s(Seven) -> ampr, &
+Ampersand -> s(Seven) -> ampr, &
 Asterisk -> s(Eight) -> astr, *
 LeftParenthesis -> s(Nine) -> lprn, (
 RightParenthesis -> s(Zero) -> rprn, )

@@ -54,7 +54,6 @@ export default defineConfig({
       },
       {
         text: 'Keycodes',
-        link: '/keycodes/us',
         items: keycodes
       },
     ],

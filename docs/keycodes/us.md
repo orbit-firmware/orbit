@@ -1,12 +1,20 @@
 # US (Default)
 
+## Usage
+
+Optional, since this is the default.  
+```toml
+# keyboard.toml
+[settings]
+keycodes = "us"
+```
+
 ## Core
 
 | Key | Code | Alias |
 | --- | --- | --- |
 | None | 0x0000 | `none`, `xxx` |
 | Trough | 0x0001 | `trough`, `---` |
-| Choose | 0x0002 | `choose`, `yes`, `yup`, `yep` |
 
 ## Alphas
 
@@ -109,7 +117,7 @@
 | Dollar | 0x1221 | `dollar`, `dlr`, `$` |
 | Percent | 0x1222 | `percent`, `perc`, `%` |
 | Circumflex | 0x1223 | `circumflex`, `circ`, `^` |
-| Amprsand | 0x1224 | `amprsand`, `ampr`, `&` |
+| Ampersand | 0x1224 | `ampersand`, `ampr`, `&` |
 | Asterisk | 0x1225 | `asterisk`, `astr`, `*` |
 | LeftParenthesis | 0x1226 | `leftparenthesis`, `lprn`, `(` |
 | RightParenthesis | 0x1227 | `rightparenthesis`, `rprn`, `)` |

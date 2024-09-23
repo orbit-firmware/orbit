@@ -19,7 +19,7 @@ Minus             -> Slash
 Degree            -> s(Grave)           -> °
 DoubleQuote       -> s(Two)
 Section           -> s(Three)           -> §
-Amprsand          -> s(Six)
+Ampersand          -> s(Six)
 Slash             -> s(Seven)
 LeftParenthesis   -> s(Eight)
 RightParenthesis  -> s(Nine)
