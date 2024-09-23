@@ -15,10 +15,10 @@ Its main selling points are:
     - Raspberry Pi `RP2040`
     - The `ESP32` and the WCH 32-bit RISC-V(CH32V) series.
 
-# Documentation
-[Documentation](https://orbit-firmware.github.io/orbit).
+# [Documentation](https://orbit-firmware.github.io/orbit)
 
-The docs are powered by VitePress. They are also viewable offline via `make docs`.
+
+The docs are powered by [VitePress](https://vitepress.dev/). They are also viewable offline via `make docs`.
 
 If you need help, we have a friendly [Discord](https://discord.gg/SrESTtBKV5) server for you.
 
