@@ -11,43 +11,9 @@ The main selling points are:
   - It supports a wide variety of chipsets through [embassy](https://github.com/embassy-rs/embassy).
     - all of the STM32 family, the nRF52, nRF53, nRF91, Raspberry Pi RP2040, ESP32 and the WCH 32-bit RISC-V(CH32V) series.
 
-
-Here is an example keymap:  
-```orbit
-layer 0
-____________________________________________________________________________________________________
-press      | esc    q      w      e      r      t      y      u      i      o      p      =
-shifted    | `      ---    ---    ---    ---    ---    ---    ---    ---    ---    ---    "::"
-____________________________________________________________________________________________________
-press      | tab    a      s      d      f      g      h      j      k      l             ent
-shifted    | ---    ---    ---    ---    ---    ---    ---    ---    ---    ---           bspc
-____________________________________________________________________________________________________
-press      | lsft   z      x      c      v      b      n      m      ,             .      del
-shifted    | ---    ---    ---    ---    ---    ---    ---    ---    !             ?      ---
-____________________________________________________________________________________________________
-press      | lctl   lgui   lalt          space         space                /      -      _
-shifted    | ---    ---    ---           ---           ---                  \      +      _
-held       | ---    ---    ---           ml(1)         ml(2)                ---    ---    ---
-mac        | lgui   lctl   ---           ---           ---                  ---    ---    ---
-```
-
-
-## Prerequisits
-install rust
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-install probe-rs
-```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
-```
-
-  
 To get started, check out the 📖 [Docs](https://orbit-firmware.github.io/orbit).
 
 If you need help, we have a friendly [discord server](https://discord.gg/SrESTtBKV5) for you.
-
 
 ## License
 
