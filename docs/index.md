@@ -5,14 +5,21 @@
 
 </div>
 
-# Orbit Firmware
+The keyboard firmware designed to be delightful!
 
-Welcome to Orbit, the keyboard firmware designed to make your typing experience as seamless and delightful as possible!
+The main motivation for creating yet another keyboard firmware was to eliminate many of the friction and pain points that users might encounter with other firmwares.
 
-At the heart of Orbit is simplicity. Our firmware is incredibly easy to configure, ensuring you spend less time tweaking settings and more time enjoying your keyboard. With Orbit, you only need to compile once—update your keymaps on the fly without a hassle, adapting effortlessly to your changing needs.
+You only need two files to get you up and running:
+- `keyboard.toml` -> Describes your keyboard.
+- `keymap.orbit` -> Your keymap file.
 
-But that's not all. Orbit is crafted with efficiency in mind. Its compact size means it won't bloat your setup, while its performance is powered by Rust, offering you a fast and reliable typing experience.
+In many cases, the keyboard.toml file is not even needed, as the community provides a wealth of predefined keyboards ready for use.
 
-We’ve chosen a shrimp as our mascot, symbolizing the agility and precision of our firmware. Just as Rust's crab embodies safety and speed, our shrimp represents the nimbleness and simplicity that Orbit brings to your keyboard.
+It supports `Hall-Effect` switches out of the box.  
+All behaviors are designed to work seamlessly together.  
+Keymaps can be placed directly on the keyboard's flash drive,  
+so there’s no need to recompile.
 
-Dive in, and let Orbit transform the way you interact with your keyboard—easy to set up, light on resources, and robust in performance!
+Dive in, and let orbit transform the way you interact with your keyboard!
+
+Easy to set up, light on resources, and robust in performance!

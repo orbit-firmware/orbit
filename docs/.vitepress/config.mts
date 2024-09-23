@@ -4,8 +4,8 @@ import { defineConfig } from 'vitepress'
 import keycodes from './keycodes.mts'
 
 export default defineConfig({
-  title: "Orbit Firmware",
-  description: "Documentaion for the Orbit firmware",
+  title: "orbit",
+  description: "Documentaion for the orbit firmware",
   base: '/orbit/',
   head: [['link', { rel: 'icon', href: '/orbit/favicon.ico' }]],
 
@@ -17,13 +17,9 @@ export default defineConfig({
 
     sidebar: [
       {
-        items: [
-          { text: 'Introduction', link: '/' },
-        ],
-      },
-      {
         text: 'Setup',
         items: [
+          { text: 'Introduction', link: '/' },
           { text: 'Getting Started', link: '/getting-started' },
           { text: 'Configuration', link: '/configuration' },
         ],
@@ -31,25 +27,25 @@ export default defineConfig({
       {
         text: 'Behaviors',
         items: [
-          { text: 'Press', link: '/' },
-          { text: 'Hold', link: '/' },
-          { text: 'Modify', link: '/' },
-          { text: 'Tap', link: '/' },
-          { text: 'OS', link: '/' },
+          { text: 'Press', link: '/behaviors/press' },
+          { text: 'Tap', link: '/behaviors/tap' },
+          { text: 'Hold', link: '/behaviors/hold' },
+          { text: 'Modify', link: '/behaviors/modify' },
+          { text: 'OS', link: '/behaviors/os' },
         ]
       },
       {
         text: 'Actions',
         items: [
-          { text: 'Layers', link: '/' },
-          { text: 'Mouse', link: '/' },
-          { text: 'RGB', link: '/' },
+          { text: 'Layers', link: '/actions/layers' },
+          { text: 'Mouse', link: '/actions/mouse' },
+          { text: 'RGB', link: '/actions/rgb' },
         ]
       },
       {
         text: 'Flavors',
         items: [
-          { text: 'Space Cadet', link: '/' },
+          { text: 'Space Cadet', link: '/flavors/space_cadet' },
         ]
       },
       {

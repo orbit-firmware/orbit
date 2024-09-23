@@ -1,9 +1,9 @@
-# Orbit Firmware
+# orbit Firmware
 
 <img src="https://github.com/orbit-firmware/orbit/blob/master/docs/public/logo.svg?raw=true" width="100" height="100">
 
 
-Orbit is a `rust keyboard firmware` built for ease.  
+orbit is a `rust keyboard firmware` built for ease.  
   
 Its main selling points are:
   - You can configure your keyboard directly through the keyboard's flash drive.
@@ -24,7 +24,7 @@ If you need help, we have a friendly [Discord](https://discord.gg/SrESTtBKV5) se
 
 ## License
 
-Orbit is licensed under either of your choice
+orbit is licensed under either of your choice
 
 - Apache License, Version 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
 - MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)

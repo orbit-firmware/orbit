@@ -1,6 +1,6 @@
 <!-- omit in toc -->
 
-# Contributing to Orbit
+# Contributing to orbit
 
 First off, thanks for taking the time to contribute! ❤️
 
@@ -17,7 +17,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 
 ## Table of Contents
 
-- [Contributing to Orbit](#contributing-to-orbit)
+- [Contributing to orbit](#contributing-to-orbit)
   - [Table of Contents](#table-of-contents)
   - [I Have a Question](#i-have-a-question)
   - [I Want To Contribute](#i-want-to-contribute)
@@ -81,7 +81,7 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 - Collect information about the bug:
   - Log (Traceback)
   - Your target platform(stm32, rp2040, etc.)
-  - Version of Orbit and your Rust complier 
+  - Version of orbit and your Rust complier 
   - Possibly your keyboard config
   - Can you reliably reproduce the issue?
 
@@ -107,7 +107,7 @@ Once it's filed:
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for Orbit, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
+This section guides you through submitting an enhancement suggestion for orbit, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
 
 <!-- omit in toc -->
 
@@ -128,7 +128,7 @@ Enhancement suggestions are tracked as [GitHub issues](github.com/orbit-firmware
 - Provide a **step-by-step description of the suggested enhancement** in as many details as possible.
 - **Describe the current behavior** and **explain which behavior you expected to see instead** and why. At this point you can also tell which alternatives do not work for you.
 - You may want to **include screenshots and animated GIFs** which help you demonstrate the steps or point out the part which the suggestion is related to.
-- **Explain why this enhancement would be useful** to most Orbit users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
+- **Explain why this enhancement would be useful** to most orbit users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
 
 <!-- You might want to create an issue template for enhancement suggestions that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
 

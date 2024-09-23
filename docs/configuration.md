@@ -4,12 +4,12 @@
 The keyboard file controls the capabileties of your keyboard.  
 There are two places where this file can be placed.
  - `keyboards/my_keyboard.toml`:  
-  for offical keyboards published in the repository
+  for keyboards published in the repository
  - `user/keyboard.toml`:  
   Your own independent configuration
 
-If you compile with an official configuration [`keyboards/..`](https://github.com/orbit-firmware/orbit/tree/master/keyboards) but also provide a `user` configuration,  
-the contents will be merged.  
+If you compile with an predefined configuration [`keyboards/..`](https://github.com/orbit-firmware/orbit/tree/master/keyboards), but also provide a `user` configuration,  
+their contents will be merged.  
 You can also use this to adjust official configurations to your taste.  
 
 
@@ -19,7 +19,7 @@ Here is an example configuration:
 product_id = 0x0000 # your product id
 vendor_id = 0x0000 # your vendor id
 name = "My Keyboard" # The keyboards name
-manufacturer = "Orbit Inc." # the keyboards manufacturer
+manufacturer = "orbit Inc." # the keyboards manufacturer
 chip = "stm32f303cb" # What main mcu/chip the keyboard is using https://github.com/orbit-firmware/orbit/tree/master/chips
 key_count = 42 # How many total keys the keyboard has
 debounce_micro_secs = 50 # how many ms the key debounce should last 
