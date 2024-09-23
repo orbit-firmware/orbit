@@ -8,7 +8,7 @@ Optional, since this is the default.
 ```toml
 # keyboard.toml
 [settings]
-keycodes = "us"
+keycodes = "us" // [!code focus]
 ```
 
 ## Core

@@ -166,7 +166,7 @@ for (const file of FILES) {
   markdown += '```toml\n';
   markdown += `# keyboard.toml\n`;
   markdown += `[settings]\n`;
-  markdown += `keycodes = "${name}"\n`;
+  markdown += `keycodes = "${name}" // [!code focus]\n`;
   markdown += '```\n\n';
 
   if (name !== 'us') {

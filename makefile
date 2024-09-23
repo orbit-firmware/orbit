@@ -26,9 +26,9 @@ flash: #/ flashes the firmware [debug=true/false]
 		exit 1; \
 	}
 ifeq ($(debug),true)
-	cd build && cargo-embed --features debug
+	cd build && cargo embed --features debug
 else
-	cd build && cargo-embed
+	cd build && cargo embed
 endif
 
 clean: #/ cleans build files

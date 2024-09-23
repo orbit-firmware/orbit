@@ -5,7 +5,7 @@
 ```toml
 # keyboard.toml
 [settings]
-keycodes = "uk"
+keycodes = "uk" // [!code focus]
 ```
 
 #### Legend

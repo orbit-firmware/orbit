@@ -213,8 +213,11 @@
   border-radius: 5px;
 }
 
-/* table {
-  width: 100%;
-  border-collapse: collapse;
-  display: revert !important;
-} */
+html {
+  scroll-behavior: smooth;
+}
+
+.vp-doc [class*="language-"] .has-focused-lines .line:not(.has-focus) {
+  opacity: 0.5;
+  filter: blur(0.05rem);
+}
