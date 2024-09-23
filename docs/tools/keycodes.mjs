@@ -47,7 +47,6 @@ const merge_keycodes = (base, adjustments) => {
         merged[section][existing_index] = adjustment;
         merged[section][existing_index].adjusted = true;
       } else {
-        // Otherwise, add the new keycode
         adjustment.adjusted = true;
         merged[section].push(adjustment);
       }
@@ -56,9 +55,6 @@ const merge_keycodes = (base, adjustments) => {
 
   return merged;
 }
-
-
-
 
 const parse_keycode = (code) => {
   if (code.startsWith("0x")) {
@@ -162,35 +158,35 @@ for (const file of FILES) {
 
   markdown += '## Usage\n\n';
   if (name === 'us') {
+    markdown += '::: info\n';
     markdown += 'Optional, since this is the default.  \n';
+    markdown += ':::\n';
   }
+
   markdown += '```toml\n';
   markdown += `# keyboard.toml\n`;
   markdown += `[settings]\n`;
   markdown += `keycodes = "${name}"\n`;
   markdown += '```\n\n';
 
+  if (name !== 'us') {
+    markdown += '#### Legend\n';
+    markdown += '<span style="color: var(--vp-c-brand-1)">`*`</span> Keys have been adjusted to meet the language specific layout.  \n';
+  }
+
   for (const section in merged) {
     markdown += `## ${section}\n\n`;
-    if (name === 'us') {
-      markdown += '| Key | Code | Alias |\n';
-      markdown += '| --- | --- | --- |\n';
-    } else {
-      markdown += '| Key | Code | Alias | Language Specific |\n';
-      markdown += '| --- | --- | --- | --: |\n';
-    }
+    markdown += '| Key | Code | Alias |\n';
+    markdown += '| --- | --- | --- |\n';
 
     for (const line of merged[section]) {
       let ident = line[0];
+      if (line.adjusted) {
+        ident += "<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a>";
+      }
       let code = parse_keycode(line[1]);
       let alias = line.length < 3 ? "" : line[2].join(', ');
-      let adjusted = line.adjusted ? "<span style='color: var(--vp-c-brand-1)'>yes</span>" : "<span style='color: var(--vp-c-gray-1)'>-</span>";
-
-      if (name === 'us') {
-        markdown += `| ${ident} | ${code} | ${alias} |\n`;
-      } else {
-        markdown += `| ${ident} | ${code} | ${alias} | ${adjusted} |\n`;
-      }
+      markdown += `| ${ident} | ${code} | ${alias} |\n`;
     }
     markdown += '\n';
   }

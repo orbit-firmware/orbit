@@ -48,9 +48,9 @@ RightCtrl -> 0x00E4 -> rctrl, rctl
 LeftShift -> 0x00E1 -> lshft, lsft, shift
 RightShift -> 0x00E5 -> rshft, rsft
 LeftAlt -> 0x00E2 -> lalt, alt
-RightAlt -> 0x00E6 -> ralt
-LeftGui -> 0x00E3 -> lgui, gui
-RightGui -> 0x00E7 -> rgui
+RightAlt -> 0x00E6 -> ralt, altgr
+LeftGui -> 0x00E3 -> gui, win, meta, lgui, lwin, lmeta 
+RightGui -> 0x00E7 -> rgui, rwin, rmeta
 
 ### Navigation
 Left -> 0x0050 
