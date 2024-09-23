@@ -1,6 +1,7 @@
 export default [
-  { text: 'french', link: '/keycodes/french' },
-  { text: 'german', link: '/keycodes/german' },
-  { text: 'spanish', link: '/keycodes/spanish' },
-  { text: 'us', link: '/keycodes/us' },
+  { text: 'US', link: '/keycodes/us' },
+  { text: 'French', link: '/keycodes/french' },
+  { text: 'German', link: '/keycodes/german' },
+  { text: 'Spanish', link: '/keycodes/spanish' },
+  { text: 'US', link: '/keycodes/us' },
 ];

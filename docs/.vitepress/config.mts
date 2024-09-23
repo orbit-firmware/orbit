@@ -29,11 +29,6 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Keycodes',
-        link: '/keycodes',
-        items: keycodes
-      },
-      {
         text: 'Behaviors',
         items: [
           { text: 'Press', link: '/' },
@@ -50,7 +45,18 @@ export default defineConfig({
           { text: 'Mouse', link: '/' },
           { text: 'RGB', link: '/' },
         ]
-      }
+      },
+      {
+        text: 'Flavors',
+        items: [
+          { text: 'Space Cadet', link: '/' },
+        ]
+      },
+      {
+        text: 'Keycodes',
+        link: '/keycodes/us',
+        items: keycodes
+      },
     ],
 
     socialLinks: [

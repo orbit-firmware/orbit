@@ -1,4 +1,4 @@
-# us (Default)
+# US (Default)
 
 ## Core
 
@@ -102,28 +102,28 @@
 | Comma | 0x0036 | `comma`, `,` |
 | Dot | 0x0037 | `dot`, `.` |
 | Slash | 0x0038 | `slash`, `/`, `slsh`, `sls` |
-| Tilde | s(Grave) | `tilde`, `~` |
-| Exlm | s(One) | `exlm`, `!` |
-| At | s(Two) | `at`, `@` |
-| Hash | s(Three) | `hash`, `#` |
-| Dollar | s(Four) | `dollar`, `dlr`, `$` |
-| Percent | s(Five) | `percent`, `perc`, `%` |
-| Circumflex | s(Six) | `circumflex`, `circ`, `^` |
-| Amprsand | s(Seven) | `amprsand`, `ampr`, `&` |
-| Asterisk | s(Eight) | `asterisk`, `astr`, `*` |
-| LeftParenthesis | s(Nine) | `leftparenthesis`, `lprn`, `(` |
-| RightParenthesis | s(Zero) | `rightparenthesis`, `rprn`, `)` |
-| Underscore | s(Minus) | `underscore`, `unds`, `_` |
-| Plus | s(Equal) | `plus`, `+` |
-| LeftCurlyBracket | s(LeftBracket) | `leftcurlybracket`, `lcbr`, `{` |
-| RightCurlyBracket | s(RightBracket) | `rightcurlybracket`, `rcbr`, `}` |
-| Pipe | s(Backslash) | `pipe`, `|` |
+| Tilde | 0x1235 | `tilde`, `~` |
+| Exlm | 0x121E | `exlm`, `!` |
+| At | 0x121F | `at`, `@` |
+| Hash | 0x1220 | `hash`, `#` |
+| Dollar | 0x1221 | `dollar`, `dlr`, `$` |
+| Percent | 0x1222 | `percent`, `perc`, `%` |
+| Circumflex | 0x1223 | `circumflex`, `circ`, `^` |
+| Amprsand | 0x1224 | `amprsand`, `ampr`, `&` |
+| Asterisk | 0x1225 | `asterisk`, `astr`, `*` |
+| LeftParenthesis | 0x1226 | `leftparenthesis`, `lprn`, `(` |
+| RightParenthesis | 0x1227 | `rightparenthesis`, `rprn`, `)` |
+| Underscore | 0x122D | `underscore`, `unds`, `_` |
+| Plus | 0x122E | `plus`, `+` |
+| LeftCurlyBracket | 0x122F | `leftcurlybracket`, `lcbr`, `{` |
+| RightCurlyBracket | 0x1230 | `rightcurlybracket`, `rcbr`, `}` |
+| Pipe | 0x1231 | `pipe`, `\|` |
 | Semicolon | 0x0033 | `semicolon`, `;`, `scln`, `scoln` |
-| Colon | s(Semicolon) | `colon`, `cln`, `:` |
-| DoubleQuote | s(0x0034) | `doublequote`, `dquot`, `"` |
-| LeftAngleBracket | s(0x0036) | `leftanglebracket`, `labk`, `<` |
-| RightAngleBracket | s(0x0037) | `rightanglebracket`, `rabk`, `>` |
-| QuestionMark | s(0x0038) | `questionmark`, `ques`, `?` |
+| Colon | 0x1233 | `colon`, `cln`, `:` |
+| DoubleQuote | 0x1234 | `doublequote`, `dquot`, `"` |
+| LeftAngleBracket | 0x1236 | `leftanglebracket`, `labk`, `<` |
+| RightAngleBracket | 0x1237 | `rightanglebracket`, `rabk`, `>` |
+| QuestionMark | 0x1238 | `questionmark`, `ques`, `?` |
 | NonUsBackSlash | 0x0064 | `nonusbackslash` |
 | NonUsHash | 0x0032 | `nonushash` |
 

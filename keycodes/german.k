@@ -1,12 +1,17 @@
-Circumflex        -> Grave
+### Alphas
 Ss                -> Minus              -> ß
-Accent            -> Equal              -> ´
 Y                 -> 0x001D
 Z                 -> 0x001C
-Ue                -> LeftBracket        -> ü
-Plus              -> RightBracket
 Oe                -> Semicolon          -> ö
 Ae                -> Quote              -> ä
+Ue                -> LeftBracket        -> ü
+
+
+
+### Symbols
+Circumflex        -> Grave
+Accent            -> Equal              -> ´
+Plus              -> RightBracket
 Hash              -> NonUsHash
 LeftAngleBracket  -> NonUsBackSlash
 RightAngleBracket -> s(NonUsBackSlash)
