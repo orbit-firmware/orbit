@@ -279,3 +279,7 @@ html {
 table code {
   white-space: nowrap;
 }
+
+.nav .group+.group {
+  border: none;
+}
