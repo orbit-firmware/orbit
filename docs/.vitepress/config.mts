@@ -52,6 +52,10 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Modifiers',
+        link: '/modifiers',
+      },
+      {
         text: 'Keycodes',
         items: keycodes
       },

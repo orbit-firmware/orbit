@@ -26,7 +26,7 @@ If you are not sure how to write actions, look up the syntax [here](/actions#syn
 
 #### Modifier Mask
 You can optionally pass a `modifier mask` that has to be active for the layer action to activate.  
-A list of masks can be found [here](/modifier_masks).  
+A list of masks can be found [here](/modifiers#masks).  
 
 
 
