@@ -26,6 +26,7 @@ export default defineConfig({
       },
       {
         text: 'Behaviors',
+        link: '/behaviors',
         items: [
           { text: 'Press', link: '/behaviors/press' },
           { text: 'Tap', link: '/behaviors/tap' },
@@ -36,6 +37,7 @@ export default defineConfig({
       },
       {
         text: 'Actions',
+        link: '/actions',
         items: [
           { text: 'Layers', link: '/actions/layers' },
           { text: 'Mouse', link: '/actions/mouse' },
@@ -44,6 +46,7 @@ export default defineConfig({
       },
       {
         text: 'Flavors',
+        link: '/flavors',
         items: [
           { text: 'Space Cadet', link: '/flavors/space_cadet' },
         ]
