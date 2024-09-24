@@ -99,16 +99,24 @@ To install docker, visit [https://www.docker.com/](https://www.docker.com/).
 
 if [gnu make](https://www.gnu.org/software/make/) is installed
 ```shell
-make docker // creates container and connects to docker tty
-make kb=MY_KEYBOARD
+cd orbit
+
+# creates container and connects to docker tty
+make docker  # [!code focus]
+
+# once conencted to the docker container
+make kb=MY_KEYBOARD # [!code focus]
 ```
 
 or plain script
 ```shell
 cd orbit/docker
+
+# creates container and connects to docker tty
 docker-compose up -d # [!code focus]
 docker exec -it orbit bash # [!code focus]
 
+# once conencted to the docker container
 make kb=MY_KEYBOARD # [!code focus]
 ```
 

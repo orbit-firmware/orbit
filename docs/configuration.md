@@ -13,74 +13,138 @@ their contents will be merged.
 You can also use this to adjust official configurations to your taste.  
 
 
-Here is an example configuration:
+## Keyboard
+
+These are the general device informations used for usb or bluetooth.  
+
 ```toml
-[keyboard]
-product_id = 0x0000 # your product id
-vendor_id = 0x0000 # your vendor id
-name = "My Keyboard" # The keyboards name
-manufacturer = "orbit Inc." # the keyboards manufacturer
-chip = "stm32f303cb" # What main mcu/chip the keyboard is using https://github.com/orbit-firmware/orbit/tree/master/chips
-key_count = 42 # How many total keys the keyboard has
-debounce_micro_secs = 50 # how many ms the key debounce should last 
-keycodes = "french" # changes keycodes to represent a french keyboard
+# keyboard.toml
 
-# which behaviors are active
-[behaviors]
-press = true
-hold = true
+# keyboard device definition
+[keyboard] # [!code focus]
+# your product id
+# can be left at 0 for non commercial products
+product_id = 0x0000 # [!code focus]
+# your vendor id
+# can be left at 0 for non commercial products
+vendor_id = 0x0000 # [!code focus]
+# The keyboards name
+name = "My Keyboard" # [!code focus]
+# the keyboards manufacturer
+manufacturer = "orbit Inc." # [!code focus]
+# What mcu/chip the keyboard is using 
+chip = "stm32f303cb"  # [!code focus]
+```
+::: info
+A list of chips can be found [here](https://github.com/orbit-firmware/orbit/tree/master/orbit/chips).
+:::
 
-# which actions are active
-[actions]
-layer_toggle = true
-mouse = true
-
-# if the keyboard uses a matrix
-# NOTE: cant be defined together with [multiplexers]
-[matrix]
-analogue_read = true # default false
-row_count = 3
-col_count = 12
-row_pins = ["PA0", "PA1", "PA2"]
-col_pins = ["PA3", "PA4", "PA5", "PA6", "PA8", "PA9", "PA10", "PA15", "PB0", "PB1", "PB2", "PB10"]
-
-# if the keyboard uses multiplexers
-# NOTE: cant be defined together with [matrix]
-[multiplexers]
-analogue_read = true # default false
-count = 3
-channels = 16
-sel_pins = ["PB3", "PB4", "PB6", "PB5"]
-com_pins = ["PA13", "PA10", "PA9"]
-
-# The row/col layout for the keys in order
-# If multiplexers are defined, it corresponds to [multiplexer, channel]
-[layout]
-keys = [
-  [0,9], [0,1], [0,3], [0,4], [1,0], [1,1], [1,2], [1,5], [2,0], [2,1], [2,2], [2,4],
-  [0,8], [0,2], [0,5], [1,9], [1,8], [1,3], [1,4], [2,9], [2,8], [2,3], [0,6],
-  [0,7], [0,0], [1,5], [1,4], [1,3], [1,0], [2,6], [2,5], [2,3], [2,0], [0,3],
-  [0,2], [0,1], [0,1], [1,2], [1,1], [2,4], [2,2], [2,1],
-]
-
-[rgb] # per key rgb data pin(s)
-data_pins = "PA7"
-
-[underglow] # underglow rgb data pin(s)
-data_pins = ["PA8"]
-
-[swd] # serial wire debug pin configuration
-swo = "PB2"
-swclk = "PA14"
-swdio = "PA15"
-
+## Settings
+```toml
+# keyboard.toml
+# keyboard settings
+[settings]  # [!code focus]
+# language specific keycodes 
+keycodes = "german"  # [!code focus]
+# key debounce time frame in ms
+debounce_time = 10  # [!code focus]
+# default time for the hold behavior to activate in ms
+hold_time = 180  # [!code focus]
+# default time in between taps in ms
+tapping_term = 220  # [!code focus]
 ```
 
 ## Behaviors
-Behaviors are controlling:
-  - When a keypress is triggered.
-  - What the final output of a keypress is.
+
+This controls wich [behaviors](/behaviors) are enabled for your keyboard.
+```toml
+# keyboard.toml
+# which behaviors are active
+[behaviors]   # [!code focus]
+press = true  # [!code focus]
+hold = true  # [!code focus]
+```
 
 ## Actions
-Actions are executable functions that change how your keyboard behaaves when they are triggerd.
+This controls wich [actions](/actions) are enabled for your keyboard.
+```toml
+# keyboard.toml
+# which actions are active
+[actions]  # [!code focus]
+layers = true  # [!code focus]
+mouse = true  # [!code focus]
+```
 
+## Flavors
+This controls wich [flavors](/flavors) are enabled for your keyboard.
+```toml
+# keyboard.toml
+# which actions are active
+[flavors]  # [!code focus]
+space_cadet = true  # [!code focus]
+```
+
+## Matrix
+```toml
+# keyboard.toml
+# if the keyboard uses a matrix
+# NOTE: cant be defined together with [multiplexers]
+[matrix]  # [!code focus]
+# default false
+analogue_read = true  # [!code focus]
+row_count = 3  # [!code focus]
+col_count = 12  # [!code focus]
+row_pins = ["PA0", "PA1", "PA2"]  # [!code focus]
+col_pins = ["PA3", "PA4", "PA5", "PA6", "PA8", "PA9", "PA10", "PA15", "PB0", "PB1", "PB2", "PB10"]  # [!code focus]
+layout = [  # [!code focus]
+  [0,9], [0,1], [0,3], [0,4], [1,0], [1,1], [1,2], [1,5], [2,0], [2,1], [2,2], [2,4],   # [!code focus]
+  [0,8], [0,2], [0,5], [1,9], [1,8], [1,3], [1,4], [2,9], [2,8], [2,3], [0,6],   # [!code focus]
+  [0,7], [0,0], [1,5], [1,4], [1,3], [1,0], [2,6], [2,5], [2,3], [2,0], [0,3],   # [!code focus]
+  [0,2], [0,1], [0,1], [1,2], [1,1], [2,4], [2,2], [2,1],   # [!code focus]
+]   # [!code focus]
+```
+
+
+## Multiplexers
+```toml
+# keyboard.toml
+# if the keyboard uses multiplexers
+# NOTE: cant be defined together with [matrix]
+[multiplexers]  # [!code focus]
+ # default false
+analogue_read = true  # [!code focus]
+count = 3  # [!code focus]
+channels = 16  # [!code focus]
+sel_pins = ["PB3", "PB4", "PB6", "PB5"]  # [!code focus]
+com_pins = ["PA13", "PA10", "PA9"]  # [!code focus]
+layout = [  # [!code focus]
+  [0,9], [0,1], [0,3], [0,4], [1,0], [1,1], [1,2], [1,5], [2,0], [2,1], [2,2], [2,4],   # [!code focus]
+  [0,8], [0,2], [0,5], [1,9], [1,8], [1,3], [1,4], [2,9], [2,8], [2,3], [0,6],   # [!code focus]
+  [0,7], [0,0], [1,5], [1,4], [1,3], [1,0], [2,6], [2,5], [2,3], [2,0], [0,3],   # [!code focus]
+  [0,2], [0,1], [0,1], [1,2], [1,1], [2,4], [2,2], [2,1],   # [!code focus]
+]   # [!code focus]
+```
+
+
+
+## Lighting
+
+```toml
+# keyboard.toml
+
+[lighting]   # [!code focus]
+driver = "wsqwe456" # [!code focus]
+per_key_rgb = "PA7"  # [!code focus]
+underglow  = ["PA8"] # [!code focus]
+```
+
+## Serial Wire Debug
+```toml
+# keyboard.toml
+# serial wire debug pin configuration
+[swd]  # [!code focus]
+swo = "PB2"  # [!code focus]
+swclk = "PA14"  # [!code focus]
+swdio = "PA15"  # [!code focus]
+
+```

@@ -165,7 +165,7 @@ for (const file of FILES) {
 
   markdown += '```toml\n';
   markdown += `# keyboard.toml\n`;
-  markdown += `[settings]\n`;
+  markdown += `[settings] // [!code focus]\n`;
   markdown += `keycodes = "${name}" // [!code focus]\n`;
   markdown += '```\n\n';
 
@@ -181,7 +181,7 @@ for (const file of FILES) {
 
     for (const line of merged[section]) {
       let ident = line[0];
-      if (line.adjusted) {
+      if (line.adjusted && name !== 'us') {
         ident += "<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a>";
       }
       let code = parse_keycode(line[1]);
