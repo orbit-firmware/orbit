@@ -32,7 +32,7 @@
 	],
 	"repository": {
 		"comment": {
-			"name": "comment.line.orbit",
+			"name": "comment.line",
 			"begin": "^(//|#)",
 			"end": "$"
 		},
@@ -46,13 +46,13 @@
 		},
 		"none": {
 			"match": "\\s(none|xxx)\\s",
-			"name": "constant.language"
+			"name": "constant.language.orbit"
 		},
 		"layer": {
 			"match": "(^layer)(?:\\s+|)?(\\d+)",
 			"captures": {
 				"1": {
-					"name": "constant.language"
+					"name": "constant.language.orbit"
 				},
 				"2": {
 					"name": "variable.parameter.orbit"
@@ -64,12 +64,12 @@
 			"end": "(\\|)",
 			"beginCaptures": {
 				"1": {
-					"name": "entity.name.function"
+					"name": "constant.language.orbit"
 				}
 			},
 			"endCaptures": {
 				"1": {
-					"name": "constant.language"
+					"name": "comment.line.orbit"
 				}
 			},
 			"patterns": [
@@ -92,7 +92,7 @@
 			"end": "\\)",
 			"beginCaptures": {
 				"1": {
-					"name": "entity.name.function"
+					"name": "entity.name.function.orbit"
 				}
 			},
 			"patterns": [
@@ -117,5 +117,5 @@
 			]
 		}
 	},
-	"scopeName": "source.orbit"
+	"scopeName": "source"
 }
