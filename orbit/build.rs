@@ -57,12 +57,7 @@ pub fn main() {
   ok!("Pre-Compile completed!");
 }
 
-fn configure(
-  keyboard: &Value,
-  chip_name: &str,
-  keyboard_name: &str,
-  input_features: &Vec<String>,
-) {
+fn configure(keyboard: &Value, chip_name: &str, keyboard_name: &str, input_features: &Vec<String>) {
   let chip_type: &str = get_chip_type(chip_name);
 
   let mut content = read_toml("build/Cargo.toml");
@@ -205,7 +200,7 @@ pub fn merge_toml(src1: &str, src2: &str, target: &str, src2_required: bool) {
 }
 
 fn get_keyboard(kb: &str) -> (Value, String) {
-  let keyboard_toml = format!("keyboards/{}.toml", kb);
+  let keyboard_toml = format!("orbit/keyboards/{}.toml", kb);
   let path = Path::new(&keyboard_toml);
   if path.exists() {
     info!("Using Keyboard: {}", kb);
@@ -234,7 +229,7 @@ fn get_chip(keyboard: &Value) -> (String, String, String) {
     std::process::exit(1);
   }
 
-  let chip_dir = format!("chips/{}", chip);
+  let chip_dir = format!("orbit/chips/{}", chip);
   let chip_toml = format!("{}/Cargo.toml", chip_dir);
   let chip_toml_path = Path::new(&chip_toml);
   if chip_toml_path.exists() {

@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import modifiers from './modifiers.mjs';
 
-const DIR = '../keycodes';
-const FILES = fs.readdirSync(DIR).filter(file => file.endsWith('.k'));
-const BASE_FILE = 'us.k';
+const DIR = '../orbit/keycodes';
+const FILES = fs.readdirSync(DIR).filter(file => file.endsWith('.kcs'));
+const BASE_FILE = 'us.kcs';
 
 function convert_name(name) {
   name = name.replace("_", " ");
@@ -139,7 +139,7 @@ base_keycodes = parse_file(path.join(DIR, BASE_FILE));
 
 
 for (const file of FILES) {
-  const name = file.replace('.k', '').replace('_', ' ').trim();
+  const name = file.replace('.kcs', '').replace('_', ' ').trim();
   const file_path = path.join(DIR, file);
 
   const adjustments = parse_file(file_path);

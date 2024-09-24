@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 import { MarkdownOptions } from "vitepress";
 import { LanguageRegistration } from "shikiji";
 
-import grammar from "./theme/tmorbit.json"
+import grammar from "../../orbit/orbit.tmLanguage.json"
 import pages from '../_pages.mts'
 
 

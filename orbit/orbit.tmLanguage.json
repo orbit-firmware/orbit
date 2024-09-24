@@ -1,0 +1,121 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "orbit",
+	"patterns": [
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#separator"
+		},
+		{
+			"include": "#trough"
+		},
+		{
+			"include": "#none"
+		},
+		{
+			"include": "#layer"
+		},
+		{
+			"include": "#behavior"
+		},
+		{
+			"include": "#action"
+		},
+		{
+			"include": "#parameter"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"comment": {
+			"name": "comment.line.orbit",
+			"begin": "^(//|#)",
+			"end": "$"
+		},
+		"separator": {
+			"match": "^___+",
+			"name": "comment.line.orbit"
+		},
+		"trough": {
+			"match": "\\s(trough|---)\\s",
+			"name": "comment.line.orbit"
+		},
+		"none": {
+			"match": "\\s(none|xxx)\\s",
+			"name": "constant.language"
+		},
+		"layer": {
+			"match": "(^layer)(?:\\s+|)?(\\d+)",
+			"captures": {
+				"1": {
+					"name": "constant.language"
+				},
+				"2": {
+					"name": "variable.parameter.orbit"
+				}
+			}
+		},
+		"behavior": {
+			"begin": "^([a-zA-Z]+)",
+			"end": "(\\|)",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.function"
+				}
+			},
+			"endCaptures": {
+				"1": {
+					"name": "constant.language"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\w+",
+					"name": "variable.parameter.orbit"
+				},
+				{
+					"match": "\\d+",
+					"name": "variable.parameter.orbit"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.orbit"
+				}
+			]
+		},
+		"action": {
+			"begin": "(\\w+)\\(",
+			"end": "\\)",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.function"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\w+",
+					"name": "variable.parameter.orbit"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.orbit"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.orbit",
+			"match": "\".*?\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.orbit",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.orbit"
+}

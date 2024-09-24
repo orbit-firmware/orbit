@@ -8,7 +8,7 @@ publish = false
 edition = "2021"
 
 [dependencies]
-orbit-macros = { path = "../orbit-macros", features = ["chip_type_none"] }
+orbit-macros = { path = "orbit-macros", features = ["chip_type_none"] }
 embedded-hal = "1.0"
 embassy-usb = { version = "0.3", features = [
   "defmt",

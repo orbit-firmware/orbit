@@ -13,7 +13,7 @@ endif
 		exit 1; \
 	}
 ifeq ($(kb),_emulator)
-	@echo "\x1b[34mEmulator detected, starting...\x1b[0m"
+	@echo -e "\x1b[34mEmulator detected, starting...\x1b[0m"
 	@cd build && cargo run --release
 else
 	@cd build && cargo objcopy --release -- -O binary ../firmware.bin

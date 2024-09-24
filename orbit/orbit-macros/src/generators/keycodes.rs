@@ -29,7 +29,7 @@ fn read(name: &str, required: bool) -> Vec<KeyCode> {
     return vec![];
   }
   let root = util::get_root();
-  let path = format!("{}/keycodes/{}.k", root, name);
+  let path = format!("{}/orbit/keycodes/{}.kcs", root, name);
 
   if !required && !util::file_exists(path.as_str()) {
     return vec![];
