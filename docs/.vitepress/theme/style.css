@@ -218,8 +218,8 @@ html {
 }
 
 .vp-doc [class*="language-"] .has-focused-lines .line:not(.has-focus) {
-  opacity: 0.5;
-  filter: blur(0.05rem);
+  opacity: 0.3;
+  filter: blur(1px);
 }
 
 .c-spacer-small {

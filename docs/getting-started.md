@@ -50,7 +50,7 @@ cd orbit
 cargo install cargo-play # only required once
 
 cargo play ./orbit/build.rs -- MY_KEYBOARD # [!code focus]
-cd build
+cd build # [!code focus]
 cargo objcopy --release -- -O binary ../firmware.bin # [!code focus]
 cargo objcopy --release -- -O ihex ../firmware.hex # [!code focus]
 ```
@@ -80,7 +80,7 @@ cargo install cargo-play # only required once
 cargo install cargo-embed # only required once
 
 cargo play ./orbit/build.rs -- MY_KEYBOARD # [!code focus]
-cd build
+cd build # [!code focus]
 cargo embed # [!code focus]
 
 # optionally pass the debug feature if you want to debug via st-link or j-link

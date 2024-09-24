@@ -206,4 +206,4 @@ let template = `export default [
   ${keycode_files.map(item => `{ text: '${item.text == "US" ? "US (Default)" : item.text}', link: '${item.link}' },`).join('\n  ')}
 ];`;
 
-fs.writeFileSync('.vitepress/keycodes.mts', template);
+fs.writeFileSync('_keycodes.mts', template);

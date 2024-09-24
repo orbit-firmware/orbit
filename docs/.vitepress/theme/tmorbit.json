@@ -1,0 +1,137 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "orbit",
+  "patterns": [
+    {
+      "include": "#core_codes"
+    },
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#layer"
+    },
+    {
+      "include": "#separator"
+    },
+    {
+      "include": "#behavior"
+    },
+    {
+      "include": "#action"
+    }
+  ],
+  "repository": {
+    "core_codes": {
+      "match": "\\s(none|xxx|trough|---)\\s",
+      "captures": {
+        "1": {
+          "name": "comment.line.orbit"
+        }
+      }
+    },
+    "comment": {
+      "name": "comment.line.orbit",
+      "begin": "#",
+      "end": "$"
+    },
+    "layer": {
+      "match": "(^layer)(?:\\s+|)?(\\d+)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.orbit"
+        },
+        "2": {
+          "name": "constant.numeric.layer.orbit"
+        }
+      }
+    },
+    "separator": {
+      "match": "^___+",
+      "name": "comment.line.orbit"
+    },
+    "behavior": {
+      "match": "(\\w+(?:\\s+|))?(\\|)",
+      "captures": {
+        "1": {
+          "name": "entity.name.class.orbit"
+        },
+        "2": {
+          "name": "comment.line.orbit"
+        }
+      }
+    },
+    "action": {
+      "match": "(\\w+)(\\()(?:\\s*|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)([\\s,]+|)([a-zA-Z0-1]+|)(?:[\\s,]+|)(\\))",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.action.orbit"
+        },
+        "2": {
+          "name": "markup.punctuation.list.beginning.orbit"
+        },
+        "3": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "4": {
+          "name": "emphasis.orbit"
+        },
+        "5": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "6": {
+          "name": "emphasis.orbit"
+        },
+        "7": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "8": {
+          "name": "emphasis.orbit"
+        },
+        "9": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "10": {
+          "name": "emphasis.orbit"
+        },
+        "11": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "12": {
+          "name": "emphasis.orbit"
+        },
+        "13": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "14": {
+          "name": "emphasis.orbit"
+        },
+        "15": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "16": {
+          "name": "emphasis.orbit"
+        },
+        "17": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "18": {
+          "name": "emphasis.orbit"
+        },
+        "19": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "20": {
+          "name": "emphasis.orbit"
+        },
+        "21": {
+          "name": "constant.numeric.layer.orbit"
+        },
+        "22": {
+          "name": "markup.punctuation.list.end.orbit"
+        }
+      }
+    }
+  },
+  "scopeName": "source"
+}

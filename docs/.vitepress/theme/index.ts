@@ -3,6 +3,7 @@ import { h } from 'vue'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import './style.css'
+import fs from 'fs'
 
 
 
@@ -41,6 +42,13 @@ const anchor_flash = () => {
       on_click(e.target)
     }
   });
+}
+
+
+const load_orbit_language = async () => {
+  const myLang = JSON.parse(fs.readFileSync('my-lang.json', 'utf8'))
+
+  await highlighter.loadLanguage(myLang)
 }
 
 export default {

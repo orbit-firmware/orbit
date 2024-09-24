@@ -1,0 +1,123 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "orbit",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#layer"
+    },
+    {
+      "include": "#layer_num"
+    },
+    {
+      "include": "#behavior"
+    },
+    {
+      "include": "#behavior_separator"
+    },
+    {
+      "include": "#none"
+    },
+    {
+      "include": "#trough"
+    },
+    {
+      "include": "#action"
+    },
+    {
+      "include": "#action_punctuation"
+    },
+    {
+      "include": "#action_parameters"
+    },
+    {
+      "include": "#action_parentheses"
+    },
+    {
+      "include": "#entity"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.orbit",
+      "begin": "#",
+      "end": "$"
+    },
+    "layer": {
+      "name": "entity.name.tag.orbit",
+      "match": "^layer"
+    },
+    "layer_num": {
+      "name": "constant.numeric.layer.orbit",
+      "match": "(?<=\\blayer\\s)\\d+"
+    },
+    "none": {
+      "patterns": [
+        {
+          "name": "comment.line.orbit",
+          "match": "(|\\s+)non(|\\s+)"
+        },
+        {
+          "name": "comment.line.orbit",
+          "match": "(|\\s+)xxx(|\\s+)"
+        }
+      ]
+    },
+    "trough": {
+      "patterns": [
+        {
+          "name": "comment.line.orbit",
+          "match": "(|\\s+)trough(|\\s+)"
+        },
+        {
+          "name": "comment.line.orbit",
+          "match": "(|\\s+)---(|\\s+)"
+        }
+      ]
+    },
+    "action": {
+      "name": "entity.name.type.orbit",
+      "match": "\\w+(?=\\()"
+    },
+    "action_parameters": {
+      "patterns": [
+        {
+          "name": "variable.parameter.orbit",
+          "match": "(?<=\\().*?[^,]+(?:,[^,]+)*?(?=\\))",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.orbit"
+            }
+          }
+        }
+      ]
+    },
+    "action_punctuation": {
+      "name": "entity.name.type.orbit",
+      "match": "(?<=\\w+\\([^\\)]*)\\s*,\\s*"
+    },
+    "action_parentheses": {
+      "patterns": [
+        {
+          "name": "entity.name.tag.orbit",
+          "match": "(?<=\\w+)\\("
+        },
+        {
+          "name": "entity.name.tag.orbit",
+          "match": "(?<=\\w+|\\d+)\\)"
+        }
+      ]
+    },
+    "behavior": {
+      "name": "variable.parameter.orbit",
+      "match": "^\\w+(?=\\s+\\|)"
+    },
+    "behavior_separator": {
+      "name": "variable.parameter.orbit",
+      "match": "^\\w+(?:\\s+|)(\\|)"
+    }
+  },
+  "scopeName": "source.orbit"
+}

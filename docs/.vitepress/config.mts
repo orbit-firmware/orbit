@@ -1,65 +1,36 @@
 import { defineConfig } from 'vitepress'
 
+import { MarkdownOptions } from "vitepress";
+import { LanguageRegistration } from "shikiji";
 
-import keycodes from './keycodes.mts'
+import grammar from "./theme/tmorbit.json"
+import pages from '../_pages.mts'
+
+
+const orbit: LanguageRegistration = {
+  id: "orbit",
+  aliases: ["orbit-alias"],
+  ...grammar,
+};
+
+const md: MarkdownOptions = {
+  languages: [orbit],
+  // theme: "one-dark-pro",
+};
 
 export default defineConfig({
   title: "orbit",
   description: "Documentaion for the orbit firmware",
   base: '/orbit/',
   head: [['link', { rel: 'icon', href: '/orbit/favicon.ico' }]],
-
+  markdown: md,
   themeConfig: {
     logo: '/logo.svg',
     search: {
       provider: 'local'
     },
 
-    sidebar: [
-      {
-        text: 'Setup',
-        items: [
-          { text: 'Introduction', link: '/' },
-          { text: 'Getting Started', link: '/getting-started' },
-          { text: 'Configuration', link: '/configuration' },
-        ],
-      },
-      {
-        text: 'Behaviors',
-        link: '/behaviors',
-        items: [
-          { text: 'Press', link: '/behaviors/press' },
-          { text: 'Tap', link: '/behaviors/tap' },
-          { text: 'Hold', link: '/behaviors/hold' },
-          { text: 'Modify', link: '/behaviors/modify' },
-          { text: 'OS', link: '/behaviors/os' },
-        ]
-      },
-      {
-        text: 'Actions',
-        link: '/actions',
-        items: [
-          { text: 'Layers', link: '/actions/layers' },
-          { text: 'Mouse', link: '/actions/mouse' },
-          { text: 'RGB', link: '/actions/rgb' },
-        ]
-      },
-      {
-        text: 'Flavors',
-        link: '/flavors',
-        items: [
-          { text: 'Space Cadet', link: '/flavors/space_cadet' },
-        ]
-      },
-      {
-        text: 'Modifiers',
-        link: '/modifiers',
-      },
-      {
-        text: 'Keycodes',
-        items: keycodes
-      },
-    ],
+    sidebar: pages,
 
     socialLinks: [
       { icon: 'discord', link: 'https://discord.gg/SrESTtBKV5' },
@@ -67,3 +38,5 @@ export default defineConfig({
     ]
   }
 })
+
+

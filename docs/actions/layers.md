@@ -25,8 +25,8 @@ If you are not sure how to write actions, look up the syntax [here](/actions#syn
 | Set Default Layer | `sbl(layer, [modifier_mask])` | Sets the [base layer](#base-layer). <br> This might be used to switch from QWERTY to DVORAK layout etc.  |
 
 #### Modifier Mask
-You can optionally pass a `modifier mask` that has to be active for the layer action to activate.  
-A list of masks can be found [here](/modifiers#masks).  
+You can optionally pass a `modifier mask` that has to be present for the layer action to execute.  
+A list of masks can be found [here](/actions/modifiers#masks).  
 
 
 
@@ -39,31 +39,49 @@ This layer always has the index `0`.
 
 The following examples only have 4 keys defined for ease of demonstration.
 
-```
+Change layer on press:
+```orbit
 # when key one is pressed down, it switches to layer 1
-layer 0
-press | ml(1) q     w     e # [!code focus]
+layer 0 # [!code focus]
+_______________________________   # [!code focus]
+press | ml(1) q     w     e       # [!code focus]
 
-# on layer 2 we replace q, w and e with 1, 2 and 3
 layer 1
-press | ---  1     2     3  # [!code focus]
+_______________________________
+press | ---  1     2     3     
 
 ```
 
-
-```
+Change layer on hold:
+```orbit
 # normally key one is "esc"
 # when key one is held, it switches to layer 1
-layer 0
-press | esc   q     w     e
-hold  | ml(1) q     w     e # [!code focus]
+layer 0 # [!code focus]
+_______________________________   # [!code focus]
+press | esc   q     w     e       # [!code focus]
+hold  | ml(1) q     w     e       # [!code focus]
 
-# on layer 2 we replace "q", "w" and "e" with "1", "2" and "3"
 layer 1
-press | ---  1     2     3  # [!code focus]
+_______________________________
+press | ---  1     2     3     
 
 ```
 
+
+Change layer with shift:
+```orbit
+# normally key one is "esc"
+# when key one is held AND left shift is held, it switches to layer 1
+layer 0 # [!code focus]
+____________________________________  # [!code focus]
+press | esc       q     w     lsft    # [!code focus]
+hold  | ml(1, ls) q     w     e       # [!code focus]
+
+layer 1
+____________________________________
+press | ---       1     2     3     
+
+```
 
 
 
