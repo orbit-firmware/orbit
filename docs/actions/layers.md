@@ -41,7 +41,7 @@ The following examples only have 4 keys defined for ease of demonstration.
 
 Change layer on press:
 ```orbit
-# when key one is pressed down, it switches to layer 1
+# when `key 1` is pressed down, it switches to `layer 1`
 layer 0 # [!code focus]
 _______________________________   # [!code focus]
 press | ml(1) q     w     e       # [!code focus]
@@ -54,8 +54,8 @@ press | ---  1     2     3
 
 Change layer on hold:
 ```orbit
-# normally key one is "esc"
-# when key one is held, it switches to layer 1
+# normally `key 1` is "esc"
+# when `key 1` is held, it switches to `layer 1`
 layer 0 # [!code focus]
 _______________________________   # [!code focus]
 press | esc   q     w     e       # [!code focus]
@@ -70,16 +70,17 @@ press | ---  1     2     3
 
 Change layer with shift:
 ```orbit
-# normally key one is "esc"
-# when key one is held AND left shift is held, it switches to layer 1
+# normally `key 1` is "esc"
+# when `key 1` is held AND left shift is held, it toggles to `layer 1`
+# this means in `layer 1` we can use `key 1` one again, since it doesnt have to be held anymore
 layer 0 # [!code focus]
 ____________________________________  # [!code focus]
 press | esc       q     w     lsft    # [!code focus]
-hold  | ml(1, ls) q     w     e       # [!code focus]
+hold  | tl(1, ls) q     w     e       # [!code focus]
 
 layer 1
 ____________________________________
-press | ---       1     2     3     
+press | esc       1     2     3     
 
 ```
 
