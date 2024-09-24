@@ -15,8 +15,6 @@ Benefits of Using Layers
 
 ## Usage
 
-If you are not sure how to write actions, look up the syntax [here](/actions#syntax).  
-
 | Method | Code | Description |
 | ------ | ------------- | ----------- |
 | Momentary Layer | `ml(layer, [modifier_mask])` | Enables the layer while the key is held down |
@@ -24,8 +22,11 @@ If you are not sure how to write actions, look up the syntax [here](/actions#syn
 | Set Layer | `sl(layer, [modifier_mask])` | Switches to the layer when pressed |
 | Set Default Layer | `sbl(layer, [modifier_mask])` | Sets the [base layer](#base-layer). <br> This might be used to switch from QWERTY to DVORAK layout etc.  |
 
+## Legend
+
 #### Modifier Mask
-You can optionally pass a `modifier mask` that has to be present for the layer action to execute.  
+This is an [optional](/actions#optional-parameters) parameter.  
+You can pass a `modifier mask` that has to be present for the layer action to execute.  
 A list of masks can be found [here](/actions/modifiers#masks).  
 
 
