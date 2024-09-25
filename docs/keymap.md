@@ -1,3 +1,28 @@
+# Keymap
+
+A keymap defines how each key on a keyboard behaves across various layers and states.  
+It acts as a flexible configuration tool that maps key presses to behaviors and actions.  
+
+Your keymap will be placed in the harddrive/flash of your keyboard.  
+For that to work you have to put your keyboard into [boot-mode](/).  
+
+
+## Structure
+
+```
+Layer NUMBER
+_____________________________  # optional row separator
+press    | key1 key2 key3 key4 # minimum requirement for a row and also denotes the start of a row
+behavior | ---  ---  ---  key4 # behavior for each key 
+_____________________________  # optional row separator
+press    | key1 key2 key3 key4 # new row
+```
+
+
+
+
+
+
 
 
 ```orbit

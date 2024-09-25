@@ -7,10 +7,12 @@ mod stm32 {
   use embassy_usb::driver::Driver;
 
   use crate::orbit::dbg::info;
+  use crate::orbit::hid::HID;
   use crate::orbit::peripherals::*;
   use embassy_time::Timer;
 
-  pub async fn run<D: Driver<'static>>(usb_driver: D) -> ! {
+  pub async fn run<'d, D: Driver<'d>>(driver: &'d D) -> ! {
+    let mut hid = HID::new(driver);
     loop {
       Keyboard::instance().process().await;
     }

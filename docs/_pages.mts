@@ -8,6 +8,7 @@ export default [
       { text: 'Introduction', link: '/' },
       { text: 'Getting Started', link: '/getting-started' },
       { text: 'Configuration', link: '/configuration' },
+      { text: 'Roadmap', link: '/roadmap' },
     ],
   },
   {

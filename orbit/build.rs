@@ -180,8 +180,6 @@ fn write_toml(target: &str, merged_toml: &Value) {
   if let Err(e) = fs::write(target, serialized) {
     error!("Failed to write target file: {}", e);
     std::process::exit(1);
-  } else {
-    info!("Successfully wrote to {}", target);
   }
 }
 

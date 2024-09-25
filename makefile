@@ -16,8 +16,9 @@ ifeq ($(kb),_emulator)
 	@echo -e "\x1b[34mEmulator detected, starting...\x1b[0m"
 	@cd build && cargo run --release
 else
-	@cd build && cargo objcopy --release -- -O binary ../firmware.bin
-	@cd build && cargo objcopy --release -- -O ihex ../firmware.hex
+	@cd build && cargo build --release
+	# @cd build && cargo objcopy --release -- -O binary ../firmware.bin
+	# @cd build && cargo objcopy --release -- -O ihex ../firmware.hex
 endif
 
 flash: #/ flashes the firmware [debug=true/false]
