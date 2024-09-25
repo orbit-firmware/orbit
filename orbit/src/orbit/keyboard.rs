@@ -3,8 +3,10 @@ use core::cell::UnsafeCell;
 use core::option::Option;
 use core::sync::atomic::{AtomicBool, Ordering};
 use embassy_usb::driver::Driver;
+use usbd_hid::descriptor::{KeyboardReport, SerializedDescriptor};
 
 use crate::orbit::config;
+use crate::orbit::dbg::{info, warn};
 use crate::orbit::hid::Hid;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
@@ -12,13 +14,11 @@ use crate::orbit::peripherals::*;
 static KEYBOARD_INITIIALIZED: AtomicBool = AtomicBool::new(false);
 static mut KEYBOARD_INSTANCE: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
 
-use crate::orbit::dbg::{dump, info};
-
 pub struct Keyboard {
   peripherals: Peripherals,
   layer: u32,
   keys: [Key; config::KEY_COUNT],
-  hid: Option<Hid<Driver<'static>>>,
+  buffer: [u8; 8],
 }
 
 impl Keyboard {
@@ -41,13 +41,8 @@ impl Keyboard {
       peripherals: Peripherals::new(),
       keys: populate(Key::new),
       layer: 0,
-      hid: None,
+      buffer: [0; 8],
     }
-  }
-
-  pub async fn create_hid<D: Driver<'static>>(&mut self, driver: D) {
-    let hid = Hid::new(driver).await;
-    self.hid = Some(hid);
   }
 
   pub fn set_layer(&mut self, layer: u32) {
@@ -58,8 +53,28 @@ impl Keyboard {
     self.layer
   }
 
-  pub async fn process(&mut self) {
-    self.scan().await;
+  pub async fn process<D: Driver<'static>>(&mut self, driver: D) {
+    let mut hid = Hid::new(driver).await;
+
+    let proc = async {
+      let (reader, mut writer) = hid.split();
+      loop {
+        self.scan();
+        let report = KeyboardReport {
+          keycodes: [4, 0, 0, 0, 0, 0],
+          leds: 0,
+          modifier: 0,
+          reserved: 0,
+        };
+        match writer.write_serialize(&report).await {
+          Ok(()) => {}
+          Err(e) => warn!("Failed to send report: {:?}", e),
+        };
+        info!("Keyboard scanned");
+      }
+    };
+
+    proc.await;
   }
 
   pub fn key(&mut self, index: usize) -> &mut Key {
@@ -71,9 +86,9 @@ impl Keyboard {
     &mut self.peripherals
   }
 
-  async fn scan(&mut self) {
+  fn scan(&mut self) {
     if config::USE_MATRIX {
-      self.scan_matrix().await;
+      self.scan_matrix();
     }
 
     if config::USE_MULTIPLEXERS {
@@ -81,7 +96,7 @@ impl Keyboard {
     }
   }
 
-  async fn scan_matrix(&mut self) {
+  fn scan_matrix(&mut self) {
     let keys = &mut self.keys;
     let peri = &mut self.peripherals;
 

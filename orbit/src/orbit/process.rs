@@ -10,24 +10,9 @@ mod stm32 {
   use crate::orbit::hid::Hid;
   use crate::orbit::peripherals::*;
   use embassy_futures::join::join;
-  use embassy_time::Timer;
 
   pub async fn run<D: Driver<'static>>(driver: D) {
-    let mut keyboard = Keyboard::instance();
-    keyboard.create_hid(driver);
-    keyboard.process().await;
-    // let process = async {
-    //   loop {
-    //     if !hid.usb_ready() {
-    //       Timer::after_millis(100).await;
-    //       info!("Waiting for USB to be ready");
-    //       continue;
-    //     }
-
-    //   }
-    // };
-
-    // process.await;
+    Keyboard::instance().process(driver).await;
   }
 }
 

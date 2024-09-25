@@ -21,13 +21,17 @@ else
 	# @cd build && cargo objcopy --release -- -O ihex ../firmware.hex
 endif
 
-flash: #/ flashes the firmware [debug=true/false]
+flash: #/ flashes the firmware [features="list of features"]
 	@make pre_compile -B args="$(kb) $(features)" || { \
 		echo "pre_compile failed, aborting."; \
 		exit 1; \
 	}
 ifeq ($(debug),true)
-	cd build && cargo embed --features debug
+ifneq ($(features),)
+	cd build && cargo embed --features $(features)
+else
+	cd build && cargo embed
+endif
 else
 	cd build && cargo embed
 endif

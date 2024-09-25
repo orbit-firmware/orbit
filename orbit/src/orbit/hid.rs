@@ -3,6 +3,7 @@ use core::option::Option;
 use core::sync::atomic::{AtomicBool, Ordering};
 use static_cell::StaticCell;
 
+use embassy_time::Timer;
 use embassy_usb::{
   class::hid::{HidReader, HidReaderWriter, HidWriter, ReportId, RequestHandler, State},
   control::{InResponse, OutResponse},
@@ -16,19 +17,29 @@ static USB_READY: AtomicBool = AtomicBool::new(false);
 
 use crate::orbit::dbg::*;
 
+use super::modifiers::s;
+
+const READ_N: usize = 1;
+const WRITE_N: usize = 8;
+
 pub struct Hid<D: Driver<'static>> {
-  reader: Option<HidReader<'static, D, 1>>,
-  writer: Option<HidWriter<'static, D, 8>>,
+  hid: Option<HidReaderWriter<'static, D, READ_N, WRITE_N>>,
 }
 
 impl<D: Driver<'static>> Hid<D> {
   pub async fn new(driver: D) -> Self {
-    let mut hid = Hid {
-      reader: None,
-      writer: None,
-    };
+    let mut hid = Hid { hid: None };
 
     hid.configure(driver).await;
+
+    // let mut ready = async {
+    //   while !hid.usb_ready() {
+    //     Timer::after_millis(10).await;
+    //     info!("Waiting for USB to be ready");
+    //   }
+    // };
+
+    // ready.await;
 
     hid
   }
@@ -84,20 +95,24 @@ impl<D: Driver<'static>> Hid<D> {
       max_packet_size: 8,
     };
 
-    #[rustfmt::skip]
-    let hid = HidReaderWriter::<_, 1, 8>::new(
+    self.hid = Some(HidReaderWriter::<'static, D, READ_N, WRITE_N>::new(
       &mut builder,
       STATE.init(State::new()),
-      config
-    );
+      config,
+    ));
 
     let mut usb = builder.build();
 
-    let (reader, writer) = hid.split();
-    self.reader = Some(reader);
-    self.writer = Some(writer);
-
     usb.run().await;
+  }
+
+  pub fn split(
+    self,
+  ) -> (
+    HidReader<'static, D, READ_N>,
+    HidWriter<'static, D, WRITE_N>,
+  ) {
+    self.hid.unwrap().split()
   }
 }
 

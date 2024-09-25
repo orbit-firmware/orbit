@@ -69,8 +69,10 @@ A full list is available [here](https://github.com/orbit-firmware/orbit/tree/mas
 
 if [gnu make](https://www.gnu.org/software/make/) is installed
 ```shell
-cd orbit
-make flash kb=MY_KEYBOARD
+cd orbit # [!code focus]
+make flash kb=MY_KEYBOARD # [!code focus]
+# optionally pass the debug feature if you want to debug via st-link or j-link
+make flash kb=MY_KEYBOARD features="debug"
 ```
 
 or plain script
