@@ -2,13 +2,15 @@ use core::array::from_fn as populate;
 use core::cell::UnsafeCell;
 use core::option::Option;
 use core::sync::atomic::{AtomicBool, Ordering};
+use embassy_usb::driver::Driver;
 
 use crate::orbit::config;
+use crate::orbit::hid::Hid;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
 
-static KEYBOARD_INIT: AtomicBool = AtomicBool::new(false);
-static mut KEYBOARD: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
+static KEYBOARD_INITIIALIZED: AtomicBool = AtomicBool::new(false);
+static mut KEYBOARD_INSTANCE: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
 
 use crate::orbit::dbg::{dump, info};
 
@@ -16,17 +18,20 @@ pub struct Keyboard {
   peripherals: Peripherals,
   layer: u32,
   keys: [Key; config::KEY_COUNT],
+  hid: Option<Hid<Driver<'static>>>,
 }
 
 impl Keyboard {
   // IMPORTANT: always use this to get the keyboard
   pub fn instance() -> &'static mut Keyboard {
     unsafe {
-      if !KEYBOARD_INIT.load(Ordering::SeqCst) {
-        KEYBOARD_INIT.store(true, Ordering::SeqCst);
-        (*KEYBOARD.get()) = Some(Keyboard::new());
+      if !KEYBOARD_INITIIALIZED.load(Ordering::SeqCst) {
+        KEYBOARD_INITIIALIZED.store(true, Ordering::SeqCst);
+        (*KEYBOARD_INSTANCE.get()) = Some(Keyboard::new());
       }
-      (*KEYBOARD.get()).as_mut().expect("Singleton should be initialized")
+      (*KEYBOARD_INSTANCE.get())
+        .as_mut()
+        .expect("Singleton should be initialized")
     }
   }
 
@@ -36,7 +41,13 @@ impl Keyboard {
       peripherals: Peripherals::new(),
       keys: populate(Key::new),
       layer: 0,
+      hid: None,
     }
+  }
+
+  pub async fn create_hid<D: Driver<'static>>(&mut self, driver: D) {
+    let hid = Hid::new(driver).await;
+    self.hid = Some(hid);
   }
 
   pub fn set_layer(&mut self, layer: u32) {

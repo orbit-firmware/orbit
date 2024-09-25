@@ -1,6 +1,6 @@
+use crate::orbit::dbg::dump;
 use crate::orbit::key::Key;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::dbg::dump;
 use crate::orbit::peripherals::*;
 
 #[allow(dead_code)]
