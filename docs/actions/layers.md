@@ -34,7 +34,7 @@ A list of masks can be found [here](/actions/modifiers#masks).
 ### Base layer
 This layer is the always-active layer that other layers stack on top of.  
 In other words, it defines how your basic keys work, without any other layering.  
-This layer always has the index `0`.
+By default this layer has the number `0`.
 
 ## Examples
 

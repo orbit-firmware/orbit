@@ -1,7 +1,6 @@
-use crate::orbit::dbg::{dump, info};
 use crate::orbit::key::Key;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::peripherals::*;
+use crate::orbit::modifiers::*;
 
 #[allow(dead_code)]
 #[repr(u8)]
@@ -21,8 +20,7 @@ impl Actions {
   #[allow(unused)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
     if key.is_pressed() {
-      info!("key is pressed");
-      keyboard.report_keycode(0x0029);
+      keyboard.report_keycode(ls(4));
     }
   }
 }
