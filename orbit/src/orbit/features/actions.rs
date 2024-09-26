@@ -20,7 +20,9 @@ impl Actions {
   #[allow(unused)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
     if key.is_pressed() {
-      keyboard.report_keycode(ls(4));
+      keyboard.register_keycode(ls(4));
+    } else {
+      keyboard.unregister_keycode(ls(4));
     }
   }
 }
