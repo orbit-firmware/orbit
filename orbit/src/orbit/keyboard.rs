@@ -2,14 +2,16 @@ use core::array::from_fn as populate;
 use core::cell::UnsafeCell;
 use core::option::Option;
 use core::sync::atomic::{AtomicBool, Ordering};
+use embassy_futures::join::join;
 use embassy_usb::driver::Driver;
-use usbd_hid::descriptor::{KeyboardReport, SerializedDescriptor};
+use usbd_hid::descriptor::KeyboardReport;
 
 use crate::orbit::config;
-use crate::orbit::dbg::{info, warn};
+use crate::orbit::dbg::info;
 use crate::orbit::hid::Hid;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
+use crate::orbit::report::Report;
 
 static KEYBOARD_INITIIALIZED: AtomicBool = AtomicBool::new(false);
 static mut KEYBOARD_INSTANCE: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
@@ -18,7 +20,7 @@ pub struct Keyboard {
   peripherals: Peripherals,
   layer: u32,
   keys: [Key; config::KEY_COUNT],
-  buffer: [u8; 8],
+  report: Report,
 }
 
 impl Keyboard {
@@ -41,7 +43,7 @@ impl Keyboard {
       peripherals: Peripherals::new(),
       keys: populate(Key::new),
       layer: 0,
-      buffer: [0; 8],
+      report: Report::new(),
     }
   }
 
@@ -54,32 +56,26 @@ impl Keyboard {
   }
 
   pub async fn process<D: Driver<'static>>(&mut self, driver: D) {
-    let mut hid = Hid::new(driver).await;
+    let (mut usb, reader, mut writer) = Hid::init(driver).await;
 
-    let proc = async {
-      let (reader, mut writer) = hid.split();
+    let process = async {
       loop {
+        Hid::ready().await;
         self.scan();
-        let report = KeyboardReport {
-          keycodes: [4, 0, 0, 0, 0, 0],
-          leds: 0,
-          modifier: 0,
-          reserved: 0,
-        };
-        match writer.write_serialize(&report).await {
-          Ok(()) => {}
-          Err(e) => warn!("Failed to send report: {:?}", e),
-        };
-        info!("Keyboard scanned");
+        self.report.process(&mut writer).await;
       }
     };
 
-    proc.await;
+    join(usb.run(), process).await;
   }
 
   pub fn key(&mut self, index: usize) -> &mut Key {
     assert!(index < config::KEY_COUNT, "Index out of bounds");
     &mut self.keys[index]
+  }
+
+  pub fn report_keycode(&mut self, keycode: u16) {
+    self.report.add_keycode(keycode);
   }
 
   pub fn peripherals(&mut self) -> &mut Peripherals {

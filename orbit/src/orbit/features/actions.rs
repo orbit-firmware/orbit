@@ -1,4 +1,4 @@
-use crate::orbit::dbg::dump;
+use crate::orbit::dbg::{dump, info};
 use crate::orbit::key::Key;
 use crate::orbit::keyboard::Keyboard;
 use crate::orbit::peripherals::*;
@@ -20,11 +20,9 @@ impl Actions {
   #[allow(dead_code)]
   #[allow(unused)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
-    dump!("Actions::process");
-    // if key.is_pressed() {
-    //   keyboard.peripherals().output(Peripheral::PB9).set_high();
-    // } else {
-    //   keyboard.peripherals().output(Peripheral::PB9).set_low();
-    // }
+    if key.is_pressed() {
+      info!("key is pressed");
+      keyboard.report_keycode(0x0029);
+    }
   }
 }

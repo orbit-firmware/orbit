@@ -28,7 +28,7 @@ space_cadet = true
 row_count = 1
 col_count = 0
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["PB7"]
+row_pins = ["PB9"]
 col_pins = []
 layout = [[0,0]]
 

@@ -17,50 +17,62 @@ pub enum Modifier {
   RightGui = 0x1800,
 }
 
-pub fn lc(code: u16) -> u16 {
-  code | Modifier::LeftControl as u16
+pub fn lc(keycode: u16) -> u16 {
+  keycode | Modifier::LeftControl as u16
 }
 
-pub fn rc(code: u16) -> u16 {
-  code | Modifier::RightControl as u16
+pub fn rc(keycode: u16) -> u16 {
+  keycode | Modifier::RightControl as u16
 }
 
-pub fn r(code: u16) -> u16 {
-  lc(rc(code))
+pub fn r(keycode: u16) -> u16 {
+  lc(rc(keycode))
 }
 
-pub fn ls(code: u16) -> u16 {
-  code | Modifier::LeftShift as u16
+pub fn ls(keycode: u16) -> u16 {
+  keycode | Modifier::LeftShift as u16
 }
 
-pub fn rs(code: u16) -> u16 {
-  code | Modifier::RightShift as u16
+pub fn rs(keycode: u16) -> u16 {
+  keycode | Modifier::RightShift as u16
 }
 
-pub fn s(code: u16) -> u16 {
-  ls(rs(code))
+pub fn s(keycode: u16) -> u16 {
+  ls(rs(keycode))
 }
 
-pub fn la(code: u16) -> u16 {
-  code | Modifier::LeftAlt as u16
+pub fn la(keycode: u16) -> u16 {
+  keycode | Modifier::LeftAlt as u16
 }
 
-pub fn ra(code: u16) -> u16 {
-  code | Modifier::RightAlt as u16
+pub fn ra(keycode: u16) -> u16 {
+  keycode | Modifier::RightAlt as u16
 }
 
-pub fn a(code: u16) -> u16 {
-  la(ra(code))
+pub fn a(keycode: u16) -> u16 {
+  la(ra(keycode))
 }
 
-pub fn lg(code: u16) -> u16 {
-  code | Modifier::LeftGui as u16
+pub fn lg(keycode: u16) -> u16 {
+  keycode | Modifier::LeftGui as u16
 }
 
-pub fn rg(code: u16) -> u16 {
-  code | Modifier::RightGui as u16
+pub fn rg(keycode: u16) -> u16 {
+  keycode | Modifier::RightGui as u16
 }
 
-pub fn g(code: u16) -> u16 {
-  lg(rg(code))
+pub fn g(keycode: u16) -> u16 {
+  lg(rg(keycode))
+}
+
+pub fn has_modifier(keycode: u16) -> bool {
+  keycode & 0xFF00 != 0
+}
+
+pub fn get_modifier(keycode: u16) -> u16 {
+  keycode & 0xFF00
+}
+
+pub fn get_modifier_u8(keycode: u16) -> u8 {
+  (keycode >> 8) as u8
 }

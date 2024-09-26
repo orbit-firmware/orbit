@@ -1,63 +1,47 @@
-use core::cell::UnsafeCell;
-use core::option::Option;
-use core::sync::atomic::{AtomicBool, Ordering};
-use static_cell::StaticCell;
-
+use defmt::*;
+use embassy_futures::join::join;
 use embassy_time::Timer;
-use embassy_usb::{
-  class::hid::{HidReader, HidReaderWriter, HidWriter, ReportId, RequestHandler, State},
-  control::{InResponse, OutResponse},
-  driver::Driver,
-  Builder, Config, Handler,
-};
-
+use embassy_usb::class::hid::Config as HidConfig;
+use embassy_usb::class::hid::{HidReader, HidReaderWriter, HidWriter, State};
+use embassy_usb::driver::Driver;
+use embassy_usb::Builder;
+use embassy_usb::Config;
+use embassy_usb::UsbDevice;
+use static_cell::StaticCell;
 use usbd_hid::descriptor::{KeyboardReport, SerializedDescriptor};
 
-static USB_READY: AtomicBool = AtomicBool::new(false);
+use crate::orbit::config as OrbitConfig;
+use crate::orbit::handlers::{usb_ready, KeyboardDeviceHandler, KeyboardRequestHandler};
 
-use crate::orbit::dbg::*;
+pub const MAX_POWER: u16 = 500; // mA // could get this from config
+pub const READ_N: usize = 1;
+pub const WRITE_N: usize = 8;
+const USB_RETRY_TIME: u64 = 100; // ms
 
-use super::modifiers::s;
+pub struct Hid {}
 
-const READ_N: usize = 1;
-const WRITE_N: usize = 8;
-
-pub struct Hid<D: Driver<'static>> {
-  hid: Option<HidReaderWriter<'static, D, READ_N, WRITE_N>>,
-}
-
-impl<D: Driver<'static>> Hid<D> {
-  pub async fn new(driver: D) -> Self {
-    let mut hid = Hid { hid: None };
-
-    hid.configure(driver).await;
-
-    // let mut ready = async {
-    //   while !hid.usb_ready() {
-    //     Timer::after_millis(10).await;
-    //     info!("Waiting for USB to be ready");
-    //   }
-    // };
-
-    // ready.await;
-
-    hid
+impl Hid {
+  pub async fn ready() {
+    while !usb_ready() {
+      Timer::after_millis(USB_RETRY_TIME).await;
+    }
   }
 
-  pub fn usb_ready(&self) -> bool {
-    USB_READY.load(Ordering::SeqCst)
-  }
+  fn create_builder<D: Driver<'static>>(driver: D) -> Builder<'static, D> {
+    static CONFIG_DESC: StaticCell<[u8; 256]> = StaticCell::new();
+    static BOS_DESC: StaticCell<[u8; 256]> = StaticCell::new();
+    static MSOS_DESC: StaticCell<[u8; 128]> = StaticCell::new();
+    static CONTROL_BUF: StaticCell<[u8; 128]> = StaticCell::new();
 
-  async fn configure(&mut self, driver: D) {
+    // Create embassy-usb Config
     let mut config = Config::new(
       0x16c0, // VID 5824 (0x16c0) | For USB Keyboards
       0x27db, // PID 10203 (0x27db) | For USB Keyboards
     );
-    // TODO:
-    config.manufacturer = Some("Embassy");
-    config.product = Some("HID keyboard example");
-    config.serial_number = Some("12345678");
-    config.max_power = 100;
+    config.manufacturer = Some(OrbitConfig::MANUFACTURER);
+    config.product = Some(OrbitConfig::NAME);
+    config.serial_number = Some(OrbitConfig::SERIAL_NUMBER);
+    config.max_power = MAX_POWER;
     config.max_packet_size_0 = 64;
 
     // Required for windows compatibility.
@@ -67,122 +51,49 @@ impl<D: Driver<'static>> Hid<D> {
     config.device_protocol = 0x01;
     config.composite_with_iads = true;
 
-    // need a few statics to ensure the buffers are available for the lifetime of the USB device.
-    static STATE: StaticCell<State> = StaticCell::new();
-    static REQUEST_HANDLER: StaticCell<KeyboardRequest> = StaticCell::new();
-    static DEVICE_HANDLER: StaticCell<KeyboardDevice> = StaticCell::new();
-    static CONFIG_DESC: StaticCell<[u8; 256]> = StaticCell::new();
-    static BOS_DESC: StaticCell<[u8; 256]> = StaticCell::new();
-    static MSOS_DESC: StaticCell<[u8; 128]> = StaticCell::new();
-    static CONTROL_BUF: StaticCell<[u8; 128]> = StaticCell::new();
-
-    #[rustfmt::skip]
-    let mut builder = Builder::new(
+    Builder::new(
       driver,
       config,
+      // Create embassy-usb DeviceBuilder using the driver and config.
+      // It needs some buffers for building the descriptors.
       &mut CONFIG_DESC.init([0; 256])[..],
       &mut BOS_DESC.init([0; 256])[..],
+      // You can also add a Microsoft OS descriptor.
       &mut MSOS_DESC.init([0; 128])[..],
       &mut CONTROL_BUF.init([0; 128])[..],
-    );
+    )
+  }
 
-    builder.handler(DEVICE_HANDLER.init(KeyboardDevice::new()));
+  pub async fn init<D: Driver<'static>>(
+    driver: D,
+  ) -> (
+    UsbDevice<'static, D>,
+    HidReader<'static, D, READ_N>,
+    HidWriter<'static, D, WRITE_N>,
+  ) {
+    static STATE: StaticCell<State> = StaticCell::new();
+    static REQUEST_HANDLER: StaticCell<KeyboardRequestHandler> = StaticCell::new();
+    static DEVICE_HANDLER: StaticCell<KeyboardDeviceHandler> = StaticCell::new();
 
-    let config = embassy_usb::class::hid::Config {
+    let state = STATE.init(State::new());
+    let request_handler = REQUEST_HANDLER.init(KeyboardRequestHandler {});
+    let device_handler = DEVICE_HANDLER.init(KeyboardDeviceHandler::new());
+
+    let mut builder = Hid::create_builder::<D>(driver);
+    builder.handler(device_handler);
+
+    let config = HidConfig {
       report_descriptor: KeyboardReport::desc(),
-      request_handler: Some(REQUEST_HANDLER.init(KeyboardRequest {})),
+      request_handler: None,
       poll_ms: 60,
       max_packet_size: 8,
     };
 
-    self.hid = Some(HidReaderWriter::<'static, D, READ_N, WRITE_N>::new(
-      &mut builder,
-      STATE.init(State::new()),
-      config,
-    ));
+    let hid = HidReaderWriter::<D, READ_N, WRITE_N>::new(&mut builder, state, config);
 
     let mut usb = builder.build();
+    let (reader, writer) = hid.split();
 
-    usb.run().await;
-  }
-
-  pub fn split(
-    self,
-  ) -> (
-    HidReader<'static, D, READ_N>,
-    HidWriter<'static, D, WRITE_N>,
-  ) {
-    self.hid.unwrap().split()
-  }
-}
-
-struct KeyboardRequest {}
-
-impl RequestHandler for KeyboardRequest {
-  fn get_report(&mut self, id: ReportId, _buf: &mut [u8]) -> Option<usize> {
-    info!("Get report for {:?}", id);
-    None
-  }
-
-  fn set_report(&mut self, id: ReportId, data: &[u8]) -> OutResponse {
-    info!("Set report for {:?}: {=[u8]}", id, data);
-    OutResponse::Accepted
-  }
-
-  fn set_idle_ms(&mut self, id: Option<ReportId>, dur: u32) {
-    info!("Set idle rate for {:?} to {:?}", id, dur);
-  }
-
-  fn get_idle_ms(&mut self, id: Option<ReportId>) -> Option<u32> {
-    info!("Get idle rate for {:?}", id);
-    None
-  }
-}
-
-struct KeyboardDevice {
-  configured: AtomicBool,
-}
-
-impl KeyboardDevice {
-  fn new() -> Self {
-    KeyboardDevice {
-      configured: AtomicBool::new(false),
-    }
-  }
-}
-
-impl Handler for KeyboardDevice {
-  fn enabled(&mut self, enabled: bool) {
-    self.configured.store(false, Ordering::Relaxed);
-    if enabled {
-      info!("Device enabled");
-    } else {
-      info!("Device disabled");
-    }
-  }
-
-  fn reset(&mut self) {
-    self.configured.store(false, Ordering::Relaxed);
-    info!("Bus reset, the Vbus current limit is 100mA");
-  }
-
-  fn addressed(&mut self, addr: u8) {
-    self.configured.store(false, Ordering::Relaxed);
-    info!("USB address set to: {}", addr);
-  }
-
-  fn configured(&mut self, configured: bool) {
-    self.configured.store(configured, Ordering::Relaxed);
-    if configured {
-      if !USB_READY.load(Ordering::SeqCst) {
-        USB_READY.store(true, Ordering::SeqCst);
-      }
-      info!("Device configured, it may now draw up to the configured current limit from Vbus.")
-    } else {
-      if USB_READY.load(Ordering::SeqCst) {
-        USB_READY.store(false, Ordering::SeqCst);
-      }
-      info!("Device is no longer configured, the Vbus current limit is 100mA.");
-    }
+    (usb, reader, writer)
   }
 }

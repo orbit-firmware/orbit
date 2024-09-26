@@ -24,6 +24,7 @@ bind_interrupts!(struct Irqs {
     OTG_FS => usb_otg::InterruptHandler<peripherals::USB_OTG_FS>;
 });
 
+
 fn setup_clocks(config: &mut embassy_stm32::Config) {
   use embassy_stm32::rcc::*;
   config.rcc.hse = Some(Hse {
@@ -43,6 +44,12 @@ fn setup_clocks(config: &mut embassy_stm32::Config) {
   config.rcc.apb2_pre = APBPrescaler::DIV1;
   config.rcc.sys = Sysclk::PLL1_P;
 }
+
+
+
+
+
+
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {

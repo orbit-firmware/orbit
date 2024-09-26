@@ -23,6 +23,11 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let use_matrix: bool = toml::contains(&config, "matrix");
   let use_multiplexers: bool = toml::contains(&config, "multiplexers");
 
+  let mut serial_number: String = toml::get(&config, "keyboard/serial_number", false);
+  if serial_number.is_empty() {
+    serial_number = "00000001".to_string();
+  }
+
   {
     if !use_matrix && !use_multiplexers {
       println!("Missing matrix or multiplexers configuration!");
@@ -146,6 +151,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const VENDOR_ID: u16 = #vendor_id;
     pub const NAME: &str = #name;
     pub const MANUFACTURER: &str = #manufacturer;
+    pub const SERIAL_NUMBER: &str = #serial_number;
     pub const CHIP: &str = #chip;
     pub const KEY_COUNT: usize = #key_count;
 
