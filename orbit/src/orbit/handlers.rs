@@ -1,11 +1,12 @@
 use crate::orbit::hid::MAX_POWER;
 use core::sync::atomic::{AtomicBool, Ordering};
-use defmt::*;
 use embassy_usb::class::hid::{ReportId, RequestHandler};
 use embassy_usb::control::OutResponse;
 use embassy_usb::Handler;
 
 static USB_READY: AtomicBool = AtomicBool::new(false);
+
+use crate::orbit::dbg::info;
 
 pub fn usb_ready() -> bool {
   USB_READY.load(Ordering::SeqCst)

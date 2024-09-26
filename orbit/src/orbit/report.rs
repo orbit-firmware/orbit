@@ -4,6 +4,7 @@ use embassy_usb::class::hid::HidWriter;
 use embassy_usb::driver::Driver;
 use usbd_hid::descriptor::KeyboardReport;
 
+use crate::orbit::config;
 use crate::orbit::dbg::{info, warn};
 use crate::orbit::hid::WRITE_N;
 use crate::orbit::keycodes::KeyCode;
@@ -11,13 +12,11 @@ use crate::orbit::modifiers::*;
 
 use super::keycodes;
 
-const MODIFIER_COUNT: usize = 8;
 const KEY_CODE_REPORT_SIZE: usize = 6;
-const KEY_CODES_SIZE: usize = 2 * KEY_CODE_REPORT_SIZE;
-const BUFFER_SIZE: usize = 2 ^ MODIFIER_COUNT;
+const BUFFER_SIZE: usize = 16; // propably enough
 
 pub struct Report {
-  keycodes: [u16; KEY_CODES_SIZE],
+  keycodes: [u16; config::KEY_COUNT],
   buffer: [Option<KeyboardReport>; BUFFER_SIZE],
 }
 
@@ -26,6 +25,24 @@ impl Report {
     Report {
       keycodes: populate(|_| KeyCode::None as u16),
       buffer: populate(|_| None),
+    }
+  }
+
+  pub fn register_keycode(&mut self, keycode: u16) {
+    for code in self.keycodes.iter_mut() {
+      if *code == KeyCode::None as u16 {
+        *code = keycode;
+        break;
+      }
+    }
+  }
+
+  pub fn unregister_keycode(&mut self, keycode: u16) {
+    for code in self.keycodes.iter_mut() {
+      if *code == keycode {
+        *code = KeyCode::None as u16;
+        break;
+      }
     }
   }
 
@@ -79,6 +96,7 @@ impl Report {
           if let Some(keycode_idx) = keycode_idx {
             report.keycodes[keycode_idx] = *code as u8;
             any_buffer_written = true;
+            info!("Keycode {:?} added to buffer {:?}", code, buffer_idx);
           }
         }
       }
@@ -106,16 +124,6 @@ impl Report {
       }
     }
 
-    self.keycodes = populate(|_| KeyCode::None as u16);
     self.buffer = populate(|_| None);
-  }
-
-  pub fn add_keycode(&mut self, keycode: u16) {
-    for code in self.keycodes.iter_mut() {
-      if *code == KeyCode::None as u16 {
-        *code = keycode;
-        break;
-      }
-    }
   }
 }

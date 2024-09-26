@@ -1,4 +1,3 @@
-use defmt::*;
 use embassy_futures::join::join;
 use embassy_time::Timer;
 use embassy_usb::class::hid::Config as HidConfig;

@@ -74,8 +74,12 @@ impl Keyboard {
     &mut self.keys[index]
   }
 
-  pub fn report_keycode(&mut self, keycode: u16) {
-    self.report.add_keycode(keycode);
+  pub fn register_keycode(&mut self, keycode: u16) {
+    self.report.register_keycode(keycode);
+  }
+
+  pub fn unregister_keycode(&mut self, keycode: u16) {
+    self.report.unregister_keycode(keycode);
   }
 
   pub fn peripherals(&mut self) -> &mut Peripherals {
