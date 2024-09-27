@@ -8,6 +8,7 @@ vendor_id = 0x0000
 name = "Devboard"
 manufacturer = "Devboard"
 chip = "stm32f411ceu"
+storage = 256
 
 [settings]
 keycodes = "german"

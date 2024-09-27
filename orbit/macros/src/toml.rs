@@ -78,6 +78,18 @@ impl FromTomlValue for bool {
   }
 }
 
+impl FromTomlValue for u8 {
+  fn from_value(value: &Value, required: bool) -> Option<Self> {
+    if let Value::Integer(i) = value {
+      Some(*i as u8)
+    } else if !required {
+      Some(0)
+    } else {
+      None
+    }
+  }
+}
+
 impl FromTomlValue for u16 {
   fn from_value(value: &Value, required: bool) -> Option<Self> {
     if let Value::Integer(i) = value {
@@ -259,8 +271,7 @@ pub fn set_package_name(filepath: &str, name: &str) {
       .or_insert_with(|| toml::Value::Table(toml::map::Map::new()));
 
     if let toml::Value::Table(ref mut package_table) = package_table {
-      package_table
-        .insert("name".to_string(), toml::Value::String(name.to_string()));
+      package_table.insert("name".to_string(), toml::Value::String(name.to_string()));
     }
   }
 

@@ -16,6 +16,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let name: String = toml::get(&config, "keyboard/name", true);
   let manufacturer: String = toml::get(&config, "keyboard/manufacturer", true);
   let chip: String = toml::get(&config, "keyboard/chip", true);
+  let storage: u16 = toml::get(&config, "keyboard/storage", true);
 
   let debounce_time: u16 = toml::get(&config, "settings/debounce_time", true);
   let tapping_term: u16 = toml::get(&config, "settings/tapping_term", true);
@@ -153,6 +154,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const MANUFACTURER: &str = #manufacturer;
     pub const SERIAL_NUMBER: &str = #serial_number;
     pub const CHIP: &str = #chip;
+    pub const STORAGE: u16 = #storage;
     pub const KEY_COUNT: usize = #key_count;
 
     // settings

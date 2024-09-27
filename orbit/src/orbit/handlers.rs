@@ -50,6 +50,9 @@ impl KeyboardDeviceHandler {
 impl Handler for KeyboardDeviceHandler {
   fn enabled(&mut self, enabled: bool) {
     self.configured.store(false, Ordering::Relaxed);
+    if !USB_READY.load(Ordering::SeqCst) {
+      USB_READY.store(false, Ordering::SeqCst);
+    }
     if enabled {
       info!("Device enabled");
     } else {
@@ -59,11 +62,17 @@ impl Handler for KeyboardDeviceHandler {
 
   fn reset(&mut self) {
     self.configured.store(false, Ordering::Relaxed);
+    if !USB_READY.load(Ordering::SeqCst) {
+      USB_READY.store(false, Ordering::SeqCst);
+    }
     info!("Bus reset, the Vbus current limit is {}mA", MAX_POWER);
   }
 
   fn addressed(&mut self, addr: u8) {
     self.configured.store(false, Ordering::Relaxed);
+    if !USB_READY.load(Ordering::SeqCst) {
+      USB_READY.store(false, Ordering::SeqCst);
+    }
     info!("USB address set to: {}", addr);
   }
 

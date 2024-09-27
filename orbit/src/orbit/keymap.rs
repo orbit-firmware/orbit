@@ -1,11 +1,11 @@
-use crate::orbit::config;
+use crate::orbit::config as Orbit;
 use core::option::Option;
 use heapless::String;
 
 const MAX_LAYERS: usize = 16;
 
 pub struct KeyMap {
-  data: [Option<String<32>>; config::KEY_COUNT * config::BEHAVIOR_COUNT * MAX_LAYERS],
+  data: [Option<String<32>>; Orbit::KEY_COUNT * Orbit::BEHAVIOR_COUNT * MAX_LAYERS],
 }
 
 impl KeyMap {
@@ -31,6 +31,6 @@ impl KeyMap {
   }
 
   fn get_index(&self, key: usize, layer: usize, behavior: usize) -> usize {
-    key * config::BEHAVIOR_COUNT * MAX_LAYERS + behavior * MAX_LAYERS + layer
+    key * Orbit::BEHAVIOR_COUNT * MAX_LAYERS + behavior * MAX_LAYERS + layer
   }
 }

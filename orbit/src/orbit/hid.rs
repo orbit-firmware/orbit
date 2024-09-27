@@ -7,15 +7,77 @@ use embassy_usb::Builder;
 use embassy_usb::Config;
 use embassy_usb::UsbDevice;
 use static_cell::StaticCell;
-use usbd_hid::descriptor::{KeyboardReport, SerializedDescriptor};
 
-use crate::orbit::config as OrbitConfig;
+use crate::orbit::config as Orbit;
+use crate::orbit::dbg::info;
 use crate::orbit::handlers::{usb_ready, KeyboardDeviceHandler, KeyboardRequestHandler};
 
 pub const MAX_POWER: u16 = 500; // mA // could get this from config
 pub const READ_N: usize = 1;
 pub const WRITE_N: usize = 8;
+
 const USB_RETRY_TIME: u64 = 100; // ms
+
+const HID_REPORT_DESCRIPTOR: &[u8] = &[
+  0x05, 0x01, // Usage Page (Generic Desktop),
+  0x09, 0x06, // Usage (Keyboard),
+  0xA1, 0x01, // Collection (Application),
+  0x75, 0x01, // Report Size (1),
+  0x95, 0x08, // Report Count (8),
+  0x05, 0x07, // Usage Page (Key Codes),
+  0x19, 0xE0, // Usage Minimum (224),
+  0x29, 0xE7, // Usage Maximum (231),
+  0x15, 0x00, // Logical Minimum (0),
+  0x25, 0x01, // Logical Maximum (1),
+  0x81, 0x02, // Input (Data, Variable, Absolute),Modifier byte
+  0x95, 0x01, // Report Count (1),
+  0x75, 0x08, // Report Size (8),
+  0x81, 0x03, // Input (Constant), Reserved byte
+  0x95, 0x05, // Report Count (5),
+  0x75, 0x01, // Report Size (1),
+  0x05, 0x08, // Usage Page (LEDs),
+  0x19, 0x01, // Usage Minimum (1),
+  0x29, 0x05, // Usage Maximum (5),
+  0x91, 0x02, // Output (Data, Variable, Absolute), LED report
+  0x95, 0x01, // Report Count (1),
+  0x75, 0x03, // Report Size (3),
+  0x91, 0x03, // Output (Constant), LED report
+  0x95, 0x06, // Report Count (6),
+  0x75, 0x08, // Report Size (8),
+  0x15, 0x00, // Logical Minimum (0),
+  0x25, 0x68, // Logical Maximum(104),
+  0x05, 0x07, // Usage Page (Key Codes),
+  0x19, 0x00, // Usage Minimum (0),
+  0x29, 0x68, // Usage Maximum (104),
+  0x81, 0x00, // Input (Data, Array),
+  0xc0, // End Collection
+];
+
+pub struct Report {
+  pub modifier: u8,
+  pub reserved: u8,
+  pub keycodes: [u8; 6],
+}
+
+impl Default for Report {
+  fn default() -> Report {
+    Report {
+      modifier: 0,
+      reserved: 0,
+      keycodes: [0; 6],
+    }
+  }
+}
+
+impl Report {
+  pub fn serialize(&self) -> [u8; 8] {
+    let mut buf = [0; 8];
+    buf[0] = self.modifier;
+    buf[1] = self.reserved;
+    buf[2..8].copy_from_slice(&self.keycodes);
+    buf
+  }
+}
 
 pub struct Hid {}
 
@@ -37,9 +99,9 @@ impl Hid {
       0x16c0, // VID 5824 (0x16c0) | For USB Keyboards
       0x27db, // PID 10203 (0x27db) | For USB Keyboards
     );
-    config.manufacturer = Some(OrbitConfig::MANUFACTURER);
-    config.product = Some(OrbitConfig::NAME);
-    config.serial_number = Some(OrbitConfig::SERIAL_NUMBER);
+    config.manufacturer = Some(Orbit::MANUFACTURER);
+    config.product = Some(Orbit::NAME);
+    config.serial_number = Some(Orbit::SERIAL_NUMBER);
     config.max_power = MAX_POWER;
     config.max_packet_size_0 = 64;
 
@@ -82,7 +144,7 @@ impl Hid {
     builder.handler(device_handler);
 
     let config = HidConfig {
-      report_descriptor: KeyboardReport::desc(),
+      report_descriptor: HID_REPORT_DESCRIPTOR,
       request_handler: None,
       poll_ms: 60,
       max_packet_size: 8,

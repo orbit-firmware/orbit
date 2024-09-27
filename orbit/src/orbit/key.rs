@@ -1,4 +1,4 @@
-use crate::orbit::config;
+use crate::orbit::config as Orbit;
 use crate::orbit::dbg::*;
 use crate::orbit::features::*;
 use crate::orbit::keyboard::Keyboard;
@@ -56,7 +56,7 @@ impl Key {
       #[cfg(feature = "behavior_tap_enabled")]
       taps: 0,
       #[cfg(feature = "behavior_tap_enabled")]
-      tapping_term: config::TAPPING_TERM,
+      tapping_term: Orbit::TAPPING_TERM,
       delay: 0,
       timestamp: 0,
       debounce_timestamp: 0,
@@ -174,15 +174,9 @@ impl Key {
 
     if self.is_sendable() {
       if self.has_state(SEND_ONESHOT) {
-        info!("send_oneshot");
         self.send_key(keyboard, true);
         self.send_key(keyboard, false);
       } else {
-        if self.is_pressed() {
-          info!("send_press");
-        } else {
-          info!("send_release");
-        }
         self.send_key(keyboard, self.is_pressed());
       }
       self.state &= !SEND_ENABLED;
@@ -236,7 +230,7 @@ impl Key {
   }
 
   fn detect_interrupt(&mut self, keyboard: &mut Keyboard) {
-    for k in 0..config::KEY_COUNT {
+    for k in 0..Orbit::KEY_COUNT {
       let key: &Key = keyboard.key(k);
       if key.index != self.index && key.just_pressed() && !self.has_state(INTERRUPT) {
         self.state |= INTERRUPT;
@@ -293,7 +287,7 @@ impl Key {
 
   fn debounce(&mut self, wanted_state: bool) -> bool {
     if self.has_state(DEBOUNCING) {
-      if time::elapsed(self.debounce_timestamp) >= config::DEBOUNCE_TIME {
+      if time::elapsed(self.debounce_timestamp) >= Orbit::DEBOUNCE_TIME {
         self.del_state(DEBOUNCING);
       } else {
         return self.is_pressed();

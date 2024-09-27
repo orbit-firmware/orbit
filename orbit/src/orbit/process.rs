@@ -6,12 +6,11 @@ mod stm32 {
   use crate::orbit::keyboard::Keyboard;
   use embassy_usb::driver::Driver;
 
+  use crate::orbit::config as Orbit;
   use crate::orbit::dbg::*;
-  use crate::orbit::hid::Hid;
-  use crate::orbit::peripherals::*;
-  use embassy_futures::join::join;
 
   pub async fn run<D: Driver<'static>>(driver: D) {
+    info!("Running on STM32 {:?}", Orbit::STORAGE);
     Keyboard::instance().process(driver).await;
   }
 }

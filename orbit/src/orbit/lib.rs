@@ -8,4 +8,5 @@ mod keymap;
 mod modifiers;
 mod peripherals;
 mod process;
+mod storage;
 mod time;

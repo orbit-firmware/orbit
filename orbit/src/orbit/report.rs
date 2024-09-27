@@ -2,128 +2,142 @@ use core::array::from_fn as populate;
 use core::option::Option;
 use embassy_usb::class::hid::HidWriter;
 use embassy_usb::driver::Driver;
-use usbd_hid::descriptor::KeyboardReport;
 
-use crate::orbit::config;
-use crate::orbit::dbg::{info, warn};
-use crate::orbit::hid::WRITE_N;
+use crate::orbit::config as Orbit;
+use crate::orbit::dbg::warn;
+use crate::orbit::hid::{Report, WRITE_N};
 use crate::orbit::keycodes::KeyCode;
 use crate::orbit::modifiers::*;
 
-use super::keycodes;
+use super::dbg::info;
 
-const KEY_CODE_REPORT_SIZE: usize = 6;
 const BUFFER_SIZE: usize = 16; // propably enough
 
-pub struct Report {
-  keycodes: [u16; config::KEY_COUNT],
-  buffer: [Option<KeyboardReport>; BUFFER_SIZE],
+struct Code {
+  code: u16,
+  keycode: u8,
+  modifier: u8,
+  sent_once: bool,
+  delete: bool,
 }
 
-impl Report {
-  pub fn new() -> Report {
-    Report {
-      keycodes: populate(|_| KeyCode::None as u16),
-      buffer: populate(|_| None),
+impl Code {
+  fn new(code: u16) -> Code {
+    let modifier = get_modifier_u8(code);
+    let keycode = code as u8;
+    Code {
+      code,
+      keycode,
+      modifier,
+      sent_once: false,
+      delete: false,
+    }
+  }
+}
+
+pub struct Reports {
+  codes: [Option<Code>; Orbit::KEY_COUNT],
+  reports: [Option<Report>; BUFFER_SIZE],
+}
+
+impl Reports {
+  pub fn new() -> Reports {
+    Reports {
+      codes: populate(|_| None),
+      reports: populate(|_| None),
     }
   }
 
-  pub fn register_keycode(&mut self, keycode: u16) {
-    for code in self.keycodes.iter_mut() {
-      if *code == KeyCode::None as u16 {
-        *code = keycode;
+  pub fn add(&mut self, keycode: u16) {
+    for (i, report) in self.codes.iter().enumerate() {
+      if report.is_none() {
+        self.codes[i] = Some(Code::new(keycode));
         break;
       }
     }
   }
 
-  pub fn unregister_keycode(&mut self, keycode: u16) {
-    for code in self.keycodes.iter_mut() {
-      if *code == keycode {
-        *code = KeyCode::None as u16;
-        break;
+  pub fn remove(&mut self, keycode: u16) {
+    for (i, code_opt) in self.codes.iter_mut().enumerate() {
+      if let Some(ref mut code) = code_opt {
+        if code.code == keycode {
+          code.delete = true;
+          break;
+        }
       }
     }
   }
 
-  fn get_free_buffer(&self, modifiers: u8) -> Option<(usize, usize)> {
-    for (i, report_opt) in self.buffer.iter().enumerate() {
-      if report_opt.is_none() {
-        return Some((i, 0));
-      } else {
-        let report = report_opt.unwrap();
-        if report.modifier == modifiers {
-          if let Some(free_idx) = report.keycodes.iter().position(|&x| x == 0) {
-            return Some((i, free_idx));
-          } else {
-            continue;
+  fn get_buf(&self, code: &Code) -> Option<(usize, usize)> {
+    for (report_index, report) in self.reports.iter().enumerate() {
+      if report.is_none() {
+        return Some((report_index, 0));
+      }
+
+      if let Some(ref report) = report {
+        if report.modifier == code.modifier {
+          if let Some(keycode_index) = report.keycodes.iter().position(|&x| x == 0) {
+            return Some((report_index, keycode_index));
           }
         }
       }
     }
+
     None
   }
 
-  fn fill_buffers(&mut self) -> bool {
-    let mut any_buffer_written = false;
-    let keycodes = &self.keycodes;
+  fn fill(&mut self) -> bool {
+    let mut any = false;
+    let codes = &self.codes;
 
-    for code in keycodes {
-      if *code == KeyCode::None as u16 {
-        break;
-      }
+    for (i, code) in codes.iter().enumerate() {
+      if let Some(code) = code {
+        if let Some((report_index, keycode_index)) = self.get_buf(code) {
+          // create buffer if it doesn't exist
+          if self.reports[report_index].is_none() {
+            let mut report = Report::default();
+            report.modifier = code.modifier;
+            self.reports[report_index] = Some(report);
+          }
 
-      let mut buffer_idx: Option<usize> = None;
-      let mut keycode_idx: Option<usize> = None;
-
-      let modifier = get_modifier_u8(*code);
-      if let Some((b, k)) = self.get_free_buffer(modifier) {
-        buffer_idx = Some(b);
-        keycode_idx = Some(k);
-      }
-
-      // create buffer if it doesn't exist
-      if let Some(buffer_idx) = buffer_idx {
-        if self.buffer[buffer_idx].is_none() {
-          self.buffer[buffer_idx] = Some(KeyboardReport {
-            keycodes: [0; KEY_CODE_REPORT_SIZE],
-            leds: 0,
-            modifier,
-            reserved: 0,
-          });
-        }
-        if let Some(ref mut report) = self.buffer[buffer_idx] {
-          if let Some(keycode_idx) = keycode_idx {
-            report.keycodes[keycode_idx] = *code as u8;
-            any_buffer_written = true;
-            info!("Keycode {:?} added to buffer {:?}", code, buffer_idx);
+          if let Some(ref mut report) = self.reports[report_index] {
+            report.keycodes[keycode_index] = code.keycode;
+            any = true;
           }
         }
       }
     }
 
-    any_buffer_written
+    any
   }
 
   pub async fn process<D: Driver<'static>>(&mut self, writer: &mut HidWriter<'static, D, WRITE_N>) {
-    if !self.fill_buffers() {
-      self.buffer[0] = Some(KeyboardReport {
-        keycodes: [0; KEY_CODE_REPORT_SIZE],
-        leds: 0,
-        modifier: 0,
-        reserved: 0,
-      });
+    for (i, code_opt) in self.codes.iter_mut().enumerate() {
+      if let Some(ref mut code) = code_opt {
+        if code.delete && code.sent_once {
+          self.codes[i] = None;
+          break;
+        }
+        code.sent_once = true;
+      }
     }
 
-    for report_opt in self.buffer.iter_mut() {
-      if let Some(report) = report_opt {
-        match writer.write_serialize(report).await {
+    let any: bool = self.fill();
+
+    // send empty report if no keycodes are pressed
+    if !any {
+      self.reports[0] = Some(Report::default());
+    }
+
+    for report_opt in self.reports.iter_mut() {
+      if let Some(ref mut report) = report_opt {
+        match writer.write(&report.serialize()).await {
           Ok(()) => {}
           Err(e) => warn!("Failed to send report: {:?}", e),
         }
       }
     }
 
-    self.buffer = populate(|_| None);
+    self.reports = populate(|_| None);
   }
 }

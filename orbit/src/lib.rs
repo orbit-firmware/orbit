@@ -12,5 +12,6 @@ mod orbit {
   pub mod peripherals;
   pub mod process;
   pub mod report;
+  pub mod storage;
   pub mod time;
 }
