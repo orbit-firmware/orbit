@@ -37,7 +37,7 @@ pub fn generate_chip_peripherals(
   };
 
   let output_declaration = quote! {
-    [#(Output::new(p.#outputs, Level::High, Speed::VeryHigh).degrade(),)*]
+    [#(Output::new(p.#outputs, Level::Low, Speed::VeryHigh).degrade(),)*]
   };
 
   (

@@ -7,11 +7,10 @@ use embassy_usb::driver::Driver;
 
 use crate::orbit::config as Orbit;
 use crate::orbit::dbg::{info, warn};
-use crate::orbit::hid::Hid;
+use crate::orbit::hid;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
 use crate::orbit::report::Reports;
-use crate::orbit::storage::Storage;
 
 static KEYBOARD_INITIIALIZED: AtomicBool = AtomicBool::new(false);
 static mut KEYBOARD_INSTANCE: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
@@ -38,7 +37,7 @@ impl Keyboard {
   }
 
   fn new() -> Self {
-    assert!(Orbit::KEY_COUNT > 0);
+    assert!(Orbit::KEY_COUNT > 0, "No keys defined");
     Self {
       peripherals: Peripherals::new(),
       keys: populate(Key::new),
@@ -56,14 +55,15 @@ impl Keyboard {
   }
 
   pub async fn process<D: Driver<'static>>(&mut self, driver: D) {
-    let (mut usb, reader, mut writer) = Hid::init(driver).await;
+    let (mut usb, reader, mut writer) = hid::keyboard::init(driver).await;
 
     let mut writer = &mut writer;
     let process = async {
       loop {
-        Hid::ready().await;
-        self.scan();
-        self.reports.process(&mut writer).await;
+        if hid::keyboard::ready().await {
+          self.scan();
+          self.reports.process(&mut writer).await;
+        }
       }
     };
 
@@ -71,7 +71,7 @@ impl Keyboard {
   }
 
   pub fn key(&mut self, index: usize) -> &mut Key {
-    assert!(index < Orbit::KEY_COUNT, "Index out of bounds");
+    assert!(index < Orbit::KEY_COUNT, "Key Index not present");
     &mut self.keys[index]
   }
 
@@ -88,40 +88,69 @@ impl Keyboard {
   }
 
   fn scan(&mut self) {
-    if Orbit::USE_MATRIX {
-      self.scan_matrix();
-    }
+    #[cfg(feature = "matrix_scan")]
+    self.scan_matrix();
 
-    if Orbit::USE_MULTIPLEXERS {
-      // self.scan_multiplexers();
-    }
+    #[cfg(feature = "multiplexers_scan")]
+    self.scan_multiplexers();
   }
 
+  #[cfg(feature = "matrix_scan")]
   fn scan_matrix(&mut self) {
     let keys = &mut self.keys;
     let peri = &mut self.peripherals;
 
     for k in 0..Orbit::LAYOUT.len() {
       let mut state = false;
-
       let pair = &Orbit::LAYOUT[k];
-      if pair.len() == 2 {
-        let row = pair[0];
-        let col = pair[1];
-        if row == Peripheral::None && col == Peripheral::None {
-          continue;
-        } else if row != Peripheral::None && col != Peripheral::None {
-          let s1 = peri.input(row).is_high();
-          let s2 = peri.input(col).is_high();
-          state = s1 && s2;
-        } else if row != Peripheral::None {
-          state = peri.input(row).is_high();
-        } else if col != Peripheral::None {
-          state = peri.input(col).is_high();
-        }
+      if pair.len() != 2 {
+        continue;
+      }
+
+      let row = pair[0];
+      let col = pair[1];
+      if row == Peripheral::None && col == Peripheral::None {
+        continue;
+      } else if row != Peripheral::None && col != Peripheral::None {
+        let s1 = peri.input(row).is_high();
+        let s2 = peri.input(col).is_high();
+        state = s1 && s2;
+      } else if row != Peripheral::None {
+        state = peri.input(row).is_high();
+      } else if col != Peripheral::None {
+        state = peri.input(col).is_high();
       }
 
       keys[k].process(state);
+    }
+  }
+
+  #[cfg(feature = "multiplexers_scan")]
+  fn scan_multiplexers(&mut self) {
+    let mut state = false;
+    let keys = &mut self.keys;
+    let peri = &mut self.peripherals;
+    let num_bits = Orbit::MULTIPLEXER_CHANNELS
+      .next_power_of_two()
+      .trailing_zeros() as usize;
+
+    for k in 0..Orbit::LAYOUT.len() {
+      let mut state = false;
+      let pair = &Orbit::LAYOUT[k];
+      let com = pair.0;
+      let sel = pair.1 as usize & ((1 << num_bits) - 1) as usize;
+
+      for (i, pin) in Orbit::MULTIPLEXER_SEL_PINS.iter().enumerate() {
+        if (sel & (1 << i)) != 0 {
+          peri.output(*pin).set_low();
+        } else {
+          peri.output(*pin).set_high();
+        }
+      }
+
+      let mut state = peri.input(com).read();
+      info!("{}", state);
+      // keys[k].process(state);
     }
   }
 }

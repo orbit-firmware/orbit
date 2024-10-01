@@ -5,7 +5,7 @@ use embassy_usb::driver::Driver;
 
 use crate::orbit::config as Orbit;
 use crate::orbit::dbg::warn;
-use crate::orbit::hid::{Report, WRITE_N};
+use crate::orbit::hid::keyboard::{Report, WRITE_N};
 use crate::orbit::keycodes::KeyCode;
 use crate::orbit::modifiers::*;
 

@@ -6,6 +6,7 @@ use panic_halt as _;
 #[cfg(feature = "debug")]
 use {defmt_rtt as _, panic_probe as _};
 
+use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::{
   bind_interrupts,

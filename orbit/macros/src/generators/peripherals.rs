@@ -45,10 +45,8 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   }
 
   if use_multiplexers {
-    let sel_pins: Vec<String> =
-      toml::get(&config, "multiplexers/sel_pins", true);
-    let com_pins: Vec<String> =
-      toml::get(&config, "multiplexers/com_pins", true);
+    let sel_pins: Vec<String> = toml::get(&config, "multiplexers/sel_pins", true);
+    let com_pins: Vec<String> = toml::get(&config, "multiplexers/com_pins", true);
     for sel in sel_pins.clone() {
       let ident = Ident::new(&sel, Span::call_site());
       outputs.push(ident);
@@ -117,6 +115,11 @@ fn generate_orbit_io() -> TokenStream {
       pub fn is_low(&mut self) -> bool {
         self.0.is_low().unwrap_or(false)
       }
+
+      #[allow(dead_code)]
+      pub fn read(&mut self) -> u16 {
+        0
+      }
     }
 
     pub struct OrbitOutputPin<'a>(&'a mut dyn OutputPin<Error = Infallible>);
@@ -137,18 +140,12 @@ fn generate_orbit_io() -> TokenStream {
 }
 
 #[cfg(feature = "chip_type_none")]
-fn generate_peripherals(
-  inputs: &Vec<Ident>,
-  outputs: &Vec<Ident>,
-) -> TokenStream {
+fn generate_peripherals(inputs: &Vec<Ident>, outputs: &Vec<Ident>) -> TokenStream {
   panic!("No chip type defined in keyboard.toml");
 }
 
 #[cfg(not(feature = "chip_type_none"))]
-fn generate_peripherals(
-  inputs: &Vec<Ident>,
-  outputs: &Vec<Ident>,
-) -> TokenStream {
+fn generate_peripherals(inputs: &Vec<Ident>, outputs: &Vec<Ident>) -> TokenStream {
   let input_count = inputs.len();
   let output_count = outputs.len();
 
@@ -160,8 +157,7 @@ fn generate_peripherals(
   let mut output_declaration = quote! {};
 
   (
-    header, init, input_definition, input_declaration, output_definition,
-    output_declaration,
+    header, init, input_definition, input_declaration, output_definition, output_declaration,
   ) = generate_chip_peripherals(inputs, outputs);
 
   quote! {
@@ -192,7 +188,7 @@ fn generate_peripherals(
       #[allow(dead_code)]
       pub fn output(&mut self, pin: Peripheral) -> OrbitOutputPin {
         let index = pin.index();
-        OrbitOutputPin(&mut self.outputs[index])
+        OrbitOutputPin(&mut self.outputs[index - #input_count])
       }
     }
   }

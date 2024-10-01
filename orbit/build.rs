@@ -36,10 +36,10 @@ pub fn main() {
     std::process::exit(1);
   }
   let keyboard_name = args.get(1).unwrap();
-  let mut input_features: Vec<String> = vec![];
+  let mut argument_features: Vec<String> = vec![];
   if args.len() == 3 {
     let features = args.get(2).unwrap();
-    input_features = features.split(",").map(|s| s.to_string()).collect();
+    argument_features = features.split(",").map(|s| s.to_string()).collect();
   }
   let (keyboard, keyboard_toml) = get_keyboard(&keyboard_name);
   let (chip_name, chip_dir, chip_toml) = get_chip(&keyboard);
@@ -51,16 +51,22 @@ pub fn main() {
   merge_toml(
     &keyboard_toml, "user/keyboard.toml", "build/keyboard.toml", false,
   );
-  configure(&keyboard, &chip_name, &keyboard_name, &input_features);
+  configure(&keyboard, &chip_name, &keyboard_name, &argument_features);
   prepare_orbit_module();
   save_last_build_cfg(&keyboard_name, &chip_name);
   ok!("Pre-Compile completed!");
 }
 
-fn configure(keyboard: &Value, chip_name: &str, keyboard_name: &str, input_features: &Vec<String>) {
+fn configure(
+  keyboard: &Value,
+  chip_name: &str,
+  keyboard_name: &str,
+  argument_features: &Vec<String>,
+) {
   let chip_type: &str = get_chip_type(chip_name);
 
   let mut content = read_toml("build/Cargo.toml");
+  let mut keyboard_content = read_toml("build/keyboard.toml");
 
   content["package"]["name"] = Value::String(keyboard_name.to_string());
   content["dependencies"]["orbit-macros"]["features"] =
@@ -71,9 +77,28 @@ fn configure(keyboard: &Value, chip_name: &str, keyboard_name: &str, input_featu
   for feature in enabled_features {
     features.push(Value::String(feature));
   }
-  for feature in input_features {
+  for feature in argument_features {
     features.push(Value::String(feature.to_string()));
   }
+
+  let has_matrix_scan = keyboard_content.get("matrix").is_some();
+  let has_multiplexers_scan = keyboard_content.get("multiplexers").is_some();
+  if has_matrix_scan && has_multiplexers_scan {
+    panic!("Error: Both 'matrix_scan' and 'multiplexer_scan' cannot exist simultaneously.");
+  } else {
+    if has_matrix_scan {
+      features.push(Value::String("matrix_scan".to_string()));
+    }
+    if has_multiplexers_scan {
+      features.push(Value::String("multiplexers_scan".to_string()));
+    }
+  }
+
+  let has_analogue_read = keyboard_content.get("settings/analogue_read").is_some();
+  if has_analogue_read {
+    features.push(Value::String("analogue_read".to_string()));
+  }
+
   content["features"]["default"] = Value::Array(features.clone());
   write_toml("build/Cargo.toml", &content);
 }

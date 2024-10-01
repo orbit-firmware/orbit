@@ -42,6 +42,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   }
 
   let mut layout = vec![];
+  let mut layout_def = quote! {};
 
   // get the behavior count from the current configuration
   let mut behavior_count: usize = 0;
@@ -66,11 +67,23 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let row_count = row_pins.len() as usize;
     let col_count = col_pins.len() as usize;
 
+    let mut row_pin_idents = vec![];
+    for pin in row_pins.clone() {
+      let row_ident = Ident::new(&pin, proc_macro2::Span::call_site());
+      row_pin_idents.push(row_ident);
+    }
+
+    let mut col_pin_idents = vec![];
+    for pin in col_pins.clone() {
+      let col_ident = Ident::new(&pin, proc_macro2::Span::call_site());
+      col_pin_idents.push(col_ident);
+    }
+
     matrix = quote! {
       pub const MATRIX_ROW_COUNT: usize = #row_count;
       pub const MATRIX_COL_COUNT: usize = #col_count;
-      pub const MATRIX_ROW_PINS: [&str; #row_count] = [#(#row_pins),*];
-      pub const MATRIX_COL_PINS: [&str; #col_count] = [#(#col_pins),*];
+      pub const MATRIX_ROW_PINS: [&str; #row_count] = [#(Peripheral::#row_pin_idents),*];
+      pub const MATRIX_COL_PINS: [&str; #col_count] = [#(Peripheral::#col_pin_idents),*];
     };
 
     key_count = layout_list.len();
@@ -83,7 +96,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
       let mut col_ident = Ident::new("None", proc_macro2::Span::call_site());
       if col_pins.len() > 0 {
-        let col: String = col_pins[key.0].clone();
+        let col: String = col_pins[key.1].clone();
         col_ident = Ident::new(&col, proc_macro2::Span::call_site());
       }
 
@@ -93,6 +106,10 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             Peripheral::#col_ident
           ]
       });
+    }
+
+    layout_def = quote! {
+      pub const LAYOUT: [[Peripheral; 2]; #key_count] = [#(#layout),*];
     }
   }
 
@@ -112,35 +129,47 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let com_pins: Vec<String> = toml::get(&config, "multiplexers/com_pins", true);
     let sel_count = (channels / MULTIPLEXER_SEL_DEVIDER) as usize;
 
+    let mut sel_pin_idents = vec![];
+    for pin in sel_pins.clone() {
+      let sel_ident = Ident::new(&pin, proc_macro2::Span::call_site());
+      sel_pin_idents.push(sel_ident);
+    }
+
+    let mut com_pin_idents = vec![];
+    for pin in com_pins.clone() {
+      let com_ident = Ident::new(&pin, proc_macro2::Span::call_site());
+      com_pin_idents.push(com_ident);
+    }
+
     multiplexers = quote! {
       pub const MULTIPLEXER_COUNT: usize = #count;
       pub const MULTIPLEXER_CHANNELS: usize = #channels;
       pub const MULTIPLEXER_SEL_COUNT: usize = #sel_count;
-      pub const MULTIPLEXER_SEL_PINS: [&str; #sel_count] = [#(#sel_pins),*];
+      pub const MULTIPLEXER_SEL_PINS: [Peripheral; #sel_count] = [#(Peripheral::#sel_pin_idents),*];
       pub const MULTIPLEXER_COM_COUNT: usize = #count;
-      pub const MULTIPLEXER_COM_PINS: [&str; #count] = [#(#com_pins),*];
+      pub const MULTIPLEXER_COM_PINS: [Peripheral; #count] = [#(Peripheral::#com_pin_idents),*];
     };
 
     key_count = layout_list.len();
     for key in layout_list {
-      let mut sel_ident = Ident::new("None", proc_macro2::Span::call_site());
-      if sel_pins.len() > 0 {
-        let sel: String = sel_pins[key.0].clone();
-        sel_ident = Ident::new(&sel, proc_macro2::Span::call_site());
-      }
-
       let mut com_ident = Ident::new("None", proc_macro2::Span::call_site());
       if com_pins.len() > 0 {
         let com: String = com_pins[key.0].clone();
         com_ident = Ident::new(&com, proc_macro2::Span::call_site());
       }
 
+      let sel: u16 = key.1 as u16;
+
       layout.push(quote! {
-          [
-            Peripheral::#sel_ident,
-            Peripheral::#com_ident
-          ]
+          (
+            Peripheral::#com_ident,
+            #sel
+          )
       });
+    }
+
+    layout_def = quote! {
+      pub const LAYOUT: [(Peripheral, u16); #key_count] = [#(#layout),*];
     }
   }
 
@@ -166,7 +195,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const USE_MATRIX: bool = #use_matrix;
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
 
-    pub const LAYOUT: [[Peripheral; 2]; #key_count] = [#(#layout),*];
+    #layout_def
 
     #matrix
     #multiplexers

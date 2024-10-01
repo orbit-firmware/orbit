@@ -26,14 +26,24 @@ mouse = true
 [flavors]
 space_cadet = true
 
-[matrix]
-row_count = 1
-col_count = 0
+# [matrix]
+# row_count = 1
+# col_count = 0
+# row_pins = []
+# col_pins = []
 # https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-row_pins = ["Q", "W", "E", "R"]
-col_pins = []
+# layout = [
+#   ["Q"], ["W"], ["E"], ["R"]
+# ]
+
+[multiplexers]
+count = 3
+channels = 16
+# https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
+sel_pins = []
+com_pins = []
 layout = [
-  [0,0], [1,0], [2,0], [3,0]
+  ["Q"],  ["W"], ["E"],  ["R"]
 ]
 
 [rgb]

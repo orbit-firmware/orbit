@@ -5,7 +5,7 @@ runner = 'probe-rs run --chip STM32F411CEUx'
 target = "thumbv7em-none-eabi"
 
 [env]
-DEFMT_LOG = "debug"
+DEFMT_LOG = "info"
 
 [unstable]
 build-std = ["core"]
