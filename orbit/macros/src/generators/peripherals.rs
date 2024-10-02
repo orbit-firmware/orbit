@@ -118,6 +118,8 @@ fn generate_orbit_io() -> TokenStream {
 
       #[allow(dead_code)]
       pub fn read(&mut self) -> u16 {
+        // let channel = Adc.get_instance().get_channel();
+        // adc.get_pin(get pin of input pin).read()
         0
       }
     }

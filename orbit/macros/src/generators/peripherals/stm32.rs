@@ -1,4 +1,5 @@
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::{Ident,
+  TokenStream};
 use quote::quote;
 
 // TODO: make this more generic
@@ -15,6 +16,9 @@ pub fn generate_chip_peripherals(
   TokenStream,
   TokenStream,
 ) {
+
+  // https://dev.to/theembeddedrustacean/embedded-rust-embassy-analog-sensing-with-adcs-1e2n
+  // somehow provide read function for ADC for input pins if the cfg is active
   let header = quote! {
     use embassy_stm32::gpio::{Input, Output, Level, Speed, Pull, AnyPin};
     use embassy_stm32::Peripherals as Stm32Peripherals;
@@ -37,10 +41,16 @@ pub fn generate_chip_peripherals(
   };
 
   let output_declaration = quote! {
-    [#(Output::new(p.#outputs, Level::Low, Speed::VeryHigh).degrade(),)*]
+    [#(Output::new(p.#output, Level::Low, Speed::VeryHigh).degrade(),)*]
   };
 
+  #[rustfmt::skip]  
   (
-    header, init, input_definition, input_declaration, output_definition, output_declaration,
+    header,
+    init,
+    input_definition,
+    input_declaration,
+    output_definition,
+    output_declaration
   )
 }
