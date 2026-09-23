@@ -40,29 +40,29 @@ emulate:
   #!/usr/bin/env bash
   # builds in a mirror so it never touches ./build (the macros find the root by the "orbit" dir name)
   sim=/tmp/kbemu/orbit
+  bin="$sim/build/target/release/_emulator"
   export CARGO_NET_OFFLINE=true
   mkdir -p "$sim"
-  pid=""
-  trap '[ -n "$pid" ] && kill $pid 2>/dev/null; stty sane' EXIT
+  sync() { rsync -a --delete --exclude target --itemize-changes orbit "$sim/"; }
+  trap 'printf "\033[?1049l\033[?25h"; stty sane' EXIT
+  sync >/dev/null
   while true; do
-    # ctrl+c in the emulator exits it with 0: stop watching too
-    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
-      wait "$pid" && exit 0
-      pid=none
+    printf '\033[?1049l\033[?25h'; stty sane; clear
+    printf '\033[34mbuilding emulator (%s)...\033[0m\n' "$(date +%T)"
+    if (cd "$sim" && cargo play -q ./orbit/build.rs -- _emulator >/dev/null 2>&1 && cd build && cargo build --release -q 2>/tmp/kbemu/err); then
+      # the emulator keeps the terminal (it reads ctrl+r / ctrl+c); a background loop
+      # restarts it when orbit/ changes
+      (while [ -z "$(sync)" ]; do sleep 1; done; pkill -f "$bin") &
+      watcher=$!
+      "$bin"
+      code=$?
+      kill $watcher 2>/dev/null
+      [ $code -eq 0 ] && exit 0 # ctrl+c
+    else
+      grep -A12 '^error' /tmp/kbemu/err
+      printf '\033[31mbuild failed, waiting for changes\033[0m\n'
+      while [ -z "$(sync)" ]; do sleep 1; done
     fi
-    changed=$(rsync -a --delete --exclude target --itemize-changes orbit "$sim/")
-    if [ -n "$changed" ] || [ -z "$pid" ]; then
-      [ -n "$pid" ] && kill $pid 2>/dev/null && wait $pid 2>/dev/null
-      stty sane; clear
-      printf '\033[34mbuilding emulator (%s)...\033[0m\n' "$(date +%T)"
-      if (cd "$sim" && cargo play -q ./orbit/build.rs -- _emulator >/dev/null 2>&1 && cd build && cargo build --release -q 2>/tmp/kbemu/err); then
-        "$sim/build/target/release/_emulator" & pid=$!
-      else
-        grep -A12 '^error' /tmp/kbemu/err
-        printf '\033[31mbuild failed, waiting for changes\033[0m\n'; pid=none
-      fi
-    fi
-    sleep 1
   done
 
 # runs the emulator's key tests without a screen (exit 1 on failure)

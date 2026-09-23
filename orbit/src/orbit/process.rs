@@ -64,16 +64,7 @@ mod emulator {
     out.execute(EnterAlternateScreen).unwrap();
     out.execute(cursor::Hide).unwrap();
 
-    let failed = run_tests(&mut keyboard, &mut |pressed, report, status, expect| {
-      let size = terminal::size().unwrap_or((80, 24));
-      draw(&mut std::io::stdout(), pressed, report, size, status, expect);
-    });
-    let summary = if failed.is_empty() {
-      format!("tests: {0}/{0} passed. live: press the keys yourself", TESTS.len())
-    } else {
-      format!("tests: {} failed ({}). live: press the keys yourself", failed.len(), failed.join(", "))
-    };
-
+    let mut summary = play_tests(&mut keyboard);
     let mut last: Option<(Vec<bool>, [u8; 8], (u16, u16))> = None;
     loop {
       // drain terminal input so typed keys don't leak into the shell; ctrl+c quits
@@ -84,6 +75,10 @@ mod emulator {
             out.execute(LeaveAlternateScreen).unwrap();
             terminal::disable_raw_mode().unwrap();
             std::process::exit(0);
+          }
+          if k.code == TermKey::Char('r') && k.modifiers.contains(KeyModifiers::CONTROL) {
+            summary = play_tests(&mut keyboard);
+            last = None;
           }
         }
       }
@@ -96,6 +91,23 @@ mod emulator {
         last = Some(state);
       }
       std::thread::sleep(Duration::from_millis(1));
+    }
+  }
+
+  // runs the tests on screen and returns the line shown afterwards
+  fn play_tests(keyboard: &mut Keyboard) -> String {
+    let failed = run_tests(keyboard, &mut |pressed, report, status, expect| {
+      let size = terminal::size().unwrap_or((80, 24));
+      draw(&mut std::io::stdout(), pressed, report, size, status, expect);
+    });
+    // key presses made while the tests ran are not commands
+    while event::poll(Duration::ZERO).unwrap_or(false) {
+      let _ = event::read();
+    }
+    if failed.is_empty() {
+      format!("tests: {0}/{0} passed. ctrl+r reruns, ctrl+c quits", TESTS.len())
+    } else {
+      format!("tests: {} failed ({}). ctrl+r reruns, ctrl+c quits", failed.len(), failed.join(", "))
     }
   }
 
