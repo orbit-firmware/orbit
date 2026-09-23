@@ -7,7 +7,9 @@ mod util;
 
 #[proc_macro]
 pub fn generate_config(input: TokenStream) -> TokenStream {
-  generators::config::generate(input)
+  let mut out = generators::config::generate(input);
+  out.extend(TokenStream::from(util::track_inputs()));
+  out
 }
 
 #[proc_macro]

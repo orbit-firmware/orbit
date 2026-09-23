@@ -30,3 +30,14 @@ pub fn file_exists(path: &str) -> bool {
   let metadata = std::fs::metadata(p);
   metadata.is_ok() && metadata.unwrap().is_file()
 }
+
+// include_bytes! of every file the macros read, so cargo rebuilds the firmware when the
+// keyboard toml, the keymap or a keycode table changes (rustc tracks included files)
+pub fn track_inputs() -> proc_macro2::TokenStream {
+  let root = get_root();
+  let mut paths = vec![format!("{}/build/keyboard.toml", root), format!("{}/build/keymap.orbit", root)];
+  let kcs = std::fs::read_dir(format!("{}/orbit/keycodes", root)).into_iter().flatten().flatten();
+  paths.extend(kcs.map(|e| e.path().display().to_string()));
+  let paths = paths.into_iter().filter(|p| file_exists(p));
+  quote::quote! { #(const _: &[u8] = include_bytes!(#paths);)* }
+}
