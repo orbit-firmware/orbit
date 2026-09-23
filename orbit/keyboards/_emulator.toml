@@ -1,7 +1,6 @@
-# this is used to emulate the firmware on a computer
-# [features.chip_type_emulator]
+# runs the firmware on the host: each "pin" is a host key read through device_query
+# (https://github.com/ostrosco/device_query/blob/master/src/keymap.rs)
 # do NOT use this as a real chip
-
 
 [keyboard]
 product_id = 0x0000
@@ -9,7 +8,7 @@ vendor_id = 0x0000
 name = "Emulator"
 manufacturer = "Emulator"
 chip = "_emulator"
-
+storage = 256
 
 [settings]
 keycodes = "german"
@@ -26,30 +25,16 @@ mouse = true
 [flavors]
 space_cadet = true
 
-# [matrix]
-# row_count = 1
-# col_count = 0
-# row_pins = []
-# col_pins = []
-# https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-# layout = [
-#   ["Q"], ["W"], ["E"], ["R"]
-# ]
-
-[multiplexers]
-count = 3
-channels = 16
-# https://github.com/ostrosco/device_query/blob/master/src/keymap.rs
-sel_pins = []
-com_pins = []
-layout = [
-  ["Q"],  ["W"], ["E"],  ["R"]
+[matrix]
+# one direct "pin" per host key, drawn 10 per row
+row_pins = [
+  "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
+  "A", "S", "D", "F", "G", "H", "J", "K", "L", "Semicolon",
+  "Z", "X", "C", "V", "B", "N", "M", "Comma", "Dot", "Slash",
 ]
-
-[rgb]
-data_pin = "PA7"
-
-[swd]
-swo = "PB2"
-swclk = "PA14"
-swdio = "PA15"
+col_pins = []
+layout = [
+  [0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0],
+  [10,0], [11,0], [12,0], [13,0], [14,0], [15,0], [16,0], [17,0], [18,0], [19,0],
+  [20,0], [21,0], [22,0], [23,0], [24,0], [25,0], [26,0], [27,0], [28,0], [29,0],
+]

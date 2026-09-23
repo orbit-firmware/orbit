@@ -59,32 +59,6 @@ const HID_REPORT_DESCRIPTOR: &[u8] = &[
   0xc0, // End Collection
 ];
 
-pub struct Report {
-  pub modifier: u8,
-  pub reserved: u8,
-  pub keycodes: [u8; 6],
-}
-
-impl Default for Report {
-  fn default() -> Report {
-    Report {
-      modifier: 0,
-      reserved: 0,
-      keycodes: [0; 6],
-    }
-  }
-}
-
-impl Report {
-  pub fn serialize(&self) -> [u8; 8] {
-    let mut buf = [0; 8];
-    buf[0] = self.modifier;
-    buf[1] = self.reserved;
-    buf[2..8].copy_from_slice(&self.keycodes);
-    buf
-  }
-}
-
 pub async fn ready() -> bool {
   unsafe {
     while !(*DEVICE.get()).as_ref().unwrap().is_ready() {

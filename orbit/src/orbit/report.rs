@@ -1,15 +1,42 @@
 use core::array::from_fn as populate;
 use core::option::Option;
-use embassy_usb::class::hid::HidWriter;
-use embassy_usb::driver::Driver;
+#[cfg(not(feature = "chip_type_emulator"))]
+use embassy_usb::{class::hid::HidWriter, driver::Driver};
 
 use crate::orbit::config as Orbit;
 use crate::orbit::dbg::warn;
-use crate::orbit::hid::keyboard::{Report, WRITE_N};
+#[cfg(not(feature = "chip_type_emulator"))]
+use crate::orbit::hid::keyboard::WRITE_N;
 use crate::orbit::keycodes::KeyCode;
 use crate::orbit::modifiers::*;
 
 use super::dbg::info;
+
+pub struct Report {
+  pub modifier: u8,
+  pub reserved: u8,
+  pub keycodes: [u8; 6],
+}
+
+impl Default for Report {
+  fn default() -> Report {
+    Report {
+      modifier: 0,
+      reserved: 0,
+      keycodes: [0; 6],
+    }
+  }
+}
+
+impl Report {
+  pub fn serialize(&self) -> [u8; 8] {
+    let mut buf = [0; 8];
+    buf[0] = self.modifier;
+    buf[1] = self.reserved;
+    buf[2..8].copy_from_slice(&self.keycodes);
+    buf
+  }
+}
 
 struct Code {
   code: u16,
@@ -47,7 +74,7 @@ impl Reports {
 
   // one boot report holds the whole keyboard state: modifiers are or'ed together.
   // ponytail: codes past the 6 keycode slots are dropped, add nkro when that matters
-  fn build(&mut self) -> Report {
+  pub fn build(&mut self) -> Report {
     let mut report = Report::default();
     let mut n = 0;
 
@@ -78,6 +105,7 @@ impl Reports {
     report
   }
 
+  #[cfg(not(feature = "chip_type_emulator"))]
   pub async fn process<D: Driver<'static>>(&mut self, writer: &mut HidWriter<'static, D, WRITE_N>) {
     let report = self.build();
     if let Err(e) = writer.write(&report.serialize()).await {

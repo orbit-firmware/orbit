@@ -1,9 +1,12 @@
 use core::array::from_fn as populate;
+#[cfg(not(feature = "chip_type_emulator"))]
 use embassy_futures::join::join;
+#[cfg(not(feature = "chip_type_emulator"))]
 use embassy_usb::driver::Driver;
 
 use crate::orbit::config as Orbit;
 use crate::orbit::dbg::{info, warn};
+#[cfg(not(feature = "chip_type_emulator"))]
 use crate::orbit::hid;
 use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
@@ -35,6 +38,7 @@ impl Keyboard {
     self.layer
   }
 
+  #[cfg(not(feature = "chip_type_emulator"))]
   pub async fn process<D: Driver<'static>>(&mut self, driver: D) {
     let (mut usb, reader, mut writer) = hid::keyboard::init(driver).await;
 
@@ -66,6 +70,13 @@ impl Keyboard {
 
   pub fn peripherals(&mut self) -> &mut Peripherals {
     &mut self.peripherals
+  }
+
+  // one scan cycle without usb, for the emulator
+  #[cfg(feature = "chip_type_emulator")]
+  pub fn tick(&mut self) -> [u8; 8] {
+    self.scan();
+    self.reports.build().serialize()
   }
 
   fn scan(&mut self) {

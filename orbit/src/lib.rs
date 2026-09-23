@@ -2,6 +2,7 @@ mod orbit {
   pub mod config;
   pub mod dbg;
   pub mod features;
+  #[cfg(not(feature = "chip_type_emulator"))]
   pub mod hid;
   pub mod key;
   pub mod keyboard;
