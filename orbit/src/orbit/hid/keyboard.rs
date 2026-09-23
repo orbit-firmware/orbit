@@ -88,7 +88,8 @@ pub async fn init<D: Driver<'static>>(
     let config = HidConfig {
       report_descriptor: HID_REPORT_DESCRIPTOR,
       request_handler: Some((*REQUEST.get()).as_mut().unwrap()),
-      poll_ms: 60,
+      // the scan loop is paced by these writes: 1 ms = up to 1000 scans and reports a second
+      poll_ms: 1,
       max_packet_size: 8,
     };
 
