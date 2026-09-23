@@ -1,6 +1,5 @@
 use core::cell::UnsafeCell;
 use core::sync::atomic::{AtomicBool, Ordering};
-use defmt::info;
 use embassy_futures::join::join;
 use embassy_time::Timer;
 use embassy_usb::class::hid::Config as HidConfig;
