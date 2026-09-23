@@ -33,7 +33,9 @@ name = "My Keyboard" # [!code focus]
 # the keyboards manufacturer
 manufacturer = "orbit Inc." # [!code focus]
 # What mcu/chip the keyboard is using 
-chip = "stm32f303cb"  # [!code focus]
+chip = "stm32f411ceu"  # [!code focus]
+# required; read into config::STORAGE, not used by the firmware yet
+storage = 256  # [!code focus]
 ```
 ::: info
 A list of chips can be found [here](https://github.com/orbit-firmware/orbit/tree/master/orbit/chips).
@@ -48,8 +50,6 @@ A list of chips can be found [here](https://github.com/orbit-firmware/orbit/tree
 keycodes = "german"  # [!code focus]
 # key debounce time frame in ms
 debounce_time = 10  # [!code focus]
-# default time for the hold behavior to activate in ms
-hold_time = 180  # [!code focus]
 # default time in between taps in ms
 tapping_term = 220  # [!code focus]
 ```
@@ -61,8 +61,8 @@ This controls wich [behaviors](/behaviors) are enabled for your keyboard.
 # keyboard.toml
 # which behaviors are active
 [behaviors]   # [!code focus]
-press = true  # [!code focus]
 hold = true  # [!code focus]
+tap = true  # [!code focus]
 ```
 
 ## Actions
@@ -90,10 +90,6 @@ space_cadet = true  # [!code focus]
 # if the keyboard uses a matrix
 # NOTE: cant be defined together with [multiplexers]
 [matrix]  # [!code focus]
-# default false
-analogue_read = true  # [!code focus]
-row_count = 3  # [!code focus]
-col_count = 12  # [!code focus]
 row_pins = ["PA0", "PA1", "PA2"]  # [!code focus]
 col_pins = ["PA3", "PA4", "PA5", "PA6", "PA8", "PA9", "PA10", "PA15", "PB0", "PB1", "PB2", "PB10"]  # [!code focus]
 layout = [  # [!code focus]
@@ -111,8 +107,6 @@ layout = [  # [!code focus]
 # if the keyboard uses multiplexers
 # NOTE: cant be defined together with [matrix]
 [multiplexers]  # [!code focus]
- # default false
-analogue_read = true  # [!code focus]
 count = 3  # [!code focus]
 channels = 16  # [!code focus]
 sel_pins = ["PB3", "PB4", "PB6", "PB5"]  # [!code focus]
@@ -126,17 +120,6 @@ layout = [  # [!code focus]
 ```
 
 
-
-## Lighting
-
-```toml
-# keyboard.toml
-
-[lighting]   # [!code focus]
-driver = "wsqwe456" # [!code focus]
-per_key_rgb = "PA7"  # [!code focus]
-underglow  = ["PA8"] # [!code focus]
-```
 
 ## Serial Wire Debug
 ```toml

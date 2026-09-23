@@ -9,16 +9,13 @@ Its main selling points are:
   - You can configure your keyboard directly through the keyboard's flash drive.
   - It’s fast and reliable, as it's built in Rust.
   - Adding your own keyboard is as simple as creating a single configuration file.
-  - It supports a wide variety of chipsets through [embassy](https://github.com/embassy-rs/embassy).
-    - All of the `STM32` family
-    - The `nRF52`, `nRF53` and `nRF91`
-    - Raspberry Pi `RP2040`
-    - The `ESP32` and the WCH 32-bit RISC-V(CH32V) series.
+  - It runs on chips supported by [embassy](https://github.com/embassy-rs/embassy).
+    Today that is the `STM32F411CEU` (see `orbit/chips/`); other embassy targets need a chip crate.
 
 # [Documentation](https://orbit-firmware.github.io/orbit) 👈
 
 
-The docs are powered by [VitePress](https://vitepress.dev/). They are also viewable offline via `make docs`.
+The docs are powered by [VitePress](https://vitepress.dev/). They are also viewable offline via `just docs`.
 
 If you need help, we have a friendly [Discord](https://discord.gg/SrESTtBKV5) server for you.
 

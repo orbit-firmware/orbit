@@ -38,10 +38,10 @@ git clone https://github.com/orbit-firmware/orbit.git orbit # [!code focus]
 A full list is available [here](https://github.com/orbit-firmware/orbit/tree/master/keyboards)
 :::
 
-if [gnu make](https://www.gnu.org/software/make/) is installed
+if [just](https://github.com/casey/just) is installed
 ```shell
 cd orbit
-make kb=MY_KEYBOARD
+just compile MY_KEYBOARD
 ```
 
 or plain script
@@ -51,11 +51,11 @@ cargo install cargo-play # only required once
 
 cargo play ./orbit/build.rs -- MY_KEYBOARD # [!code focus]
 cd build # [!code focus]
-cargo objcopy --release -- -O binary ../firmware.bin # [!code focus]
-cargo objcopy --release -- -O ihex ../firmware.hex # [!code focus]
+cargo build --release # [!code focus]
 ```
 
-This produces `firmware.hex/bin` in the orbit directory.
+This produces the firmware ELF at `build/target/thumbv7em-none-eabi/release/MY_KEYBOARD`.
+Flash it with `just flash MY_KEYBOARD` (needs [probe-rs](https://probe.rs)).
 
 <div class="c-spacer-small"></div>
 
@@ -67,12 +67,12 @@ A full list is available [here](https://github.com/orbit-firmware/orbit/tree/mas
 :::
 
 
-if [gnu make](https://www.gnu.org/software/make/) is installed
+if [just](https://github.com/casey/just) is installed
 ```shell
 cd orbit # [!code focus]
-make flash kb=MY_KEYBOARD # [!code focus]
+just flash MY_KEYBOARD # [!code focus]
 # optionally pass the debug feature if you want to debug via st-link or j-link
-make flash kb=MY_KEYBOARD features="debug"
+just flash MY_KEYBOARD debug
 ```
 
 or plain script
@@ -99,15 +99,15 @@ This allows you to not intstall any tools (except docker itself) on your harddri
 
 To install docker, visit [https://www.docker.com/](https://www.docker.com/).
 
-if [gnu make](https://www.gnu.org/software/make/) is installed
+if [just](https://github.com/casey/just) is installed
 ```shell
 cd orbit
 
 # creates container and connects to docker tty
-make docker  # [!code focus]
+just docker  # [!code focus]
 
 # once conencted to the docker container
-make kb=MY_KEYBOARD # [!code focus]
+just compile MY_KEYBOARD # [!code focus]
 ```
 
 or plain script
@@ -119,10 +119,11 @@ docker-compose up -d # [!code focus]
 docker exec -it orbit bash # [!code focus]
 
 # once conencted to the docker container
-make kb=MY_KEYBOARD # [!code focus]
+just compile MY_KEYBOARD # [!code focus]
 ```
 
-This produces `firmware.hex/bin` in the orbit directory.
+This produces the firmware ELF at `build/target/thumbv7em-none-eabi/release/MY_KEYBOARD`.
+Flash it with `just flash MY_KEYBOARD` (needs [probe-rs](https://probe.rs)).
 
 
 <div class="c-spacer-large"></div>
