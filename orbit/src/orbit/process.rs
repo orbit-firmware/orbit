@@ -140,8 +140,8 @@ mod emulator {
       Down(&["B"]), Wait(HOLD), Expect(&["B"]), Up(&["B"]), Wait(T), Expect(&[]),
     ]),
     ("string types one character per report", &[
-      Down(&["Enter"]), Wait(HOLD), Down(&["U"]), Expect(&["LeftShift", "H"]), Wait(0), Expect(&[]),
-      Wait(0), Expect(&["I"]), Wait(0), Expect(&[]), Wait(0), Expect(&["LeftShift", "RightShift", "One"]), Wait(0), Expect(&[]),
+      Down(&["Enter"]), Wait(HOLD), Down(&["U"]), Expect(&["A"]), Wait(0), Expect(&[]),
+      Wait(0), Expect(&["Space"]), Wait(0), Expect(&[]), Wait(0), Expect(&["B"]), Wait(0), Expect(&[]),
       Up(&["U", "Enter"]), Wait(T), Expect(&[]),
     ]),
     ("rep sends the last key again", &[

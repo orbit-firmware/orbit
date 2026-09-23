@@ -92,6 +92,7 @@ fn entry(token: &str, codes: &[KeyCode], line: usize) -> Entry {
       let typed: Vec<u16> = chars
         .map(|c| {
           let found = match c {
+            ' ' => code("space", codes),
             'A'..='Z' => code(&c.to_ascii_lowercase().to_string(), codes).map(modifiers::ls),
             _ => code(&c.to_string(), codes),
           };
@@ -121,6 +122,22 @@ fn entry(token: &str, codes: &[KeyCode], line: usize) -> Entry {
   }
 }
 
+// splits a row on whitespace, keeping "quoted strings" whole
+fn split(row: &str) -> Vec<&str> {
+  let mut out = vec![];
+  let mut rest = row.trim_start();
+  while !rest.is_empty() {
+    let end = if rest.starts_with('"') {
+      rest[1..].find('"').map_or(rest.len(), |i| i + 2)
+    } else {
+      rest.find(char::is_whitespace).unwrap_or(rest.len())
+    };
+    out.push(&rest[..end]);
+    rest = rest[end..].trim_start();
+  }
+  out
+}
+
 pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode]) -> Keymap {
   let mut layers: Vec<Vec<Slot>> = vec![];
   let mut combos = vec![];
@@ -145,7 +162,7 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
       fail(n, "expected `<row> | <keys>`".to_string());
     };
     let head: Vec<&str> = head.split_whitespace().collect();
-    let tokens: Vec<&str> = tail.split_whitespace().collect();
+    let tokens = split(tail);
 
     if head[0] == "combo" {
       if tokens.len() != 1 || head.len() < 3 {
@@ -213,7 +230,7 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
     .skip(1)
     .take_while(|l| !l.trim().starts_with("layer"))
     .filter_map(|l| l.split_once('|').filter(|(h, _)| h.trim() == "press").map(|(_, t)| t.to_string()))
-    .flat_map(|t| t.split_whitespace().map(|s| s.to_string()).collect::<Vec<_>>())
+    .flat_map(|t| split(&t).into_iter().map(|s| s.to_string()).collect::<Vec<_>>())
     .collect();
   for (n, names, e) in combo_src {
     let keys: Vec<usize> = names
@@ -332,7 +349,7 @@ mod tests {
   use proc_macro2::{Ident, Span};
 
   fn codes() -> Vec<KeyCode> {
-    [("Q", 0x14, vec!["q"]), ("W", 0x1A, vec!["w"]), ("Escape", 0x29, vec!["escape", "esc"])]
+    [("Q", 0x14, vec!["q"]), ("W", 0x1A, vec!["w"]), ("Escape", 0x29, vec!["escape", "esc"]), ("Space", 0x2C, vec!["space"])]
       .into_iter()
       .map(|(name, code, aliases)| KeyCode {
         name: Ident::new(name, Span::call_site()),
@@ -375,8 +392,9 @@ mod tests {
 
   #[test]
   fn parses_strings() {
-    let map = parse("layer 0\npress | \"Qw\"\n", 1, 200, &codes());
-    assert_eq!(map.layers[0][0].press, Entry::Str(&[0x0214, 0x1A]));
+    let map = parse("layer 0\npress | \"Q w\"  q\n", 2, 200, &codes());
+    assert_eq!(map.layers[0][0].press, Entry::Str(&[0x0214, 0x2C, 0x1A]));
+    assert_eq!(map.layers[0][1].press, Entry::Code(0x14));
   }
 
   #[test]

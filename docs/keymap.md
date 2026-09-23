@@ -23,7 +23,7 @@ Also:
   key goes down, and a key held past the term sends its press.
 - `"text"` types the text, one character per report (then a release, so repeated letters
   register). Each character must be a key name or alias in the keycode table; uppercase
-  letters are sent with shift. Spaces cannot appear inside a string yet.
+  letters are sent with shift; spaces are typed as space.
 - `boot` restarts an STM32 into its ROM USB bootloader (flash with `dfu-util`).
 
 Combos:
