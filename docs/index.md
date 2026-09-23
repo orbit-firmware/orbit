@@ -15,10 +15,9 @@ You only need two files to get you up and running:
 
 In many cases, the keyboard.toml file is not even needed, as the community provides a wealth of predefined keyboards ready for use.
 
-It supports `Hall-Effect` switches out of the box.  
 All behaviors are designed to work seamlessly together.  
-Keymaps can be placed directly on the keyboard's flash drive,  
-so there’s no need to recompile.
+Hall-effect switches and keymaps loaded from the keyboard's flash drive are not implemented yet;
+keymaps are compiled into the firmware.
 
 Dive in, and let orbit transform the way you interact with your keyboard!
 
