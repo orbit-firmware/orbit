@@ -134,7 +134,7 @@ Enhancement suggestions are tracked as [GitHub issues](github.com/orbit-firmware
 
 ### Your First Code Contribution
 
-You can following the steps [here](https://orbit-firmware.github.io/orbit/how_to_contribute.html).
+Set up the toolchain and build a keyboard as described in [Getting Started](https://orbit-firmware.github.io/orbit/getting-started.html).
 
 ### Improving The Documentation
 

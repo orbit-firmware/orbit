@@ -5,7 +5,6 @@
 mod stm32 {
   use embassy_usb::driver::Driver;
 
-  use crate::orbit::config as Orbit;
   use crate::orbit::keyboard::Keyboard;
 
   pub async fn run<D: Driver<'static>>(driver: D) {

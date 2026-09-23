@@ -1,8 +1,6 @@
 use crate::orbit::config as Orbit;
-use crate::orbit::dbg::*;
 use crate::orbit::features::*;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::keymap::KeyMap;
 use crate::orbit::time;
 
 pub const PRESSED: u8 = 0b00000001;

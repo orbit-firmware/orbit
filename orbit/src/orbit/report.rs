@@ -7,10 +7,8 @@ use crate::orbit::config as Orbit;
 use crate::orbit::dbg::warn;
 #[cfg(not(feature = "chip_type_emulator"))]
 use crate::orbit::hid::keyboard::WRITE_N;
-use crate::orbit::keycodes::KeyCode;
 use crate::orbit::modifiers::*;
 
-use super::dbg::info;
 
 pub struct Report {
   pub modifier: u8,

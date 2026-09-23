@@ -1,5 +1,4 @@
 use crate::orbit::dbg::info;
-use core::sync::atomic::{AtomicBool, Ordering};
 use embassy_usb::class::hid::{ReportId, RequestHandler};
 use embassy_usb::control::OutResponse;
 use embassy_usb::driver::Driver;

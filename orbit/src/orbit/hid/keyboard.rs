@@ -1,15 +1,9 @@
 use core::cell::UnsafeCell;
 use core::sync::atomic::{AtomicBool, Ordering};
-use embassy_futures::join::join;
 use embassy_time::Timer;
 use embassy_usb::class::hid::Config as HidConfig;
 use embassy_usb::class::hid::{HidReader, HidReaderWriter, HidWriter, State};
-use embassy_usb::class::hid::{ReportId, RequestHandler};
-use embassy_usb::control::OutResponse;
 use embassy_usb::driver::Driver;
-use embassy_usb::Builder;
-use embassy_usb::Config;
-use embassy_usb::Handler;
 use embassy_usb::UsbDevice;
 use static_cell::StaticCell;
 
