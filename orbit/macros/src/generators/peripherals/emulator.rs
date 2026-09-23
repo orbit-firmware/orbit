@@ -40,7 +40,7 @@ pub fn generate_chip_peripherals(
   };
 
   let output_declaration = quote! {
-    [#(DeviceOutput::new(p.#outputs),)*]
+    [#(DeviceOutput::new(Keycode::#outputs),)*]
   };
 
   (

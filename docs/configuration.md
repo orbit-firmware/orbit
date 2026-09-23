@@ -91,6 +91,9 @@ space_cadet = true  # [!code focus]
 # keyboard.toml
 # if the keyboard uses a matrix
 # NOTE: cant be defined together with [multiplexers]
+# rows are driven high one at a time and cols read (diodes from row to col);
+# swap row_pins and col_pins for the other diode direction.
+# leave col_pins empty to wire one pin per key, listed in row_pins
 [matrix]  # [!code focus]
 row_pins = ["PA0", "PA1", "PA2"]  # [!code focus]
 col_pins = ["PA3", "PA4", "PA5", "PA6", "PA8", "PA9", "PA10", "PA15", "PB0", "PB1", "PB2", "PB10"]  # [!code focus]

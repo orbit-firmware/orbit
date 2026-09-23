@@ -34,9 +34,11 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   if use_matrix {
     let row_pins: Vec<String> = toml::get(&config, "matrix/row_pins", true);
     let col_pins: Vec<String> = toml::get(&config, "matrix/col_pins", true);
+    // with col pins the rows are driven one at a time, without them each row pin is a key
+    let rows = if col_pins.is_empty() { &mut inputs } else { &mut outputs };
     for row in row_pins.clone() {
       let ident = Ident::new(&row, Span::call_site());
-      inputs.push(ident);
+      rows.push(ident);
     }
     for col in col_pins.clone() {
       let ident = Ident::new(&col, Span::call_site());

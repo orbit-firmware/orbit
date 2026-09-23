@@ -54,6 +54,10 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let layout_list: Vec<(usize, usize)> = toml::get(&config, "matrix/layout", true);
     let row_pins: Vec<String> = toml::get(&config, "matrix/row_pins", true);
     let col_pins: Vec<String> = toml::get(&config, "matrix/col_pins", true);
+    if row_pins.is_empty() {
+      println!("matrix: row_pins is empty (for one pin per key, list them in row_pins)");
+      std::process::exit(1);
+    }
     let row_count = row_pins.len() as usize;
     let col_count = col_pins.len() as usize;
 

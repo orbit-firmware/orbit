@@ -80,30 +80,31 @@ impl Keyboard {
     self.pressed[k] = self.keys[k].update(raw, time::now());
   }
 
+  // without col pins every row pin is a key read directly; with them each row is driven
+  // high in turn and the cols are read (pull-down inputs, diodes pointing row to col;
+  // swap row_pins and col_pins for the other diode direction)
   #[cfg(feature = "matrix_scan")]
   fn scan_matrix(&mut self) {
-    for k in 0..Orbit::LAYOUT.len() {
-      let mut state = false;
-      let pair = &Orbit::LAYOUT[k];
-      if pair.len() != 2 {
-        continue;
+    if Orbit::MATRIX_COL_COUNT == 0 {
+      for k in 0..Orbit::KEY_COUNT {
+        let raw = self.peripherals.input(Orbit::LAYOUT[k][0]).is_high();
+        self.set_key(k, raw);
       }
-
-      let row = pair[0];
-      let col = pair[1];
-      if row == Peripheral::None && col == Peripheral::None {
-        continue;
-      } else if row != Peripheral::None && col != Peripheral::None {
-        let s1 = self.peripherals.input(row).is_high();
-        let s2 = self.peripherals.input(col).is_high();
-        state = s1 && s2;
-      } else if row != Peripheral::None {
-        state = self.peripherals.input(row).is_high();
-      } else if col != Peripheral::None {
-        state = self.peripherals.input(col).is_high();
+      return;
+    }
+    for row in Orbit::MATRIX_ROW_PINS {
+      self.peripherals.output(row).set_high();
+      // ponytail: one timer tick (~30us at 32768 Hz) per row to let the lines settle
+      #[cfg(not(feature = "chip_type_emulator"))]
+      embassy_time::block_for(embassy_time::Duration::from_ticks(1));
+      for k in 0..Orbit::KEY_COUNT {
+        let [r, col] = Orbit::LAYOUT[k];
+        if r == row {
+          let raw = self.peripherals.input(col).is_high();
+          self.set_key(k, raw);
+        }
       }
-
-      self.set_key(k, state);
+      self.peripherals.output(row).set_low();
     }
   }
 
