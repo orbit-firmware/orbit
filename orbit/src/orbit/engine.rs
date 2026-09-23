@@ -55,7 +55,8 @@ pub struct Engine {
   // entries sent for a single report (taps)
   taps: Vec<(Entry, bool), 8>,
   waiting: Vec<(usize, u32), 8>,
-  combo: Option<usize>,
+  // the active combo and what it sends
+  combo: Option<(usize, Entry)>,
   // layers turned on by tl(n)
   toggled: u32,
   sticky: Sticky,
@@ -126,8 +127,9 @@ impl Engine {
           self.keys[w] = State::Consumed;
         }
         self.waiting.clear();
-        self.combo = Some(i);
         self.resolve_pending();
+        let entry = self.effect(None, COMBOS[i].entry);
+        self.combo = Some((i, entry));
       } else if !COMBOS.iter().any(|c| held(&c)) {
         self.flush(now);
       }
@@ -156,7 +158,7 @@ impl Engine {
         let entry = self.effect(None, entry);
         let _ = self.taps.push((entry, replaced));
       }
-      State::Consumed if self.combo.is_some_and(|c| COMBOS[c].keys.contains(&k)) => self.combo = None,
+      State::Consumed if self.combo.is_some_and(|(c, _)| COMBOS[c].keys.contains(&k)) => self.combo = None,
       _ => {}
     }
     if let Sticky::Applied { k: applied, entry } = self.sticky {
@@ -271,6 +273,9 @@ impl Engine {
         layers |= 1 << l;
       }
     }
+    if let Some((_, Entry::Layer(l))) = self.combo {
+      layers |= 1 << l;
+    }
     (0..LAYER_COUNT)
       .rev()
       .filter(|l| layers & 1 << l != 0)
@@ -314,7 +319,7 @@ impl Engine {
       State::Active { entry, replaced } => Some((*entry, *replaced)),
       _ => None,
     });
-    let combo = self.combo.map(|c| (COMBOS[c].entry, false));
+    let combo = self.combo.map(|(_, entry)| (entry, false));
     let sticky = match self.sticky {
       Sticky::Applied { entry, .. } => Some((entry, false)),
       _ => None,

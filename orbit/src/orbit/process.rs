@@ -114,6 +114,15 @@ mod emulator {
       Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Up(&["Enter"]), Wait(T),
       Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
     ]),
+    ("combo c+v holds layer 1", &[
+      Down(&["C", "V"]), Wait(T), Down(&["Q"]), Expect(&["One"]), Wait(T), Up(&["Q", "C", "V"]), Wait(T), Expect(&[]),
+    ]),
+    ("combo esc ends caps word, rep repeats it", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["T"]), Wait(T), Up(&["T"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["J", "K"]), Expect(&["Escape"]), Wait(T), Up(&["J", "K"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T),
+      Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["Q"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),
+    ]),
     ("rep sends the last key again", &[
       Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),

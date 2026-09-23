@@ -15,6 +15,7 @@ hold 200   |                      ---    ml(1)      ml(2)  ---
 
 combo j k | esc
 combo d f | tab
+combo c v | ml(1)
 
 # numbers and navigation while space is held
 layer 1
