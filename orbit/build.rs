@@ -51,14 +51,13 @@ pub fn main() {
   merge_toml(
     &keyboard_toml, "user/keyboard.toml", "build/keyboard.toml", false,
   );
-  configure(&keyboard, &chip_name, &keyboard_name, &argument_features);
+  configure(&chip_name, &keyboard_name, &argument_features);
   prepare_orbit_module();
   save_last_build_cfg(&keyboard_name, &chip_name);
   ok!("Pre-Compile completed!");
 }
 
 fn configure(
-  keyboard: &Value,
   chip_name: &str,
   keyboard_name: &str,
   argument_features: &Vec<String>,
@@ -72,7 +71,7 @@ fn configure(
   content["dependencies"]["orbit-macros"]["features"] =
     Value::Array(vec![Value::String(chip_type.to_string())]);
 
-  let enabled_features = get_features(keyboard, &mut content);
+  let enabled_features = get_features(&keyboard_content, &mut content);
   let mut features = content["features"]["default"].as_array().unwrap().clone();
   for feature in enabled_features {
     features.push(Value::String(feature));
@@ -122,37 +121,24 @@ fn get_file_names(dir: &str) -> Vec<String> {
 fn get_features(keyboard: &Value, content: &mut Value) -> Vec<String> {
   let mut features: Vec<String> = vec![];
 
-  let actions = get_file_names("orbit/src/orbit/features/actions");
-  for action in keyboard["actions"].as_table().unwrap() {
-    let name = action.0;
-    let enabled = action.1.as_bool().unwrap();
-    if !actions.contains(&name) {
-      error!("Action not found: {}", name);
-      std::process::exit(1);
+  for (kind, section) in [("action", "actions"), ("behavior", "behaviors"), ("flavor", "flavors")] {
+    let Some(table) = keyboard.get(section).and_then(Value::as_table) else {
+      continue;
+    };
+    let known = get_file_names(&format!("orbit/src/orbit/features/{}", section));
+    for (name, value) in table {
+      if !known.contains(name) {
+        error!("{} not found: {}", kind, name);
+        std::process::exit(1);
+      }
+      let Some(enabled) = value.as_bool() else {
+        error!("{}s.{} must be true or false", kind, name);
+        std::process::exit(1);
+      };
+      if enabled {
+        features.push(format!("{}_{}_enabled", kind, name));
+      }
     }
-    features.push(format!("action_{}_enabled", name));
-  }
-
-  let behaviors = get_file_names("orbit/src/orbit/features/behaviors");
-  for behavior in keyboard["behaviors"].as_table().unwrap() {
-    let name = behavior.0;
-    let enabled = behavior.1.as_bool().unwrap();
-    if !behaviors.contains(&name) {
-      error!("behavior not found: {}", name);
-      std::process::exit(1);
-    }
-    features.push(format!("behavior_{}_enabled", name));
-  }
-
-  let flavors = get_file_names("orbit/src/orbit/features/flavors");
-  for flavor in keyboard["flavors"].as_table().unwrap() {
-    let name = flavor.0;
-    let enabled = flavor.1.as_bool().unwrap();
-    if !flavors.contains(&name) {
-      error!("flavor not found: {}", name);
-      std::process::exit(1);
-    }
-    features.push(format!("flavor_{}_enabled", name));
   }
 
   features
