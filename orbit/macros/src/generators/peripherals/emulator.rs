@@ -53,6 +53,21 @@ fn create_structs() -> TokenStream {
     use embedded_hal::digital::ErrorType;
     use std::marker::PhantomData;
 
+    // host key names the emulator's test runner holds down, on top of the real keyboard
+    pub static SIMULATED: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+
+    // off while tests run, so typing elsewhere can't disturb them
+    pub static REAL_KEYS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+    fn real(keys: &[Keycode], key: &Keycode) -> bool {
+      REAL_KEYS.load(std::sync::atomic::Ordering::Relaxed) && keys.contains(key)
+    }
+
+    fn simulated(key: &Keycode) -> bool {
+      let name = format!("{:?}", key);
+      SIMULATED.lock().unwrap().iter().any(|k| *k == name)
+    }
+
     pub struct DeviceInput {
       device_state: DeviceState,
       key: Keycode,
@@ -71,12 +86,12 @@ fn create_structs() -> TokenStream {
     impl InputPin for DeviceInput {
       fn is_high(&mut self) -> Result<bool, Infallible> {
         let keys: Vec<Keycode> = self.device_state.get_keys();
-        Ok(keys.contains(&self.key))
+        Ok(real(&keys, &self.key) || simulated(&self.key))
       }
 
       fn is_low(&mut self) -> Result<bool, Infallible> {
         let keys: Vec<Keycode> = self.device_state.get_keys();
-        Ok(!keys.contains(&self.key))
+        Ok(!real(&keys, &self.key) && !simulated(&self.key))
       }
     }
 

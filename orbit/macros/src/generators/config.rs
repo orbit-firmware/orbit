@@ -179,8 +179,19 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     }
   }
 
+  // keycode names from the keyboard's keycodes file, one per key; missing = sends nothing
+  let keymap: Vec<String> = toml::get(&config, "keymap/default", false);
+  if !keymap.is_empty() && keymap.len() != key_count {
+    println!("keymap.default has {} keys, the layout has {}", keymap.len(), key_count);
+    std::process::exit(1);
+  }
+  let keymap: Vec<Ident> = (0..key_count)
+    .map(|k| Ident::new(keymap.get(k).map_or("None", |s| s.as_str()), proc_macro2::Span::call_site()))
+    .collect();
+
   quote! {
     use crate::orbit::features::*;
+    use crate::orbit::keycodes::KeyCode;
     use crate::orbit::peripherals::*;
 
     pub const PRODUCT_ID: u16 = #product_id;
@@ -202,6 +213,7 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const USE_MULTIPLEXERS: bool = #use_multiplexers;
 
     #layout_def
+    pub const KEYMAP: [KeyCode; #key_count] = [#(KeyCode::#keymap),*];
 
     #matrix
     #multiplexers

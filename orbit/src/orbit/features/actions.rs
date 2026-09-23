@@ -1,6 +1,6 @@
+use crate::orbit::config as Orbit;
 use crate::orbit::key::Key;
 use crate::orbit::keyboard::Keyboard;
-use crate::orbit::modifiers::*;
 
 #[allow(dead_code)]
 #[repr(u8)]
@@ -19,10 +19,11 @@ impl Actions {
   #[allow(dead_code)]
   #[allow(unused)]
   pub fn process(keyboard: &mut Keyboard, key: &mut Key) {
+    let code = Orbit::KEYMAP[key.index()] as u16;
     if key.is_pressed() {
-      keyboard.add_report(ls(5));
+      keyboard.add_report(code);
     } else {
-      keyboard.remove_report(ls(5));
+      keyboard.remove_report(code);
     }
   }
 }

@@ -64,3 +64,14 @@ emulate:
     fi
     sleep 1
   done
+
+# runs the emulator's key tests without a screen (exit 1 on failure)
+test:
+  #!/usr/bin/env bash
+  set -e
+  sim=/tmp/kbtest/orbit
+  mkdir -p "$sim"
+  rsync -a --delete --exclude target orbit "$sim/"
+  cd "$sim" && cargo play -q ./orbit/build.rs -- _emulator >/dev/null 2>&1
+  cd build && cargo build --release -q 2>/dev/null
+  ORBIT_EMULATOR_TEST=1 ./target/release/_emulator
