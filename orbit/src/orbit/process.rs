@@ -132,8 +132,8 @@ mod emulator {
       Down(&["B"]), Wait(T), Up(&["B"]), Expect(&[]), Wait(T), Down(&["B"]), Expect(&["Escape"]), Wait(T),
       Up(&["B"]), Wait(T), Expect(&[]),
     ]),
-    ("tap dance: single tap b then another key", &[
-      Down(&["B"]), Wait(T), Up(&["B"]), Wait(T), Expect(&[]), Down(&["Q"]), Expect(&["B", "Q"]), Wait(T),
+    ("tap dance: single tap b goes out alone, then the next key", &[
+      Down(&["B"]), Wait(T), Up(&["B"]), Wait(T), Expect(&[]), Down(&["Q"]), Expect(&["B"]), Wait(0), Expect(&["Q"]), Wait(T),
       Up(&["Q"]), Wait(T), Expect(&[]),
     ]),
     ("tap dance: b held past the term is b", &[

@@ -100,6 +100,7 @@ impl Engine {
 
   pub fn update(&mut self, pressed: &[bool; Orbit::KEY_COUNT], now: u32) -> Report {
     self.taps.clear();
+    let before = self.presses;
     for k in 0..Orbit::KEY_COUNT {
       if !pressed[k] && self.keys[k] != State::Up {
         self.release(k, now);
@@ -133,7 +134,7 @@ impl Engine {
       }
       self.typing = if step + 1 < codes.len() * 2 { Some((codes, step + 1)) } else { None };
     }
-    self.report()
+    self.report(before)
   }
 
   // what key k sends if pressed now, for display
@@ -393,15 +394,17 @@ impl Engine {
   }
 
   // ponytail: codes past the 6 keycode slots are dropped, add nkro when that matters
-  fn report(&self) -> Report {
+  // keys that went down after `before` wait for the next report when taps go out, so a tap
+  // is released before them (and a tap with the same code is not merged into them)
+  fn report(&self, before: u32) -> Report {
     let mut report = Report { modifier: 0, keycodes: [0; 6] };
     let (mut replaced_mods, mut any_replaced, mut n) = (0u8, false, 0);
 
-    // hosts type newly pressed keys in array order: taps (their keys went down before any
-    // key activated in this update), then held keys in the order they went down
+    // hosts type newly pressed keys in array order: held keys in the order they went down
     let mut by_press: [usize; Orbit::KEY_COUNT] = core::array::from_fn(|k| k);
     by_press.sort_unstable_by_key(|&k| self.order[k]);
     let held = by_press.into_iter().filter_map(|k| match self.keys[k] {
+      State::Active { .. } if !self.taps.is_empty() && self.order[k].wrapping_sub(before) as i32 > 0 => None,
       State::Active { entry, replaced } => Some((entry, replaced)),
       _ => None,
     });
