@@ -3,7 +3,6 @@ use crate::util;
 use proc_macro2::Ident;
 use quote::quote;
 
-const MULTIPLEXER_SEL_DEVIDER: usize = 4;
 
 #[allow(unused_variables)]
 pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -57,8 +56,8 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let mut matrix = quote! {
     pub const MATRIX_ROW_COUNT: usize = 0;
     pub const MATRIX_COL_COUNT: usize = 0;
-    pub const MATRIX_ROW_PINS: [&str; 0] = [];
-    pub const MATRIX_COL_PINS: [&str; 0] = [];
+    pub const MATRIX_ROW_PINS: [Peripheral; 0] = [];
+    pub const MATRIX_COL_PINS: [Peripheral; 0] = [];
   };
   if use_matrix {
     let layout_list: Vec<(usize, usize)> = toml::get(&config, "matrix/layout", true);
@@ -82,8 +81,8 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     matrix = quote! {
       pub const MATRIX_ROW_COUNT: usize = #row_count;
       pub const MATRIX_COL_COUNT: usize = #col_count;
-      pub const MATRIX_ROW_PINS: [&str; #row_count] = [#(Peripheral::#row_pin_idents),*];
-      pub const MATRIX_COL_PINS: [&str; #col_count] = [#(Peripheral::#col_pin_idents),*];
+      pub const MATRIX_ROW_PINS: [Peripheral; #row_count] = [#(Peripheral::#row_pin_idents),*];
+      pub const MATRIX_COL_PINS: [Peripheral; #col_count] = [#(Peripheral::#col_pin_idents),*];
     };
 
     key_count = layout_list.len();
@@ -117,9 +116,9 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const MULTIPLEXER_COUNT: usize = 0;
       pub const MULTIPLEXER_CHANNELS: usize = 0;
       pub const MULTIPLEXER_SEL_COUNT: usize = 0;
-      pub const MULTIPLEXER_SEL_PINS: [&str; 0] = [];
+      pub const MULTIPLEXER_SEL_PINS: [Peripheral; 0] = [];
       pub const MULTIPLEXER_COM_COUNT: usize = 0;
-      pub const MULTIPLEXER_COM_PINS: [&str; 0] = [];
+      pub const MULTIPLEXER_COM_PINS: [Peripheral; 0] = [];
   };
   if use_multiplexers {
     let layout_list: Vec<(usize, usize)> = toml::get(&config, "multiplexers/layout", true);
@@ -127,7 +126,14 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let channels: usize = toml::get(&config, "multiplexers/channels", true);
     let sel_pins: Vec<String> = toml::get(&config, "multiplexers/sel_pins", true);
     let com_pins: Vec<String> = toml::get(&config, "multiplexers/com_pins", true);
-    let sel_count = (channels / MULTIPLEXER_SEL_DEVIDER) as usize;
+    let sel_count = sel_line_count(channels);
+    if sel_pins.len() != sel_count || com_pins.len() != count {
+      println!(
+        "multiplexers: {} channels need {} sel_pins and count = {} needs {} com_pins",
+        channels, sel_count, count, count
+      );
+      std::process::exit(1);
+    }
 
     let mut sel_pin_idents = vec![];
     for pin in sel_pins.clone() {
@@ -201,4 +207,25 @@ pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     #multiplexers
   }
   .into()
+}
+
+// a mux with n channels is addressed by log2(n) select lines
+fn sel_line_count(channels: usize) -> usize {
+  if !channels.is_power_of_two() {
+    println!("multiplexers/channels must be a power of two, got {}", channels);
+    std::process::exit(1);
+  }
+  channels.trailing_zeros() as usize
+}
+
+#[cfg(test)]
+mod tests {
+  use super::sel_line_count;
+
+  #[test]
+  fn sel_lines_are_log2_of_channels() {
+    assert_eq!(sel_line_count(8), 3);
+    assert_eq!(sel_line_count(16), 4);
+    assert_eq!(sel_line_count(32), 5);
+  }
 }

@@ -139,9 +139,9 @@ impl Keyboard {
 
       for (i, pin) in Orbit::MULTIPLEXER_SEL_PINS.iter().enumerate() {
         if (sel & (1 << i)) != 0 {
-          peri.output(*pin).set_low();
-        } else {
           peri.output(*pin).set_high();
+        } else {
+          peri.output(*pin).set_low();
         }
       }
 

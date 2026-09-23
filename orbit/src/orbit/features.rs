@@ -5,4 +5,3 @@ mod behaviors;
 pub use behaviors::Behaviors;
 
 mod flavors;
-pub use flavors::Flavors;
