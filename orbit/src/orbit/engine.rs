@@ -110,6 +110,10 @@ impl Engine {
   fn release(&mut self, k: usize, now: u32) {
     if self.keys[k] == State::Waiting {
       self.flush(now);
+      // released before the combo term: its press is still sent, as a tap
+      if let State::Active { entry, replaced } = self.keys[k] {
+        let _ = self.taps.push((entry, replaced));
+      }
     }
     match self.keys[k] {
       State::Pending { slot, .. } => {

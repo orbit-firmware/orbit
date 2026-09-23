@@ -63,6 +63,7 @@ mod emulator {
     ("held key keeps its layer", &[Down(&["Space"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["Space"]), Wait(T), Expect(&["Three"]), Up(&["E"]), Wait(T), Expect(&[])]),
     ("combo j+k sends esc", &[Down(&["J", "K"]), Expect(&["Escape"]), Wait(T), Up(&["J"]), Expect(&[]), Wait(T), Up(&["K"]), Wait(T), Expect(&[])]),
     ("combo d+f pressed apart within term", &[Down(&["D"]), Wait(10), Expect(&[]), Down(&["F"]), Expect(&["Tab"]), Wait(T), Up(&["D", "F"]), Wait(T), Expect(&[])]),
+    ("combo key tapped within term", &[Down(&["J"]), Wait(T), Up(&["J"]), Expect(&["J"]), Wait(T), Expect(&[])]),
     ("combo key alone after term", &[Down(&["J"]), Wait(80), Expect(&["J"]), Up(&["J"]), Wait(T), Expect(&[])]),
     ("combo key then other key", &[Down(&["J"]), Wait(10), Down(&["Q"]), Expect(&["J", "Q"]), Wait(T), Up(&["J", "Q"]), Wait(T), Expect(&[])]),
     ("to(3) switches base, to(0) back", &[
