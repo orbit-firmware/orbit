@@ -167,8 +167,7 @@ impl Key {
     }
   }
 
-  pub fn process(&mut self, state: bool) {
-    let keyboard = Keyboard::instance();
+  pub fn process(&mut self, keyboard: &mut Keyboard, state: bool) {
     self.set_pressed(state);
     Behaviors::process(keyboard, self);
 

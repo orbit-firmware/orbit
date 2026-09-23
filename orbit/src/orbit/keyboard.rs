@@ -95,11 +95,16 @@ impl Keyboard {
     self.scan_multiplexers();
   }
 
+  // takes the key out of `keys` while it runs, so it can borrow the keyboard without aliasing
+  #[allow(unused)]
+  fn process_key(&mut self, k: usize, state: bool) {
+    let mut key = core::mem::replace(&mut self.keys[k], Key::new(k));
+    key.process(self, state);
+    self.keys[k] = key;
+  }
+
   #[cfg(feature = "matrix_scan")]
   fn scan_matrix(&mut self) {
-    let keys = &mut self.keys;
-    let peri = &mut self.peripherals;
-
     for k in 0..Orbit::LAYOUT.len() {
       let mut state = false;
       let pair = &Orbit::LAYOUT[k];
@@ -112,16 +117,16 @@ impl Keyboard {
       if row == Peripheral::None && col == Peripheral::None {
         continue;
       } else if row != Peripheral::None && col != Peripheral::None {
-        let s1 = peri.input(row).is_high();
-        let s2 = peri.input(col).is_high();
+        let s1 = self.peripherals.input(row).is_high();
+        let s2 = self.peripherals.input(col).is_high();
         state = s1 && s2;
       } else if row != Peripheral::None {
-        state = peri.input(row).is_high();
+        state = self.peripherals.input(row).is_high();
       } else if col != Peripheral::None {
-        state = peri.input(col).is_high();
+        state = self.peripherals.input(col).is_high();
       }
 
-      keys[k].process(state);
+      self.process_key(k, state);
     }
   }
 
@@ -150,7 +155,7 @@ impl Keyboard {
 
       let mut state = peri.input(com).read();
       info!("{}", state);
-      // keys[k].process(state);
+      // self.process_key(k, state);
     }
   }
 }
