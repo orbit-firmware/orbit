@@ -57,7 +57,8 @@ pub struct Engine {
   base: u8,
   // entries sent for a single report (taps)
   taps: Vec<(Entry, bool), 8>,
-  waiting: Vec<(usize, u32), 8>,
+  // a key joins only from Up, so every key fits
+  waiting: Vec<(usize, u32), { Orbit::KEY_COUNT }>,
   // the active combo and what it sends
   combo: Option<(usize, Entry)>,
   // layers turned on by tl(n)
@@ -161,9 +162,7 @@ impl Engine {
   fn press(&mut self, k: usize, now: u32) {
     if COMBOS.iter().any(|c| c.keys.contains(&k)) {
       self.keys[k] = State::Waiting;
-      if self.waiting.push((k, now)).is_err() {
-        return self.flush(now);
-      }
+      let _ = self.waiting.push((k, now));
       let held = |c: &&crate::orbit::keymap::Combo| self.waiting.iter().all(|(w, _)| c.keys.contains(w));
       if let Some(i) = COMBOS.iter().position(|c| c.keys.len() == self.waiting.len() && held(&c)) {
         for &(w, _) in self.waiting.iter() {
