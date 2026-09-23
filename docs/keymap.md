@@ -21,6 +21,9 @@ Also:
 - A `tap 2` row gives each key's double-tap entry (needs `[behaviors] tap`): a second
   press within `tapping_term` sends it; a single tap is sent when the term ends or the next
   key goes down, and a key held past the term sends its press.
+- `"text"` types the text, one character per report (then a release, so repeated letters
+  register). Each character must be a key name or alias in the keycode table; uppercase
+  letters are sent with shift. Spaces cannot appear inside a string yet.
 - `boot` restarts an STM32 into its ROM USB bootloader (flash with `dfu-util`).
 
 Combos:
@@ -29,7 +32,7 @@ Combos:
 combo j k | esc   # keys named by their layer 0 press label, within settings.combo_term ms
 ```
 
-Not yet: strings (`"::"`), `os` rows, mouse, rgb and `boot`/`stats`/`return`.
+Not yet: `os` rows, mouse, rgb and `stats`/`return`.
 A `hold` key becomes the hold after its time or as soon as another key is pressed.
 
 

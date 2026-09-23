@@ -30,10 +30,10 @@ _____________________________________________________________________________
 press      |                      ---    ---        ---    ---
 
 # while enter is held: q switches to the function key layer, w toggles layer 1,
-# e and r are sticky shift and sticky layer 1, t caps word, y repeats the last key
+# e and r are sticky shift and sticky layer 1, t caps word, y repeats the last key, u types Hi!
 layer 2
 _____________________________________________________________________________
-press      | to(3)  tl(1)  sk(lsft) skl(1) cw       rep    ---    ---    ---    ---
+press      | to(3)  tl(1)  sk(lsft) skl(1) cw       rep    "Hi!"  ---    ---    ---
 _____________________________________________________________________________
 press      | ---    ---    ---    ---    ---        ---    ---    ---    ---    ---
 _____________________________________________________________________________

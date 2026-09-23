@@ -67,6 +67,8 @@ pub struct Engine {
   tapped: Option<(usize, u32)>,
   // a tap dance key released once: its tap waits for a second press until the tapping term
   dance: Option<(usize, u32, Entry, bool)>,
+  // a string being typed and the step: even steps send a character, odd ones release it
+  typing: Option<(&'static [u16], usize)>,
   // a boot key was pressed
   pub boot: bool,
 }
@@ -85,6 +87,7 @@ impl Engine {
       last: None,
       tapped: None,
       dance: None,
+      typing: None,
       boot: false,
     }
   }
@@ -117,6 +120,12 @@ impl Engine {
           self.hold(k, slot);
         }
       }
+    }
+    if let Some((codes, step)) = self.typing {
+      if step % 2 == 0 {
+        let _ = self.taps.push((Entry::Code(codes[step / 2]), false));
+      }
+      self.typing = if step + 1 < codes.len() * 2 { Some((codes, step + 1)) } else { None };
     }
     self.report()
   }
@@ -274,6 +283,7 @@ impl Engine {
       Entry::Toggle(l) => self.toggled ^= 1 << l,
       Entry::CapsWord => self.caps_word = !self.caps_word,
       Entry::Boot => self.boot = true,
+      Entry::Str(codes) => self.typing = Some((codes, 0)),
       Entry::Code(c) => self.typed(c),
       Entry::Sticky(c) => return self.stick(k, Entry::Code(c)),
       Entry::StickyLayer(l) => return self.stick(k, Entry::Layer(l)),

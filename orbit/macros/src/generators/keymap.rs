@@ -29,6 +29,7 @@ enum Entry {
   CapsWord,
   Repeat,
   Boot,
+  Str(&'static [u16]),
 }
 
 #[derive(Clone, Copy)]
@@ -86,7 +87,20 @@ fn entry(token: &str, codes: &[KeyCode], line: usize) -> Entry {
     "cw" => Entry::CapsWord,
     "rep" => Entry::Repeat,
     "boot" => Entry::Boot,
-    _ if token.len() > 1 && token.starts_with('"') => fail(line, format!("strings are not supported yet: {}", token)),
+    _ if token.len() > 2 && token.starts_with('"') && token.ends_with('"') => {
+      let chars = token[1..token.len() - 1].chars();
+      let typed: Vec<u16> = chars
+        .map(|c| {
+          let found = match c {
+            'A'..='Z' => code(&c.to_ascii_lowercase().to_string(), codes).map(modifiers::ls),
+            _ => code(&c.to_string(), codes),
+          };
+          found.unwrap_or_else(|| fail(line, format!("no key types `{}` in {}", c, token)))
+        })
+        .collect();
+      // ponytail: leaked, a proc macro process is short-lived
+      Entry::Str(Box::leak(typed.into_boxed_slice()))
+    }
     _ => {
       if let Some(n) = arg("ml(") {
         Entry::Layer(n)
@@ -240,6 +254,7 @@ fn tokens(e: Entry) -> TokenStream {
     Entry::CapsWord => quote! { Entry::CapsWord },
     Entry::Repeat => quote! { Entry::Repeat },
     Entry::Boot => quote! { Entry::Boot },
+    Entry::Str(codes) => quote! { Entry::Str(&[#(#codes),*]) },
   }
 }
 
@@ -356,6 +371,12 @@ mod tests {
     let press: Vec<Entry> = l0.iter().map(|s| s.press).collect();
     let want = [Entry::Toggle(1), Entry::Sticky(0x0114), Entry::StickyLayer(1), Entry::CapsWord, Entry::Repeat, Entry::Boot];
     assert_eq!(press, want);
+  }
+
+  #[test]
+  fn parses_strings() {
+    let map = parse("layer 0\npress | \"Qw\"\n", 1, 200, &codes());
+    assert_eq!(map.layers[0][0].press, Entry::Str(&[0x0214, 0x1A]));
   }
 
   #[test]

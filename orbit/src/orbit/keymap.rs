@@ -23,6 +23,8 @@ pub enum Entry {
   Repeat,
   // restarts into the chip's bootloader
   Boot,
+  // types these keycodes, one per report
+  Str(&'static [u16]),
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]

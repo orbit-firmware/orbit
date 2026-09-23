@@ -139,6 +139,11 @@ mod emulator {
     ("tap dance: b held past the term is b", &[
       Down(&["B"]), Wait(HOLD), Expect(&["B"]), Up(&["B"]), Wait(T), Expect(&[]),
     ]),
+    ("string types one character per report", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["U"]), Expect(&["LeftShift", "H"]), Wait(0), Expect(&[]),
+      Wait(0), Expect(&["I"]), Wait(0), Expect(&[]), Wait(0), Expect(&["LeftShift", "RightShift", "One"]), Wait(0), Expect(&[]),
+      Up(&["U", "Enter"]), Wait(T), Expect(&[]),
+    ]),
     ("rep sends the last key again", &[
       Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),
@@ -294,6 +299,7 @@ mod emulator {
       Entry::CapsWord => "cw".to_string(),
       Entry::Repeat => "rep".to_string(),
       Entry::Boot => "boot".to_string(),
+      Entry::Str(_) => "str".to_string(),
       Entry::Trough | Entry::None => String::new(),
     }
   }
