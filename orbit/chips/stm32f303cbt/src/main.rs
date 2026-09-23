@@ -3,7 +3,7 @@
 
 #[cfg(not(feature = "defmt"))]
 use panic_halt as _;
-#[cfg(feature = "defmt")]
+#[cfg(feature = "debug")]
 use {defmt_rtt as _, panic_probe as _};
 
 use embassy_executor::Spawner;
@@ -21,10 +21,9 @@ bind_interrupts!(struct Irqs {
 mod orbit;
 
 #[embassy_executor::main]
-async fn main(_spawner: Spawner) -> ! {
+async fn main(_spawner: Spawner) {
   let p = embassy_stm32::init(Default::default());
   let usb_driver = Driver::new(p.USB, Irqs, p.PA12, p.PA11);
 
-  // macros::pinout! {};
-  crate::processor::run(usb_driver).await
+  orbit::process::run(usb_driver).await
 }
