@@ -22,6 +22,7 @@ tap = true
 
 [actions]
 mouse = true
+layers = true
 
 [flavors]
 space_cadet = true

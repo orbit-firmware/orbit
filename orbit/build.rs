@@ -1,5 +1,5 @@
 //# fs_extra = "1.3.0"
-//# serde-toml-merge = "0.3.8"
+//# serde-toml-merge = "=0.3.8"
 //# toml = "0.8"
 
 // IMPORTANT: this is not a normal build.rs file.
@@ -46,12 +46,13 @@ pub fn main() {
 
   needs_clean(&keyboard_name, &chip_name);
   copy_folder("orbit", "build", vec!["target", "Cargo.lock", "build.rs"]);
-  copy_folder(&chip_dir, "build", vec!["target", "Cargo.lock"]);
+  copy_folder(&chip_dir, "build", vec!["target"]);
   merge_toml("orbit/Cargo.toml", &chip_toml, "build/Cargo.toml", true);
   merge_toml(
     &keyboard_toml, "user/keyboard.toml", "build/keyboard.toml", false,
   );
   configure(&chip_name, &keyboard_name, &argument_features);
+  copy_keymap(&keyboard_name);
   prepare_orbit_module();
   save_last_build_cfg(&keyboard_name, &chip_name);
   ok!("Pre-Compile completed!");
@@ -102,32 +103,23 @@ fn configure(
   write_toml("build/Cargo.toml", &content);
 }
 
-fn get_file_names(dir: &str) -> Vec<String> {
-  let mut file_names: Vec<String> = vec![];
-  fs::read_dir(dir).unwrap().for_each(|entry| {
-    let entry = entry.unwrap();
-    let filename = entry.file_name().into_string().unwrap();
-    let path = Path::new(&filename);
-
-    // Get the file name without the extension
-    if let Some(stem) = path.file_stem() {
-      file_names.push(stem.to_str().unwrap().to_string());
-    }
-  });
-
-  file_names
-}
+// features a keyboard toml can switch on, per section
+const FEATURES: [(&str, &[&str]); 3] = [
+  ("actions", &["layers", "mouse"]),
+  ("behaviors", &["combo", "hold", "modding", "tap"]),
+  ("flavors", &["space_cadet"]),
+];
 
 fn get_features(keyboard: &Value, content: &mut Value) -> Vec<String> {
   let mut features: Vec<String> = vec![];
 
-  for (kind, section) in [("action", "actions"), ("behavior", "behaviors"), ("flavor", "flavors")] {
+  for (section, known) in FEATURES {
+    let kind = section.trim_end_matches('s');
     let Some(table) = keyboard.get(section).and_then(Value::as_table) else {
       continue;
     };
-    let known = get_file_names(&format!("orbit/src/orbit/features/{}", section));
     for (name, value) in table {
-      if !known.contains(name) {
+      if !known.contains(&name.as_str()) {
         error!("{} not found: {}", kind, name);
         std::process::exit(1);
       }
@@ -290,6 +282,16 @@ fn copy_folder(source: &str, target: &str, exclude_patterns: Vec<&str>) {
   options.copy_inside = true;
 
   copy_items(&contents, "build", &options).unwrap();
+}
+
+// user/keymap.orbit wins over the keyboard's own keymap
+fn copy_keymap(kb: &str) {
+  let own = format!("orbit/keyboards/{}.orbit", kb);
+  let source = if Path::new("user/keymap.orbit").exists() { "user/keymap.orbit" } else { own.as_str() };
+  if fs::copy(source, "build/keymap.orbit").is_err() {
+    error!("Keymap not found: {} (or user/keymap.orbit)", own);
+    std::process::exit(1);
+  }
 }
 
 fn prepare_orbit_module() {

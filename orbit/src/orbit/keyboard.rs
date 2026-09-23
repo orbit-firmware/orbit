@@ -5,18 +5,23 @@ use embassy_futures::join::join;
 use embassy_usb::driver::Driver;
 
 use crate::orbit::config as Orbit;
-use crate::orbit::dbg::{info, warn};
+#[cfg(feature = "multiplexers_scan")]
+use crate::orbit::dbg::info;
+#[cfg(not(feature = "chip_type_emulator"))]
+use crate::orbit::dbg::warn;
+use crate::orbit::engine::{Engine, Report};
 #[cfg(not(feature = "chip_type_emulator"))]
 use crate::orbit::hid;
 use crate::orbit::key::Key;
+use crate::orbit::keymap::Entry;
 use crate::orbit::peripherals::*;
-use crate::orbit::report::Reports;
+use crate::orbit::time;
 
 pub struct Keyboard {
   peripherals: Peripherals,
-  layer: u32,
   keys: [Key; Orbit::KEY_COUNT],
-  reports: Reports,
+  pressed: [bool; Orbit::KEY_COUNT],
+  engine: Engine,
 }
 
 impl Keyboard {
@@ -24,30 +29,23 @@ impl Keyboard {
     assert!(Orbit::KEY_COUNT > 0, "No keys defined");
     Self {
       peripherals: Peripherals::new(),
-      keys: populate(Key::new),
-      layer: 0,
-      reports: Reports::new(),
+      keys: [Key::new(); Orbit::KEY_COUNT],
+      pressed: [false; Orbit::KEY_COUNT],
+      engine: Engine::new(),
     }
-  }
-
-  pub fn set_layer(&mut self, layer: u32) {
-    self.layer = layer;
-  }
-
-  pub fn get_layer(&self) -> u32 {
-    self.layer
   }
 
   #[cfg(not(feature = "chip_type_emulator"))]
   pub async fn process<D: Driver<'static>>(&mut self, driver: D) {
-    let (mut usb, reader, mut writer) = hid::keyboard::init(driver).await;
+    let (mut usb, _reader, mut writer) = hid::keyboard::init(driver).await;
 
-    let mut writer = &mut writer;
     let process = async {
       loop {
         if hid::keyboard::ready().await {
-          self.scan();
-          self.reports.process(&mut writer).await;
+          let report = self.tick();
+          if let Err(e) = writer.write(&report.serialize()).await {
+            warn!("Failed to send report: {:?}", e);
+          }
         }
       }
     };
@@ -55,28 +53,19 @@ impl Keyboard {
     join(usb.run(), process).await;
   }
 
-  pub fn key(&mut self, index: usize) -> &mut Key {
-    assert!(index < Orbit::KEY_COUNT, "Key Index not present");
-    &mut self.keys[index]
-  }
-
-  pub fn add_report(&mut self, keycode: u16) {
-    self.reports.add(keycode);
-  }
-
-  pub fn remove_report(&mut self, keycode: u16) {
-    self.reports.remove(keycode);
-  }
-
-  pub fn peripherals(&mut self) -> &mut Peripherals {
-    &mut self.peripherals
-  }
-
-  // one scan cycle without usb, for the emulator
-  #[cfg(feature = "chip_type_emulator")]
-  pub fn tick(&mut self) -> [u8; 8] {
+  // one scan cycle: read the keys, run them through the keymap
+  pub fn tick(&mut self) -> Report {
     self.scan();
-    self.reports.build().serialize()
+    self.engine.update(&self.pressed, time::now())
+  }
+
+  pub fn is_pressed(&self, k: usize) -> bool {
+    self.pressed[k]
+  }
+
+  // what key k sends if pressed now (current layers and shift)
+  pub fn entry(&self, k: usize) -> Entry {
+    self.engine.entry(k)
   }
 
   fn scan(&mut self) {
@@ -87,12 +76,8 @@ impl Keyboard {
     self.scan_multiplexers();
   }
 
-  // takes the key out of `keys` while it runs, so it can borrow the keyboard without aliasing
-  #[allow(unused)]
-  fn process_key(&mut self, k: usize, state: bool) {
-    let mut key = core::mem::replace(&mut self.keys[k], Key::new(k));
-    key.process(self, state);
-    self.keys[k] = key;
+  fn set_key(&mut self, k: usize, raw: bool) {
+    self.pressed[k] = self.keys[k].update(raw, time::now());
   }
 
   #[cfg(feature = "matrix_scan")]
@@ -118,7 +103,7 @@ impl Keyboard {
         state = self.peripherals.input(col).is_high();
       }
 
-      self.process_key(k, state);
+      self.set_key(k, state);
     }
   }
 
@@ -147,7 +132,7 @@ impl Keyboard {
 
       let mut state = peri.input(com).read();
       info!("{}", state);
-      // self.process_key(k, state);
+      // self.set_key(k, state);
     }
   }
 }

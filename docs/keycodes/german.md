@@ -95,7 +95,7 @@ keycodes = "german" // [!code focus]
 | Tab | 0x002B | `tab` |
 | CapsLock | 0x0039 | `capslock`, `caps` |
 | Insert | 0x0049 | `insert` |
-| Delete | 0x004C | `delete` |
+| Delete | 0x004C | `delete`, `del` |
 | Home | 0x004A | `home` |
 | End | 0x004D | `end` |
 | PageUp | 0x004B | `pageup` |

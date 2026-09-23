@@ -33,10 +33,6 @@ row_pins = ["PB9"]
 col_pins = []
 layout = [[0,0]]
 
-[keymap]
-# keycode names from orbit/keycodes/<settings.keycodes>.kcs, one per layout entry
-default = ["A"]
-
 [rgb]
 data_pin = "PA7"
 

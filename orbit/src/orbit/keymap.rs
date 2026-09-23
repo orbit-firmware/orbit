@@ -1,36 +1,32 @@
-use crate::orbit::config as Orbit;
-use core::option::Option;
-use heapless::String;
+// the keymap tables get generated from build/keymap.orbit by
+// orbit/macros/src/generators/keymap.rs
 
-const MAX_LAYERS: usize = 16;
-
-pub struct KeyMap {
-  data: [Option<String<32>>; Orbit::KEY_COUNT * Orbit::BEHAVIOR_COUNT * MAX_LAYERS],
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum Entry {
+  // falls through to the next lower active layer
+  Trough,
+  None,
+  // keycode, high byte = hid modifier bits
+  Code(u16),
+  // momentary layer while held
+  Layer(u8),
+  // switches the base layer
+  To(u8),
 }
 
-impl KeyMap {
-  pub fn load_data(&mut self) {
-    // load in from flash storage
-  }
-
-  pub fn set(&mut self, key: u8, layer: u8, behavior: u8, token: &str) {
-    let index = self.get_index(key as usize, layer as usize, behavior as usize);
-    let mut t = String::new();
-    t.push_str(token).unwrap();
-    self.data[index] = Some(t);
-  }
-
-  pub fn get(&self, key: u8, layer: u8, behavior: u8) -> &str {
-    let index = self.get_index(key as usize, layer as usize, behavior as usize);
-
-    if let Some(ref token) = self.data[index] {
-      return token.as_str();
-    }
-
-    ""
-  }
-
-  fn get_index(&self, key: usize, layer: usize, behavior: usize) -> usize {
-    key * Orbit::BEHAVIOR_COUNT * MAX_LAYERS + behavior * MAX_LAYERS + layer
-  }
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct Slot {
+  pub press: Entry,
+  // replaces press while shift is held; Trough = no replacement
+  pub shift: Entry,
+  // sent instead of press when held for hold_ms; Trough = no hold
+  pub hold: Entry,
+  pub hold_ms: u16,
 }
+
+pub struct Combo {
+  pub keys: &'static [usize],
+  pub entry: Entry,
+}
+
+orbit_macros::generate_keymap! {}

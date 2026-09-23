@@ -3,8 +3,19 @@
 A keymap defines how each key on a keyboard behaves across various layers and states.  
 It acts as a flexible configuration tool that maps key presses to behaviors and actions.  
 
-Your keymap will be placed in the harddrive/flash of your keyboard.  
-For that to work you have to put your keyboard into [boot-mode](/).  
+The keymap lives next to the keyboard config as `orbit/keyboards/<keyboard>.orbit`
+(or `user/keymap.orbit`, which wins) and is compiled into the firmware.
+Loading it from the keyboard's flash drive is planned.
+
+Supported today: `layer N`, `press`, `shift` and `hold [ms]` rows, `---` (fall through to the
+layer below), `xxx` (nothing), modifier wrappers like `c(z)`, `ml(n)`, `to(n)`, and combos:
+
+```orbit
+combo j k | esc   # keys named by their layer 0 press label, within settings.combo_term ms
+```
+
+Not yet: strings (`"::"`), `os` rows, mouse, rgb and `boot`/`stats`/`return`.
+A `hold` key becomes the hold after its time or as soon as another key is pressed.
 
 
 ## Structure

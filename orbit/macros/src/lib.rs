@@ -16,6 +16,11 @@ pub fn generate_keycodes(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
+pub fn generate_keymap(input: TokenStream) -> TokenStream {
+  generators::keymap::generate(input)
+}
+
+#[proc_macro]
 pub fn generate_peripherals(input: TokenStream) -> TokenStream {
   generators::peripherals::generate(input)
 }

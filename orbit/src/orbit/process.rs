@@ -30,32 +30,67 @@ mod emulator {
   use crate::orbit::config as Orbit;
   use crate::orbit::keyboard::Keyboard;
   use crate::orbit::keycodes::KeyCode;
+  use crate::orbit::keymap::Entry;
   use crate::orbit::peripherals::{REAL_KEYS, SIMULATED};
   use std::sync::atomic::Ordering;
 
-  // (what is tested, host keys held down, keycodes the report must hold)
-  // ponytail: written against the qwerty keymap in _emulator.toml, move into the toml when
-  // other keyboards need their own tests
-  const TESTS: &[(&str, &[&str], &[&str])] = &[
-    ("single key", &["Q"], &["Q"]),
-    ("right pinky", &["Semicolon"], &["Semicolon"]),
-    ("thumb", &["Space"], &["Space"]),
-    ("chord on one half", &["Q", "W"], &["Q", "W"]),
-    ("chord across halves", &["F", "J"], &["F", "J"]),
-    ("both outer thumbs", &["Tab", "Backspace"], &["Tab", "Backspace"]),
-    ("7 keys: boot report keeps 6", &["Q", "W", "E", "R", "T", "Y", "U"], &["Q", "W", "E", "R", "T", "Y"]),
-  ];
-  const SETTLE_MS: u64 = 40; // > debounce_time
-  const SHOW_MS: u64 = 700;
+  // host keys (the physical positions in _emulator.toml) and report contents by keycode name
+  enum Step {
+    Down(&'static [&'static str]),
+    Up(&'static [&'static str]),
+    Wait(u64),
+    // the latest report holds exactly these keycodes and modifiers
+    Expect(&'static [&'static str]),
+  }
+  use Step::*;
 
-  type Show<'a> = &'a mut dyn FnMut(&[bool], &[u8; 8], &str, Option<&[&str]>);
+  // written against orbit/keyboards/_emulator.orbit
+  const T: u64 = 30; // > debounce_time, < combo_term
+  const HOLD: u64 = 260; // > hold 200
+  const TESTS: &[(&str, &[Step])] = &[
+    ("single key", &[Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Expect(&[])]),
+    ("chord across halves", &[Down(&["F", "J"]), Wait(60), Expect(&["F", "J"]), Up(&["F", "J"]), Wait(T), Expect(&[])]),
+    ("modifier key", &[Down(&["Tab"]), Wait(T), Down(&["Z"]), Expect(&["LeftShift", "Z"]), Up(&["Z", "Tab"]), Wait(T), Expect(&[])]),
+    ("7 keys: boot report keeps 6", &[Down(&["Q", "W", "E", "R", "T", "Y", "U"]), Expect(&["Q", "W", "E", "R", "T", "Y"]), Wait(T), Up(&["Q", "W", "E", "R", "T", "Y", "U"]), Wait(T), Expect(&[])]),
+    ("shift row: shift+/ sends \\", &[Down(&["Tab"]), Wait(T), Down(&["Slash"]), Expect(&["Backslash"]), Wait(T), Up(&["Slash"]), Expect(&["LeftShift"]), Wait(T), Up(&["Tab"]), Expect(&[])]),
+    ("shift row: shift+bsp sends del", &[Down(&["Tab"]), Wait(T), Down(&["Backspace"]), Expect(&["Delete"]), Wait(T), Up(&["Backspace", "Tab"]), Wait(T), Expect(&[])]),
+    ("no shift row: bsp alone", &[Down(&["Backspace"]), Expect(&["Backspace"]), Wait(T), Up(&["Backspace"]), Expect(&[])]),
+    ("hold-tap: tap sends space", &[Down(&["Space"]), Wait(T), Expect(&[]), Up(&["Space"]), Expect(&["Space"]), Wait(T), Expect(&[])]),
+    ("hold-tap: hold reaches layer 1", &[Down(&["Space"]), Wait(HOLD), Down(&["Q"]), Expect(&["One"]), Wait(T), Up(&["Q"]), Wait(T), Up(&["Space"]), Expect(&[]), Wait(T), Expect(&[])]),
+    ("hold-tap: other key decides hold", &[Down(&["Space"]), Wait(T), Down(&["W"]), Expect(&["Two"]), Wait(T), Up(&["W", "Space"]), Wait(T), Expect(&[])]),
+    ("layer 1 arrows (j waits out the combo term)", &[Down(&["Space"]), Wait(HOLD), Down(&["J"]), Expect(&[]), Wait(60), Expect(&["Down"]), Wait(T), Up(&["J", "Space"]), Wait(T), Expect(&[])]),
+    ("--- falls through to layer 0", &[Down(&["Space"]), Wait(HOLD), Down(&["Z"]), Expect(&["Z"]), Wait(T), Up(&["Z", "Space"]), Wait(T), Expect(&[])]),
+    ("held key keeps its layer", &[Down(&["Space"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["Space"]), Wait(T), Expect(&["Three"]), Up(&["E"]), Wait(T), Expect(&[])]),
+    ("combo j+k sends esc", &[Down(&["J", "K"]), Expect(&["Escape"]), Wait(T), Up(&["J"]), Expect(&[]), Wait(T), Up(&["K"]), Wait(T), Expect(&[])]),
+    ("combo d+f pressed apart within term", &[Down(&["D"]), Wait(10), Expect(&[]), Down(&["F"]), Expect(&["Tab"]), Wait(T), Up(&["D", "F"]), Wait(T), Expect(&[])]),
+    ("combo key alone after term", &[Down(&["J"]), Wait(80), Expect(&["J"]), Up(&["J"]), Wait(T), Expect(&[])]),
+    ("combo key then other key", &[Down(&["J"]), Wait(10), Down(&["Q"]), Expect(&["J", "Q"]), Wait(T), Up(&["J", "Q"]), Wait(T), Expect(&[])]),
+    ("to(3) switches base, to(0) back", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Q"]), Expect(&["F1"]), Wait(T), Up(&["Q"]), Wait(T),
+      Down(&["P"]), Wait(T), Up(&["P"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("enter tap still sends enter", &[Down(&["Enter"]), Wait(T), Up(&["Enter"]), Expect(&["Enter"]), Wait(T), Expect(&[])]),
+  ];
+  const SHOW_MS: u64 = 600;
+  const MODIFIERS: [&str; 8] = ["LeftCtrl", "LeftShift", "LeftAlt", "LeftGui", "RightCtrl", "RightShift", "RightAlt", "RightGui"];
+
+  // what a screen shows: pressed positions, the report, the status line, expected names
+  struct Frame {
+    pressed: Vec<bool>,
+    labels: Vec<String>,
+    report: [u8; 8],
+    status: String,
+    expect: Option<Vec<String>>,
+  }
 
   pub async fn run() -> ! {
     let mut keyboard = Keyboard::new();
 
     // ORBIT_EMULATOR_TEST=1: run the tests without a screen and exit 1 on failure
     if std::env::var_os("ORBIT_EMULATOR_TEST").is_some() {
-      let failed = run_tests(&mut keyboard, &mut |_, _, status, _| println!("{}", status));
+      let failed = run_tests(&mut keyboard, &mut |f| println!("{}", f.status));
       std::process::exit(if failed.is_empty() { 0 } else { 1 });
     }
 
@@ -65,7 +100,7 @@ mod emulator {
     out.execute(cursor::Hide).unwrap();
 
     let mut summary = play_tests(&mut keyboard);
-    let mut last: Option<(Vec<bool>, [u8; 8], (u16, u16))> = None;
+    let mut last: Option<(Vec<bool>, Vec<String>, [u8; 8], (u16, u16))> = None;
     loop {
       // drain terminal input so typed keys don't leak into the shell; ctrl+c quits
       while event::poll(Duration::ZERO).unwrap_or(false) {
@@ -83,11 +118,12 @@ mod emulator {
         }
       }
 
-      let report = keyboard.tick();
+      let report = keyboard.tick().serialize();
       let size = terminal::size().unwrap_or((80, 24));
-      let state = (pressed(&mut keyboard), report, size);
+      let frame = snapshot(&keyboard, report, summary.clone(), None);
+      let state = (frame.pressed.clone(), frame.labels.clone(), report, size);
       if last.as_ref() != Some(&state) {
-        draw(&mut out, &state.0, &state.1, size, &summary, None);
+        draw(&mut out, &frame, size);
         last = Some(state);
       }
       std::thread::sleep(Duration::from_millis(1));
@@ -96,9 +132,9 @@ mod emulator {
 
   // runs the tests on screen and returns the line shown afterwards
   fn play_tests(keyboard: &mut Keyboard) -> String {
-    let failed = run_tests(keyboard, &mut |pressed, report, status, expect| {
-      let size = terminal::size().unwrap_or((80, 24));
-      draw(&mut std::io::stdout(), pressed, report, size, status, expect);
+    let failed = run_tests(keyboard, &mut |f| {
+      draw(&mut std::io::stdout(), &f, terminal::size().unwrap_or((80, 24)));
+      std::thread::sleep(Duration::from_millis(SHOW_MS));
     });
     // key presses made while the tests ran are not commands
     while event::poll(Duration::ZERO).unwrap_or(false) {
@@ -111,41 +147,47 @@ mod emulator {
     }
   }
 
-  // holds each test's keys, checks the report, releases, checks the report is empty again
-  fn run_tests(keyboard: &mut Keyboard, show: Show) -> Vec<&'static str> {
+  // plays each test's steps in real time; `show` gets one frame per test: its first failing
+  // expectation, else its last one that expects keys
+  fn run_tests(keyboard: &mut Keyboard, show: &mut dyn FnMut(Frame)) -> Vec<&'static str> {
     let mut failed = vec![];
     REAL_KEYS.store(false, Ordering::Relaxed);
-    for (i, (name, keys, expect)) in TESTS.iter().enumerate() {
-      let head = format!("test {}/{}: {}  press [{}]  expect [{}]", i + 1, TESTS.len(), name, keys.join(" "), expect.join(" "));
-      *SIMULATED.lock().unwrap() = keys.iter().map(|k| k.to_string()).collect();
-      let report = settle(keyboard, SETTLE_MS);
-      let mut sent = sent_names(&report);
-      let mut want: Vec<String> = expect.iter().map(|k| k.to_string()).collect();
-      sent.sort();
-      want.sort();
-      let held_ok = sent == want && report[0] == 0;
-
+    for (i, (name, steps)) in TESTS.iter().enumerate() {
+      let mut report = settle(keyboard, 60);
+      let mut shown: Option<Frame> = None;
+      for (s, step) in steps.iter().enumerate() {
+        match step {
+          Down(keys) => {
+            SIMULATED.lock().unwrap().extend(keys.iter().map(|k| k.to_string()));
+            report = settle(keyboard, 0);
+          }
+          Up(keys) => {
+            SIMULATED.lock().unwrap().retain(|k| !keys.contains(&k.as_str()));
+            report = settle(keyboard, 0);
+          }
+          Wait(ms) => report = settle(keyboard, *ms),
+          Expect(want) => {
+            let mut got = names(&report);
+            let mut want: Vec<String> = want.iter().map(|w| w.to_string()).collect();
+            got.sort();
+            want.sort();
+            let ok = got == want;
+            let verdict = if ok { "PASS".to_string() } else { format!("FAIL: got [{}]", got.join(" ")) };
+            let status = format!("test {}/{}: {}  step {}: expect [{}]  {}", i + 1, TESTS.len(), name, s + 1, want.join(" "), verdict);
+            let keep = shown.as_ref().is_some_and(|f| f.status.contains("FAIL") || (want.is_empty() && f.expect.as_ref().is_some_and(|w| !w.is_empty())));
+            if !keep {
+              shown = Some(snapshot(keyboard, report, status, Some(want)));
+            }
+          }
+        }
+      }
       SIMULATED.lock().unwrap().clear();
-      let released = settle(keyboard, SETTLE_MS);
-      let ok = held_ok && released == [0; 8];
-
-      let verdict = match (held_ok, ok) {
-        (true, true) => "PASS".to_string(),
-        (false, _) => format!("FAIL: sent [{}]", sent.join(" ")),
-        (true, false) => format!("FAIL: stuck after release {:02x?}", released),
-      };
-      if !ok {
+      settle(keyboard, 60);
+      let frame = shown.expect("every test has an Expect step");
+      if frame.status.contains("FAIL") {
         failed.push(*name);
       }
-
-      // show the held state with its verdict
-      *SIMULATED.lock().unwrap() = keys.iter().map(|k| k.to_string()).collect();
-      let report = settle(keyboard, SETTLE_MS);
-      let status = format!("{}  {}", head, verdict);
-      show(&pressed(keyboard), &report, &status, Some(expect));
-      std::thread::sleep(Duration::from_millis(SHOW_MS));
-      SIMULATED.lock().unwrap().clear();
-      settle(keyboard, SETTLE_MS);
+      show(frame);
     }
     REAL_KEYS.store(true, Ordering::Relaxed);
     failed
@@ -153,20 +195,40 @@ mod emulator {
 
   fn settle(keyboard: &mut Keyboard, ms: u64) -> [u8; 8] {
     let end = Instant::now() + Duration::from_millis(ms);
-    let mut report = keyboard.tick();
+    let mut report = keyboard.tick().serialize();
     while Instant::now() < end {
       std::thread::sleep(Duration::from_millis(1));
-      report = keyboard.tick();
+      report = keyboard.tick().serialize();
     }
     report
   }
 
-  fn pressed(keyboard: &mut Keyboard) -> Vec<bool> {
-    (0..Orbit::KEY_COUNT).map(|k| keyboard.key(k).is_pressed()).collect()
+  fn names(report: &[u8; 8]) -> Vec<String> {
+    let mods = (0..8).filter(|b| report[0] & 1 << b != 0).map(|b| MODIFIERS[b].to_string());
+    let keys = report[2..].iter().filter(|&&c| c != 0).map(|&c| format!("{:?}", KeyCode::from_u16(c as u16)));
+    mods.chain(keys).collect()
   }
 
-  fn sent_names(report: &[u8; 8]) -> Vec<String> {
-    report[2..].iter().filter(|&&c| c != 0).map(|&c| format!("{:?}", KeyCode::from_u16(c as u16))).collect()
+  fn label(e: Entry) -> String {
+    match e {
+      Entry::Code(c) => {
+        let name = format!("{:?}", KeyCode::from_u16(c));
+        if name == "None" { format!("{:#06x}", c) } else { name }
+      }
+      Entry::Layer(l) => format!("ml{}", l),
+      Entry::To(l) => format!("to{}", l),
+      Entry::Trough | Entry::None => String::new(),
+    }
+  }
+
+  fn snapshot(keyboard: &Keyboard, report: [u8; 8], status: String, expect: Option<Vec<String>>) -> Frame {
+    Frame {
+      pressed: (0..Orbit::KEY_COUNT).map(|k| keyboard.is_pressed(k)).collect(),
+      labels: (0..Orbit::KEY_COUNT).map(|k| label(keyboard.entry(k))).collect(),
+      report,
+      status,
+      expect,
+    }
   }
 
   // 34-key split: key k < 30 sits at row k / 10, column k % 10 (5 left, 5 right);
@@ -189,44 +251,59 @@ mod emulator {
       "Enter" => "ent",
       "Backspace" => "bsp",
       "Tab" => "tab",
+      "One" => "1",
+      "Two" => "2",
+      "Three" => "3",
+      "Four" => "4",
+      "Five" => "5",
+      "Six" => "6",
+      "Seven" => "7",
+      "Eight" => "8",
+      "Nine" => "9",
+      "Zero" => "0",
+      "LeftShift" => "lsft",
+      "Escape" => "esc",
+      "Delete" => "del",
+      "Backslash" => "\\",
+      "Right" => "rght",
       "None" => "",
       _ => return name,
     };
     s.to_string()
   }
 
-  // top: physical keys; middle: the test; bottom: firmware output.
-  // with an expectation, output keys are green when right and red when wrong
-  fn draw(out: &mut std::io::Stdout, pressed: &[bool], report: &[u8; 8], (w, h): (u16, u16), status: &str, expect: Option<&[&str]>) {
-    let sent = |code: u16| {
-      let key = code as u8;
-      let mods = (code >> 8) as u8;
-      (key != 0 && report[2..].contains(&key)) || (mods != 0 && report[0] & mods == mods)
-    };
-
+  // top: physical keys; middle: the test; bottom: what each key sends on the current layer.
+  // with an expectation, sent keys are green when expected and red when not; expected
+  // names that match no key on this layer are listed in red
+  fn draw(out: &mut std::io::Stdout, f: &Frame, (w, h): (u16, u16)) {
+    let sent = names(&f.report);
     let input: Vec<(String, Option<Color>)> = (0..Orbit::KEY_COUNT)
-      .map(|k| (short(format!("{:?}", Orbit::LAYOUT[k][0])), pressed[k].then_some(Color::DarkBlue)))
+      .map(|k| (short(format!("{:?}", Orbit::LAYOUT[k][0])), f.pressed[k].then_some(Color::DarkBlue)))
       .collect();
-    let output: Vec<(String, Option<Color>)> = (0..Orbit::KEY_COUNT)
-      .map(|k| {
-        let name = format!("{:?}", Orbit::KEYMAP[k]);
-        let is_sent = sent(Orbit::KEYMAP[k] as u16);
-        let color = match expect {
+    let output: Vec<(String, Option<Color>)> = f
+      .labels
+      .iter()
+      .map(|name| {
+        let is_sent = sent.contains(name);
+        let color = match &f.expect {
           None => is_sent.then_some(Color::DarkGreen),
-          Some(expect) => {
-            let wanted = expect.contains(&name.as_str());
-            if wanted && is_sent {
-              Some(Color::DarkGreen)
-            } else if wanted != is_sent {
-              Some(Color::DarkRed)
-            } else {
-              None
-            }
-          }
+          Some(want) => match (want.contains(name), is_sent) {
+            (true, true) => Some(Color::DarkGreen),
+            (true, false) | (false, true) => Some(Color::DarkRed),
+            _ => None,
+          },
         };
-        (short(name), color)
+        (short(name.clone()), color)
       })
       .collect();
+    let mut status = f.status.clone();
+    if let Some(want) = &f.expect {
+      let off_board: Vec<&String> = want.iter().chain(sent.iter()).filter(|n| !f.labels.contains(n)).collect();
+      if !off_board.is_empty() {
+        let list: Vec<String> = off_board.iter().map(|n| format!("{}{}", if sent.contains(n) { "+" } else { "-" }, n)).collect();
+        status = format!("{}  [{}]", status, list.join(" "));
+      }
+    }
 
     queue!(out, ResetColor, terminal::Clear(terminal::ClearType::All)).unwrap();
     let half = h / 2;
@@ -235,7 +312,7 @@ mod emulator {
     let sx = (w as usize).saturating_sub(status.chars().count()) / 2;
     let color = if status.contains("FAIL") || status.contains("failed") { Color::Red } else { Color::Yellow };
     queue!(out, cursor::MoveTo(sx as u16, half), SetForegroundColor(color), Print(status), ResetColor).unwrap();
-    board(out, "firmware output (qwerty keymap)", &output, half + 1, h - half - 1, w);
+    board(out, "firmware output (current layer)", &output, half + 1, h - half - 1, w);
     out.flush().unwrap();
   }
 

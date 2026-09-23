@@ -50,8 +50,10 @@ A list of chips can be found [here](https://github.com/orbit-firmware/orbit/tree
 keycodes = "german"  # [!code focus]
 # key debounce time frame in ms
 debounce_time = 10  # [!code focus]
-# default time in between taps in ms
+# default time in between taps in ms, and the default hold time
 tapping_term = 220  # [!code focus]
+# keys of a combo must be pressed within this many ms (default 50)
+combo_term = 50  # [!code focus]
 ```
 
 ## Behaviors
@@ -62,7 +64,7 @@ This controls wich [behaviors](/behaviors) are enabled for your keyboard.
 # which behaviors are active
 [behaviors]   # [!code focus]
 hold = true  # [!code focus]
-tap = true  # [!code focus]
+combo = true  # [!code focus]
 ```
 
 ## Actions

@@ -162,7 +162,14 @@ fn merge(target: Vec<KeyCode>, source: Vec<KeyCode>) -> Vec<KeyCode> {
     let mut index = 0;
     for target_item in _target.clone() {
       if source_item.name == target_item.name {
-        _target[index] = source_item.clone();
+        // a remap moves the key; its aliases (like `=` for Equal) stay
+        let mut merged = source_item.clone();
+        for alias in target_item.alias_list {
+          if !merged.alias_list.contains(&alias) {
+            merged.alias_list.push(alias);
+          }
+        }
+        _target[index] = merged;
         found = true;
         break;
       }
@@ -174,11 +181,16 @@ fn merge(target: Vec<KeyCode>, source: Vec<KeyCode>) -> Vec<KeyCode> {
   }
 
   let mut used: Vec<KeyCode> = vec![];
-  for i in _target.clone() {
+  // one name per code (the enum needs unique values); the dropped name's aliases move over
+  for mut i in _target.clone() {
     if let Some(pos) = used.iter().position(|u| u.code == i.code) {
-      used.remove(pos);
+      for alias in used.remove(pos).alias_list {
+        if !i.alias_list.contains(&alias) {
+          i.alias_list.push(alias);
+        }
+      }
     }
-    used.push(i.clone());
+    used.push(i);
   }
 
   used
@@ -192,12 +204,16 @@ pub fn get_config_keycode_remaps() -> String {
   remaps
 }
 
+// the us keycodes with the keyboard's `settings.keycodes` file merged on top
+pub fn load() -> Vec<KeyCode> {
+  let keycodes = read("us", true);
+  let remapcodes = read(&get_config_keycode_remaps(), false);
+  merge(keycodes, remapcodes)
+}
+
 #[allow(unused_variables)]
 pub fn generate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-  let mut keycodes = read("us", true);
-  let remaps = get_config_keycode_remaps();
-  let remapcodes = read(&remaps, false);
-  keycodes = merge(keycodes, remapcodes);
+  let keycodes = load();
 
   let mut entries = vec![];
   let mut match_arms = vec![];
