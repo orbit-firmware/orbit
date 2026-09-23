@@ -261,10 +261,10 @@ mod emulator {
           }
           Wait(ms) => report = settle(keyboard, *ms),
           Expect(want) => {
-            let mut got = names(&report);
-            let mut want: Vec<String> = want.iter().map(|w| w.to_string()).collect();
-            got.sort();
-            want.sort();
+            // in report order: modifiers, then keys in the order they went down (hosts
+            // type newly pressed keys in array order)
+            let got = names(&report);
+            let want: Vec<String> = want.iter().map(|w| w.to_string()).collect();
             let ok = got == want;
             let verdict = if ok { "PASS".to_string() } else { format!("FAIL: got [{}]", got.join(" ")) };
             let status = format!("test {}/{}: {}  step {}: expect [{}]  {}", i + 1, TESTS.len(), name, s + 1, want.join(" "), verdict);

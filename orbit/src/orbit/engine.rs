@@ -51,6 +51,9 @@ enum Sticky {
 
 pub struct Engine {
   keys: [State; Orbit::KEY_COUNT],
+  // when each key went active, counted in presses: the report lists keys in this order
+  order: [u32; Orbit::KEY_COUNT],
+  presses: u32,
   base: u8,
   // entries sent for a single report (taps)
   taps: Vec<(Entry, bool), 8>,
@@ -77,6 +80,8 @@ impl Engine {
   pub fn new() -> Engine {
     Engine {
       keys: [State::Up; Orbit::KEY_COUNT],
+      order: [0; Orbit::KEY_COUNT],
+      presses: 0,
       base: 0,
       taps: Vec::new(),
       waiting: Vec::new(),
@@ -286,6 +291,8 @@ impl Engine {
 
   fn activate(&mut self, k: usize, entry: Entry, replaced: bool) {
     let entry = self.effect(Some(k), entry);
+    self.presses = self.presses.wrapping_add(1);
+    self.order[k] = self.presses;
     self.keys[k] = State::Active { entry, replaced };
   }
 
@@ -391,8 +398,12 @@ impl Engine {
     let mut report = Report { modifier: 0, keycodes: [0; 6] };
     let (mut replaced_mods, mut any_replaced, mut n) = (0u8, false, 0);
 
-    let held = self.keys.iter().filter_map(|s| match s {
-      State::Active { entry, replaced } => Some((*entry, *replaced)),
+    // hosts type newly pressed keys in array order: taps (their keys went down before any
+    // key activated in this update), then held keys in the order they went down
+    let mut by_press: [usize; Orbit::KEY_COUNT] = core::array::from_fn(|k| k);
+    by_press.sort_unstable_by_key(|&k| self.order[k]);
+    let held = by_press.into_iter().filter_map(|k| match self.keys[k] {
+      State::Active { entry, replaced } => Some((entry, replaced)),
       _ => None,
     });
     let combo = self.combo.map(|(_, entry)| (entry, false));
@@ -400,7 +411,7 @@ impl Engine {
       Sticky::Applied { entry, .. } => Some((entry, false)),
       _ => None,
     };
-    for (entry, replaced) in held.chain(combo).chain(sticky).chain(self.taps.iter().copied()) {
+    for (entry, replaced) in self.taps.iter().copied().chain(held).chain(combo).chain(sticky) {
       let Entry::Code(code) = entry else { continue };
       let mut mods = (code >> 8) as u8;
       let mut key = code as u8;
