@@ -15,6 +15,7 @@ keycodes = "us"
 debounce_time = 10
 tapping_term = 220
 combo_term = 50
+quick_tap_term = 100
 
 [behaviors]
 hold = true

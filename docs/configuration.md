@@ -54,6 +54,9 @@ debounce_time = 10  # [!code focus]
 tapping_term = 220  # [!code focus]
 # keys of a combo must be pressed within this many ms (default 50)
 combo_term = 50  # [!code focus]
+# a hold-tap key pressed again within this many ms of its tap holds the tap key instead
+# (lets space-on-hold auto-repeat); 0 or unset = off
+quick_tap_term = 150  # [!code focus]
 ```
 
 ## Behaviors

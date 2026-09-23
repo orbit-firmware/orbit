@@ -123,6 +123,11 @@ mod emulator {
       Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["Q"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),
     ]),
+    ("quick tap: tap then hold space holds space", &[
+      Down(&["Space"]), Wait(T), Up(&["Space"]), Wait(T),
+      Down(&["Space"]), Wait(HOLD), Expect(&["Space"]), Down(&["Q"]), Expect(&["Space", "Q"]), Wait(T),
+      Up(&["Q", "Space"]), Wait(T), Expect(&[]),
+    ]),
     ("rep sends the last key again", &[
       Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),

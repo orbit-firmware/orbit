@@ -176,6 +176,10 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
   if layers.is_empty() {
     fail(0, "no `layer 0`".to_string());
   }
+  // the engine keeps active layers in a u32
+  if layers.len() > 32 {
+    fail(0, format!("{} layers, at most 32", layers.len()));
+  }
   for (l, layer) in layers.iter().enumerate() {
     if layer.len() != key_count {
       fail(0, format!("layer {} has {} keys, the layout has {}", l, layer.len(), key_count));
@@ -247,6 +251,9 @@ pub fn generate(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     ms => ms,
   };
 
+  // 0 (unset) = off
+  let quick_tap_term: u16 = toml::get(&config, "settings/quick_tap_term", false);
+
   let path = format!("{}/build/keymap.orbit", root);
   let text = std::fs::read_to_string(&path).unwrap_or_else(|_| {
     println!("Missing keymap: add orbit/keyboards/<keyboard>.orbit or user/keymap.orbit");
@@ -291,6 +298,7 @@ pub fn generate(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     pub const KEYMAP: [[Slot; #key_count]; #layer_count] = [#(#layers),*];
     pub const COMBOS: [Combo; #combo_count] = [#(#combos),*];
     pub const COMBO_TERM: u16 = #combo_term;
+    pub const QUICK_TAP_TERM: u16 = #quick_tap_term;
   }
   .into()
 }
@@ -325,6 +333,12 @@ mod tests {
     assert_eq!(map.layers[1][0].press, Entry::Code(0x011A));
     assert_eq!(map.layers[1][1].press, Entry::None);
     assert_eq!(map.combos, vec![(vec![0, 1], Entry::Code(0x29))]);
+  }
+
+  #[test]
+  fn thirty_two_layers_fit() {
+    let text: String = (0..32).map(|l| format!("layer {}\npress | q\n", l)).collect();
+    assert_eq!(parse(&text, 1, 200, &codes()).layers.len(), 32);
   }
 
   #[test]

@@ -4,7 +4,7 @@
 use heapless::Vec;
 
 use crate::orbit::config as Orbit;
-use crate::orbit::keymap::{Entry, Slot, COMBOS, COMBO_TERM, KEYMAP, LAYER_COUNT};
+use crate::orbit::keymap::{Entry, Slot, COMBOS, COMBO_TERM, KEYMAP, LAYER_COUNT, QUICK_TAP_TERM};
 
 const SHIFT_BITS: u8 = 0x22;
 const LEFT_SHIFT: u8 = 0xE1;
@@ -63,6 +63,8 @@ pub struct Engine {
   caps_word: bool,
   // the last sent keycode, for rep
   last: Option<u16>,
+  // the last hold-tap key tapped and when, for quick tap
+  tapped: Option<(usize, u32)>,
   // a boot key was pressed
   pub boot: bool,
 }
@@ -79,6 +81,7 @@ impl Engine {
       sticky: Sticky::Off,
       caps_word: false,
       last: None,
+      tapped: None,
       boot: false,
     }
   }
@@ -157,6 +160,7 @@ impl Engine {
         let (entry, replaced) = self.pick(&slot);
         let entry = self.effect(None, entry);
         let _ = self.taps.push((entry, replaced));
+        self.tapped = Some((k, now));
       }
       State::Consumed if self.combo.is_some_and(|(c, _)| COMBOS[c].keys.contains(&k)) => self.combo = None,
       _ => {}
@@ -198,7 +202,9 @@ impl Engine {
       Sticky::Armed(entry) => self.sticky = Sticky::Applied { k, entry },
       _ => {}
     }
-    if slot.hold != Entry::Trough {
+    // quick tap: pressed again right after a tap, a hold-tap key holds its press
+    let quick = self.tapped.is_some_and(|(t, at)| t == k && now.wrapping_sub(at) < QUICK_TAP_TERM as u32);
+    if slot.hold != Entry::Trough && !quick {
       self.keys[k] = State::Pending { since: now, slot };
     } else {
       let (entry, replaced) = self.pick(&slot);
