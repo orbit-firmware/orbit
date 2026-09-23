@@ -20,6 +20,7 @@ quick_tap_term = 100
 [behaviors]
 hold = true
 combo = true
+tap = true
 
 [actions]
 layers = true

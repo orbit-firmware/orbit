@@ -128,6 +128,17 @@ mod emulator {
       Down(&["Space"]), Wait(HOLD), Expect(&["Space"]), Down(&["Q"]), Expect(&["Space", "Q"]), Wait(T),
       Up(&["Q", "Space"]), Wait(T), Expect(&[]),
     ]),
+    ("tap dance: double tap b sends esc", &[
+      Down(&["B"]), Wait(T), Up(&["B"]), Expect(&[]), Wait(T), Down(&["B"]), Expect(&["Escape"]), Wait(T),
+      Up(&["B"]), Wait(T), Expect(&[]),
+    ]),
+    ("tap dance: single tap b then another key", &[
+      Down(&["B"]), Wait(T), Up(&["B"]), Wait(T), Expect(&[]), Down(&["Q"]), Expect(&["B", "Q"]), Wait(T),
+      Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("tap dance: b held past the term is b", &[
+      Down(&["B"]), Wait(HOLD), Expect(&["B"]), Up(&["B"]), Wait(T), Expect(&[]),
+    ]),
     ("rep sends the last key again", &[
       Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),

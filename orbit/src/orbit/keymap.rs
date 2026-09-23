@@ -33,6 +33,8 @@ pub struct Slot {
   // sent instead of press when held for hold_ms; Trough = no hold
   pub hold: Entry,
   pub hold_ms: u16,
+  // sent instead of press on a second tap within the tapping term; Trough = none
+  pub tap2: Entry,
 }
 
 pub struct Combo {

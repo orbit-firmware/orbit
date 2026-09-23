@@ -37,6 +37,7 @@ struct Slot {
   shift: Entry,
   hold: Entry,
   hold_ms: u16,
+  tap2: Entry,
 }
 
 pub struct Keymap {
@@ -148,14 +149,17 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
         group = layer.len();
         for t in tokens {
           let press = entry(t, codes, n);
-          layer.push(Slot { press, shift: Entry::Trough, hold: Entry::Trough, hold_ms: tapping_term });
+          layer.push(Slot { press, shift: Entry::Trough, hold: Entry::Trough, hold_ms: tapping_term, tap2: Entry::Trough });
         }
       }
-      "shift" | "hold" => {
+      "shift" | "hold" | "tap" => {
         if tokens.len() != layer.len() - group {
           fail(n, format!("{} entries, the press row above has {}", tokens.len(), layer.len() - group));
         }
-        let ms = match head.get(1) {
+        if head[0] == "tap" && head.get(1) != Some(&"2") {
+          fail(n, "only `tap 2` (double tap) rows are supported".to_string());
+        }
+        let ms = match head.get(1).filter(|_| head[0] == "hold") {
           Some(ms) => ms.parse().unwrap_or_else(|_| fail(n, format!("bad hold time `{}`", ms))),
           None => tapping_term,
         };
@@ -163,13 +167,15 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
           let e = entry(t, codes, n);
           if head[0] == "shift" {
             slot.shift = e;
+          } else if head[0] == "tap" {
+            slot.tap2 = e;
           } else {
             slot.hold = e;
             slot.hold_ms = ms;
           }
         }
       }
-      other => fail(n, format!("unsupported row `{}` (press, shift, hold, combo)", other)),
+      other => fail(n, format!("unsupported row `{}` (press, shift, hold, tap 2, combo)", other)),
     }
   }
 
@@ -209,7 +215,7 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
     combos.push((keys, e));
   }
 
-  let all = layers.iter().flatten().flat_map(|s| [s.press, s.shift, s.hold]).chain(combos.iter().map(|c| c.1));
+  let all = layers.iter().flatten().flat_map(|s| [s.press, s.shift, s.hold, s.tap2]).chain(combos.iter().map(|c| c.1));
   for e in all {
     if let Entry::Layer(l) | Entry::To(l) | Entry::Toggle(l) | Entry::StickyLayer(l) = e {
       if l as usize >= layers.len() {
@@ -265,10 +271,11 @@ pub fn generate(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let cargo = toml::read("Cargo.toml", true);
   let enabled: Vec<&str> = cargo["features"]["default"].as_array().unwrap().iter().filter_map(|f| f.as_str()).collect();
   let slots = || map.layers.iter().flatten();
-  let entries = || slots().flat_map(|s| [s.press, s.shift, s.hold]).chain(map.combos.iter().map(|c| c.1));
+  let entries = || slots().flat_map(|s| [s.press, s.shift, s.hold, s.tap2]).chain(map.combos.iter().map(|c| c.1));
   let uses = [
     ("behavior_hold_enabled", "[behaviors] hold", slots().any(|s| s.hold != Entry::Trough)),
     ("behavior_combo_enabled", "[behaviors] combo", !map.combos.is_empty()),
+    ("behavior_tap_enabled", "[behaviors] tap", slots().any(|s| s.tap2 != Entry::Trough)),
     ("action_layers_enabled", "[actions] layers", entries().any(|e| matches!(e, Entry::Layer(_) | Entry::To(_) | Entry::Toggle(_) | Entry::StickyLayer(_)))),
   ];
   for (feature, key, used) in uses {
@@ -282,8 +289,9 @@ pub fn generate(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let key_count = layout.len();
   let layers = map.layers.iter().map(|layer| {
     let slots = layer.iter().map(|s| {
-      let (press, shift, hold, hold_ms) = (tokens(s.press), tokens(s.shift), tokens(s.hold), s.hold_ms);
-      quote! { Slot { press: #press, shift: #shift, hold: #hold, hold_ms: #hold_ms } }
+      let (press, shift, hold, tap2) = (tokens(s.press), tokens(s.shift), tokens(s.hold), tokens(s.tap2));
+      let hold_ms = s.hold_ms;
+      quote! { Slot { press: #press, shift: #shift, hold: #hold, hold_ms: #hold_ms, tap2: #tap2 } }
     });
     quote! { [#(#slots),*] }
   });
@@ -348,5 +356,12 @@ mod tests {
     let press: Vec<Entry> = l0.iter().map(|s| s.press).collect();
     let want = [Entry::Toggle(1), Entry::Sticky(0x0114), Entry::StickyLayer(1), Entry::CapsWord, Entry::Repeat, Entry::Boot];
     assert_eq!(press, want);
+  }
+
+  #[test]
+  fn parses_tap_2_rows() {
+    let map = parse("layer 0\npress | q w\ntap 2 | esc ---\n", 2, 200, &codes());
+    assert_eq!(map.layers[0][0].tap2, Entry::Code(0x29));
+    assert_eq!(map.layers[0][1].tap2, Entry::Trough);
   }
 }

@@ -18,6 +18,9 @@ Also:
 - `cw` is caps word: letters are shifted and `-` becomes `_` until a key other than a
   letter, digit, `-`, backspace or delete is pressed, or `cw` again.
 - `rep` sends the last keycode again.
+- A `tap 2` row gives each key's double-tap entry (needs `[behaviors] tap`): a second
+  press within `tapping_term` sends it; a single tap is sent when the term ends or the next
+  key goes down, and a key held past the term sends its press.
 - `boot` restarts an STM32 into its ROM USB bootloader (flash with `dfu-util`).
 
 Combos:

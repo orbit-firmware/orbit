@@ -1,5 +1,5 @@
 // Turns debounced key states into boot reports through the keymap:
-// layers, shift replacement, hold-tap, combos, sticky keys, caps word and repeat.
+// layers, shift replacement, hold-tap, tap dance, combos, sticky keys, caps word and repeat.
 
 use heapless::Vec;
 
@@ -65,6 +65,8 @@ pub struct Engine {
   last: Option<u16>,
   // the last hold-tap key tapped and when, for quick tap
   tapped: Option<(usize, u32)>,
+  // a tap dance key released once: its tap waits for a second press until the tapping term
+  dance: Option<(usize, u32, Entry, bool)>,
   // a boot key was pressed
   pub boot: bool,
 }
@@ -82,6 +84,7 @@ impl Engine {
       caps_word: false,
       last: None,
       tapped: None,
+      dance: None,
       boot: false,
     }
   }
@@ -98,6 +101,11 @@ impl Engine {
         self.press(k, now);
       }
     }
+    if let Some((_, at, ..)) = self.dance {
+      if now.wrapping_sub(at) >= Orbit::TAPPING_TERM as u32 {
+        self.end_dance();
+      }
+    }
     if let Some(&(_, since)) = self.waiting.first() {
       if now.wrapping_sub(since) >= COMBO_TERM as u32 {
         self.flush(now);
@@ -106,7 +114,7 @@ impl Engine {
     for k in 0..Orbit::KEY_COUNT {
       if let State::Pending { since, slot } = self.keys[k] {
         if now.wrapping_sub(since) >= slot.hold_ms as u32 {
-          self.activate(k, slot.hold, false);
+          self.hold(k, slot);
         }
       }
     }
@@ -158,8 +166,12 @@ impl Engine {
     match self.keys[k] {
       State::Pending { slot, .. } => {
         let (entry, replaced) = self.pick(&slot);
-        let entry = self.effect(None, entry);
-        let _ = self.taps.push((entry, replaced));
+        if slot.tap2 != Entry::Trough {
+          self.dance = Some((k, now, entry, replaced));
+        } else {
+          let entry = self.effect(None, entry);
+          let _ = self.taps.push((entry, replaced));
+        }
         self.tapped = Some((k, now));
       }
       State::Consumed if self.combo.is_some_and(|(c, _)| COMBOS[c].keys.contains(&k)) => self.combo = None,
@@ -189,6 +201,12 @@ impl Engine {
   fn start(&mut self, k: usize, now: u32) {
     self.resolve_pending();
     let slot = self.slot(k);
+    // the second press of a tap dance
+    if self.dance.is_some_and(|(d, ..)| d == k) && slot.tap2 != Entry::Trough {
+      self.dance = None;
+      return self.activate(k, slot.tap2, false);
+    }
+    self.end_dance();
     match self.sticky {
       Sticky::Held { k: held, entry, .. } => self.sticky = Sticky::Held { k: held, entry, interrupted: true },
       // a second sticky key cancels the armed one
@@ -204,7 +222,7 @@ impl Engine {
     }
     // quick tap: pressed again right after a tap, a hold-tap key holds its press
     let quick = self.tapped.is_some_and(|(t, at)| t == k && now.wrapping_sub(at) < QUICK_TAP_TERM as u32);
-    if slot.hold != Entry::Trough && !quick {
+    if (slot.hold != Entry::Trough || slot.tap2 != Entry::Trough) && !quick {
       self.keys[k] = State::Pending { since: now, slot };
     } else {
       let (entry, replaced) = self.pick(&slot);
@@ -216,8 +234,26 @@ impl Engine {
   fn resolve_pending(&mut self) {
     for k in 0..Orbit::KEY_COUNT {
       if let State::Pending { slot, .. } = self.keys[k] {
-        self.activate(k, slot.hold, false);
+        self.hold(k, slot);
       }
+    }
+  }
+
+  // a pending key held long enough, or interrupted: its hold, else (tap dance only) its press
+  fn hold(&mut self, k: usize, slot: Slot) {
+    if slot.hold != Entry::Trough {
+      self.activate(k, slot.hold, false);
+    } else {
+      let (entry, replaced) = self.pick(&slot);
+      self.activate(k, entry, replaced);
+    }
+  }
+
+  // a waiting single tap goes out
+  fn end_dance(&mut self) {
+    if let Some((_, _, entry, replaced)) = self.dance.take() {
+      let entry = self.effect(None, entry);
+      let _ = self.taps.push((entry, replaced));
     }
   }
 
