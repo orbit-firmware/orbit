@@ -145,12 +145,10 @@ impl Engine {
         let _ = self.taps.push((entry, replaced));
       }
     }
-    match self.sticky {
-      Sticky::Held { k: held, entry, interrupted } if held == k => {
+    if let Sticky::Held { k: held, entry, interrupted } = self.sticky {
+      if held == k {
         self.sticky = if interrupted { Sticky::Off } else { Sticky::Armed(entry) };
       }
-      Sticky::Applied { k: applied, .. } if applied == k => self.sticky = Sticky::Off,
-      _ => {}
     }
     match self.keys[k] {
       State::Pending { slot, .. } => {
@@ -160,6 +158,15 @@ impl Engine {
       }
       State::Consumed if self.combo.is_some_and(|c| COMBOS[c].keys.contains(&k)) => self.combo = None,
       _ => {}
+    }
+    if let Sticky::Applied { k: applied, entry } = self.sticky {
+      if applied == k {
+        // a tap goes out in this report: the sticky entry goes with it
+        if !self.taps.is_empty() {
+          let _ = self.taps.push((entry, false));
+        }
+        self.sticky = Sticky::Off;
+      }
     }
     self.keys[k] = State::Up;
   }

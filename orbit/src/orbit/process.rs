@@ -102,6 +102,18 @@ mod emulator {
       Down(&["Space"]), Wait(T), Up(&["Space"]), Expect(&["Space"]), Wait(T),
       Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
     ]),
+    ("sk(lsft) then a tapped hold-tap key", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Space"]), Wait(T), Up(&["Space"]), Expect(&["LeftShift", "Space"]), Wait(T), Expect(&[]),
+    ]),
+    ("sk(lsft) then a combo key tapped", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["J"]), Wait(T), Up(&["J"]), Expect(&["LeftShift", "J"]), Wait(T), Expect(&[]),
+    ]),
+    ("second sticky key cancels the armed one", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
     ("rep sends the last key again", &[
       Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
       Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),
