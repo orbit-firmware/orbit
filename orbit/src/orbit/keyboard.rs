@@ -1,7 +1,4 @@
 use core::array::from_fn as populate;
-use core::cell::UnsafeCell;
-use core::option::Option;
-use core::sync::atomic::{AtomicBool, Ordering};
 use embassy_futures::join::join;
 use embassy_usb::driver::Driver;
 
@@ -12,9 +9,6 @@ use crate::orbit::key::Key;
 use crate::orbit::peripherals::*;
 use crate::orbit::report::Reports;
 
-static KEYBOARD_INITIIALIZED: AtomicBool = AtomicBool::new(false);
-static mut KEYBOARD_INSTANCE: UnsafeCell<Option<Keyboard>> = UnsafeCell::new(None);
-
 pub struct Keyboard {
   peripherals: Peripherals,
   layer: u32,
@@ -23,20 +17,7 @@ pub struct Keyboard {
 }
 
 impl Keyboard {
-  // IMPORTANT: always use this to get the keyboard
-  pub fn instance() -> &'static mut Keyboard {
-    unsafe {
-      if !KEYBOARD_INITIIALIZED.load(Ordering::SeqCst) {
-        KEYBOARD_INITIIALIZED.store(true, Ordering::SeqCst);
-        (*KEYBOARD_INSTANCE.get()) = Some(Keyboard::new());
-      }
-      (*KEYBOARD_INSTANCE.get())
-        .as_mut()
-        .expect("Singleton should be initialized")
-    }
-  }
-
-  fn new() -> Self {
+  pub fn new() -> Self {
     assert!(Orbit::KEY_COUNT > 0, "No keys defined");
     Self {
       peripherals: Peripherals::new(),

@@ -9,7 +9,7 @@ mod stm32 {
   use crate::orbit::keyboard::Keyboard;
 
   pub async fn run<D: Driver<'static>>(driver: D) {
-    Keyboard::instance().process(driver).await;
+    Keyboard::new().process(driver).await;
   }
 }
 
@@ -50,6 +50,7 @@ mod emulator {
     dump!("Press 'Ctrl + C' to quit");
     dump!("Now listening for keypresses...");
     let device_state = DeviceState::new();
+    let mut keyboard = Keyboard::new();
 
     loop {
       let keys: Vec<Keycode> = device_state.get_keys();
@@ -63,7 +64,7 @@ mod emulator {
         }
       }
 
-      Keyboard::instance().process().await;
+      keyboard.process().await;
     }
   }
 }
