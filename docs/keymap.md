@@ -8,7 +8,19 @@ The keymap lives next to the keyboard config as `orbit/keyboards/<keyboard>.orbi
 Loading it from the keyboard's flash drive is planned.
 
 Supported today: `layer N`, `press`, `shift` and `hold [ms]` rows, `---` (fall through to the
-layer below), `xxx` (nothing), modifier wrappers like `c(z)`, `ml(n)`, `to(n)`, and combos:
+layer below), `xxx` (nothing), modifier wrappers like `c(z)`, `ml(n)`, `to(n)`, and combos.
+Also:
+
+- `tl(n)` toggles layer n on until pressed again (no modifier mask yet).
+- `sk(key)` is a sticky key: tapped, it applies to the next key press only; held, it is a
+  normal key. `skl(n)` does the same for layer n. Pressing a sticky key while one is armed
+  cancels it.
+- `cw` is caps word: letters are shifted and `-` becomes `_` until a key other than a
+  letter, digit, `-`, backspace or delete is pressed, or `cw` again.
+- `rep` sends the last keycode again.
+- `boot` restarts an STM32 into its ROM USB bootloader (flash with `dfu-util`).
+
+Combos:
 
 ```orbit
 combo j k | esc   # keys named by their layer 0 press label, within settings.combo_term ms

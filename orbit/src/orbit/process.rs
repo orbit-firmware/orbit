@@ -73,6 +73,39 @@ mod emulator {
       Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
     ]),
     ("enter tap still sends enter", &[Down(&["Enter"]), Wait(T), Up(&["Enter"]), Expect(&["Enter"]), Wait(T), Expect(&[])]),
+    // layer 2 (enter held): w tl(1), e sk(lsft), r skl(1), t cw, y rep
+    ("tl(1) toggles layer 1 on and off", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["W"]), Wait(T), Up(&["W"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Q"]), Expect(&["One"]), Wait(T), Up(&["Q"]), Wait(T),
+      Down(&["Enter"]), Wait(HOLD), Down(&["W"]), Wait(T), Up(&["W"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("sk(lsft) tapped shifts the next key only", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Up(&["E"]), Wait(T), Up(&["Enter"]), Wait(T), Expect(&[]),
+      Down(&["Q"]), Expect(&["LeftShift", "Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+      Down(&["W"]), Expect(&["W"]), Wait(T), Up(&["W"]), Wait(T), Expect(&[]),
+    ]),
+    ("sk(lsft) held is a normal shift", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["E"]), Wait(T), Down(&["Z"]), Expect(&["LeftShift", "Z"]), Wait(T),
+      Up(&["Z", "E", "Enter"]), Wait(T), Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("skl(1) takes the next key from layer 1", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["R"]), Wait(T), Up(&["R"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["Q"]), Expect(&["One"]), Wait(T), Up(&["Q"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("caps word shifts letters until space", &[
+      Down(&["Enter"]), Wait(HOLD), Down(&["T"]), Wait(T), Up(&["T"]), Wait(T), Up(&["Enter"]), Wait(T),
+      Down(&["A"]), Expect(&["LeftShift", "A"]), Wait(T), Up(&["A"]), Wait(T),
+      Down(&["Backspace"]), Expect(&["Backspace"]), Wait(T), Up(&["Backspace"]), Wait(T),
+      Down(&["Q"]), Expect(&["LeftShift", "Q"]), Wait(T), Up(&["Q"]), Wait(T),
+      Down(&["Space"]), Wait(T), Up(&["Space"]), Expect(&["Space"]), Wait(T),
+      Down(&["Q"]), Expect(&["Q"]), Wait(T), Up(&["Q"]), Wait(T), Expect(&[]),
+    ]),
+    ("rep sends the last key again", &[
+      Down(&["X"]), Wait(T), Up(&["X"]), Wait(T),
+      Down(&["Enter"]), Wait(HOLD), Down(&["Y"]), Expect(&["X"]), Wait(T), Up(&["Y", "Enter"]), Wait(T), Expect(&[]),
+    ]),
   ];
   const SHOW_MS: u64 = 600;
   const MODIFIERS: [&str; 8] = ["LeftCtrl", "LeftShift", "LeftAlt", "LeftGui", "RightCtrl", "RightShift", "RightAlt", "RightGui"];
@@ -218,6 +251,12 @@ mod emulator {
       }
       Entry::Layer(l) => format!("ml{}", l),
       Entry::To(l) => format!("to{}", l),
+      Entry::Toggle(l) => format!("tl{}", l),
+      Entry::Sticky(c) => format!("sk {}", label(Entry::Code(c))),
+      Entry::StickyLayer(l) => format!("skl{}", l),
+      Entry::CapsWord => "cw".to_string(),
+      Entry::Repeat => "rep".to_string(),
+      Entry::Boot => "boot".to_string(),
       Entry::Trough | Entry::None => String::new(),
     }
   }

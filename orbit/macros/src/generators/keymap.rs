@@ -23,6 +23,12 @@ enum Entry {
   Code(u16),
   Layer(u8),
   To(u8),
+  Toggle(u8),
+  Sticky(u16),
+  StickyLayer(u8),
+  CapsWord,
+  Repeat,
+  Boot,
 }
 
 #[derive(Clone, Copy)]
@@ -76,12 +82,21 @@ fn entry(token: &str, codes: &[KeyCode], line: usize) -> Entry {
   match token {
     "---" => Entry::Trough,
     "xxx" => Entry::None,
+    "cw" => Entry::CapsWord,
+    "rep" => Entry::Repeat,
+    "boot" => Entry::Boot,
     _ if token.len() > 1 && token.starts_with('"') => fail(line, format!("strings are not supported yet: {}", token)),
     _ => {
       if let Some(n) = arg("ml(") {
         Entry::Layer(n)
       } else if let Some(n) = arg("to(") {
         Entry::To(n)
+      } else if let Some(n) = arg("tl(") {
+        Entry::Toggle(n)
+      } else if let Some(n) = arg("skl(") {
+        Entry::StickyLayer(n)
+      } else if let Some(c) = token.strip_prefix("sk(").and_then(|t| t.strip_suffix(')')).and_then(|t| code(t, codes)) {
+        Entry::Sticky(c)
       } else if let Some(c) = code(token, codes) {
         Entry::Code(c)
       } else {
@@ -192,7 +207,7 @@ pub fn parse(text: &str, key_count: usize, tapping_term: u16, codes: &[KeyCode])
 
   let all = layers.iter().flatten().flat_map(|s| [s.press, s.shift, s.hold]).chain(combos.iter().map(|c| c.1));
   for e in all {
-    if let Entry::Layer(l) | Entry::To(l) = e {
+    if let Entry::Layer(l) | Entry::To(l) | Entry::Toggle(l) | Entry::StickyLayer(l) = e {
       if l as usize >= layers.len() {
         fail(0, format!("layer {} is used but not defined", l));
       }
@@ -209,6 +224,12 @@ fn tokens(e: Entry) -> TokenStream {
     Entry::Code(c) => quote! { Entry::Code(#c) },
     Entry::Layer(l) => quote! { Entry::Layer(#l) },
     Entry::To(l) => quote! { Entry::To(#l) },
+    Entry::Toggle(l) => quote! { Entry::Toggle(#l) },
+    Entry::Sticky(c) => quote! { Entry::Sticky(#c) },
+    Entry::StickyLayer(l) => quote! { Entry::StickyLayer(#l) },
+    Entry::CapsWord => quote! { Entry::CapsWord },
+    Entry::Repeat => quote! { Entry::Repeat },
+    Entry::Boot => quote! { Entry::Boot },
   }
 }
 
@@ -241,7 +262,7 @@ pub fn generate(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let uses = [
     ("behavior_hold_enabled", "[behaviors] hold", slots().any(|s| s.hold != Entry::Trough)),
     ("behavior_combo_enabled", "[behaviors] combo", !map.combos.is_empty()),
-    ("action_layers_enabled", "[actions] layers", entries().any(|e| matches!(e, Entry::Layer(_) | Entry::To(_)))),
+    ("action_layers_enabled", "[actions] layers", entries().any(|e| matches!(e, Entry::Layer(_) | Entry::To(_) | Entry::Toggle(_) | Entry::StickyLayer(_)))),
   ];
   for (feature, key, used) in uses {
     if used && !enabled.contains(&feature) {
@@ -304,5 +325,14 @@ mod tests {
     assert_eq!(map.layers[1][0].press, Entry::Code(0x011A));
     assert_eq!(map.layers[1][1].press, Entry::None);
     assert_eq!(map.combos, vec![(vec![0, 1], Entry::Code(0x29))]);
+  }
+
+  #[test]
+  fn parses_qmk_zmk_style_keys() {
+    let text = "layer 0\npress | tl(1) sk(c(q)) skl(1) cw rep boot\nlayer 1\npress | --- --- --- --- --- ---\n";
+    let l0 = &parse(text, 6, 200, &codes()).layers[0];
+    let press: Vec<Entry> = l0.iter().map(|s| s.press).collect();
+    let want = [Entry::Toggle(1), Entry::Sticky(0x0114), Entry::StickyLayer(1), Entry::CapsWord, Entry::Repeat, Entry::Boot];
+    assert_eq!(press, want);
   }
 }

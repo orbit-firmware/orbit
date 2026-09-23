@@ -1,5 +1,5 @@
 // Turns debounced key states into boot reports through the keymap:
-// layers, shift replacement, hold-tap and combos.
+// layers, shift replacement, hold-tap, combos, sticky keys, caps word and repeat.
 
 use heapless::Vec;
 
@@ -9,6 +9,7 @@ use crate::orbit::keymap::{Entry, Slot, COMBOS, COMBO_TERM, KEYMAP, LAYER_COUNT}
 const SHIFT_BITS: u8 = 0x22;
 const LEFT_SHIFT: u8 = 0xE1;
 const RIGHT_SHIFT: u8 = 0xE5;
+const LEFT_SHIFT_BIT: u8 = 0x02;
 
 pub struct Report {
   pub modifier: u8,
@@ -38,6 +39,16 @@ enum State {
   Consumed,
 }
 
+// sk(key) / skl(n): held like a normal key; released without another key going down it
+// arms, and applies to the next key press until that key is released
+#[derive(Clone, Copy, PartialEq)]
+enum Sticky {
+  Off,
+  Held { k: usize, entry: Entry, interrupted: bool },
+  Armed(Entry),
+  Applied { k: usize, entry: Entry },
+}
+
 pub struct Engine {
   keys: [State; Orbit::KEY_COUNT],
   base: u8,
@@ -45,11 +56,30 @@ pub struct Engine {
   taps: Vec<(Entry, bool), 8>,
   waiting: Vec<(usize, u32), 8>,
   combo: Option<usize>,
+  // layers turned on by tl(n)
+  toggled: u32,
+  sticky: Sticky,
+  caps_word: bool,
+  // the last sent keycode, for rep
+  last: Option<u16>,
+  // a boot key was pressed
+  pub boot: bool,
 }
 
 impl Engine {
   pub fn new() -> Engine {
-    Engine { keys: [State::Up; Orbit::KEY_COUNT], base: 0, taps: Vec::new(), waiting: Vec::new(), combo: None }
+    Engine {
+      keys: [State::Up; Orbit::KEY_COUNT],
+      base: 0,
+      taps: Vec::new(),
+      waiting: Vec::new(),
+      combo: None,
+      toggled: 0,
+      sticky: Sticky::Off,
+      caps_word: false,
+      last: None,
+      boot: false,
+    }
   }
 
   pub fn update(&mut self, pressed: &[bool; Orbit::KEY_COUNT], now: u32) -> Report {
@@ -115,12 +145,17 @@ impl Engine {
         let _ = self.taps.push((entry, replaced));
       }
     }
+    match self.sticky {
+      Sticky::Held { k: held, entry, interrupted } if held == k => {
+        self.sticky = if interrupted { Sticky::Off } else { Sticky::Armed(entry) };
+      }
+      Sticky::Applied { k: applied, .. } if applied == k => self.sticky = Sticky::Off,
+      _ => {}
+    }
     match self.keys[k] {
       State::Pending { slot, .. } => {
         let (entry, replaced) = self.pick(&slot);
-        if let Entry::To(l) = entry {
-          self.base = l;
-        }
+        let entry = self.effect(None, entry);
         let _ = self.taps.push((entry, replaced));
       }
       State::Consumed if self.combo.is_some_and(|c| COMBOS[c].keys.contains(&k)) => self.combo = None,
@@ -141,6 +176,19 @@ impl Engine {
   fn start(&mut self, k: usize, now: u32) {
     self.resolve_pending();
     let slot = self.slot(k);
+    match self.sticky {
+      Sticky::Held { k: held, entry, .. } => self.sticky = Sticky::Held { k: held, entry, interrupted: true },
+      // a second sticky key cancels the armed one
+      Sticky::Armed(_) if matches!(slot.press, Entry::Sticky(_) | Entry::StickyLayer(_)) => {
+        self.sticky = Sticky::Off;
+        self.keys[k] = State::Active { entry: Entry::None, replaced: false };
+        return;
+      }
+      // an armed layer only picks this key's slot
+      Sticky::Armed(Entry::Layer(_)) => self.sticky = Sticky::Off,
+      Sticky::Armed(entry) => self.sticky = Sticky::Applied { k, entry },
+      _ => {}
+    }
     if slot.hold != Entry::Trough {
       self.keys[k] = State::Pending { since: now, slot };
     } else {
@@ -159,15 +207,58 @@ impl Engine {
   }
 
   fn activate(&mut self, k: usize, entry: Entry, replaced: bool) {
-    if let Entry::To(l) = entry {
-      self.base = l;
-    }
+    let entry = self.effect(Some(k), entry);
     self.keys[k] = State::Active { entry, replaced };
+  }
+
+  // what an entry does when it goes down (held by key k, or tapped when None); returns
+  // what it sends from then on
+  fn effect(&mut self, k: Option<usize>, entry: Entry) -> Entry {
+    let entry = match entry {
+      Entry::Repeat => self.last.map_or(Entry::None, Entry::Code),
+      _ => entry,
+    };
+    match entry {
+      Entry::To(l) => self.base = l,
+      Entry::Toggle(l) => self.toggled ^= 1 << l,
+      Entry::CapsWord => self.caps_word = !self.caps_word,
+      Entry::Boot => self.boot = true,
+      Entry::Code(c) => self.typed(c),
+      Entry::Sticky(c) => return self.stick(k, Entry::Code(c)),
+      Entry::StickyLayer(l) => return self.stick(k, Entry::Layer(l)),
+      _ => {}
+    }
+    entry
+  }
+
+  fn stick(&mut self, k: Option<usize>, held: Entry) -> Entry {
+    self.sticky = match k {
+      Some(k) => Sticky::Held { k, entry: held, interrupted: false },
+      None => Sticky::Armed(held),
+    };
+    held
+  }
+
+  // a keycode went down: remember it for rep, end caps word on a non-word key
+  fn typed(&mut self, code: u16) {
+    let key = code as u8;
+    if (0xE0..=0xE7).contains(&key) {
+      return;
+    }
+    self.last = Some(code);
+    // letters, digits, -, backspace, delete
+    let word = matches!(key, 0x04..=0x27 | 0x2D | 0x2A | 0x4C);
+    if !word {
+      self.caps_word = false;
+    }
   }
 
   // the slot of the highest active layer that does not fall through
   fn slot(&self, k: usize) -> Slot {
-    let mut layers: u32 = 1 | 1 << self.base;
+    let mut layers: u32 = 1 | 1 << self.base | self.toggled;
+    if let Sticky::Armed(Entry::Layer(l)) = self.sticky {
+      layers |= 1 << l;
+    }
     for state in self.keys.iter() {
       if let State::Active { entry: Entry::Layer(l), .. } = state {
         layers |= 1 << l;
@@ -190,10 +281,18 @@ impl Engine {
   }
 
   fn shift_held(&self) -> bool {
-    self.keys.iter().any(|s| match s {
-      State::Active { entry: Entry::Code(c), replaced: false } => {
-        let key = *c as u8;
-        (*c >> 8) as u8 & SHIFT_BITS != 0 || key == LEFT_SHIFT || key == RIGHT_SHIFT
+    let sticky = match self.sticky {
+      Sticky::Armed(e) | Sticky::Applied { entry: e, .. } => Some(e),
+      _ => None,
+    };
+    let held = self.keys.iter().filter_map(|s| match s {
+      State::Active { entry, replaced: false } => Some(*entry),
+      _ => None,
+    });
+    held.chain(sticky).any(|e| match e {
+      Entry::Code(c) => {
+        let key = c as u8;
+        (c >> 8) as u8 & SHIFT_BITS != 0 || key == LEFT_SHIFT || key == RIGHT_SHIFT
       }
       _ => false,
     })
@@ -209,7 +308,11 @@ impl Engine {
       _ => None,
     });
     let combo = self.combo.map(|c| (COMBOS[c].entry, false));
-    for (entry, replaced) in held.chain(combo).chain(self.taps.iter().copied()) {
+    let sticky = match self.sticky {
+      Sticky::Applied { entry, .. } => Some((entry, false)),
+      _ => None,
+    };
+    for (entry, replaced) in held.chain(combo).chain(sticky).chain(self.taps.iter().copied()) {
       let Entry::Code(code) = entry else { continue };
       let mut mods = (code >> 8) as u8;
       let mut key = code as u8;
@@ -217,6 +320,10 @@ impl Engine {
         // modifier keys are bits of the modifier byte, not array entries
         mods |= 1 << (key - 0xE0);
         key = 0;
+      }
+      // caps word shifts letters and turns - into _
+      if self.caps_word && matches!(key, 0x04..=0x1D | 0x2D) {
+        mods |= LEFT_SHIFT_BIT;
       }
       if replaced {
         any_replaced = true;

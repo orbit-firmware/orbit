@@ -1,4 +1,6 @@
 mod orbit {
+  #[cfg(not(feature = "chip_type_emulator"))]
+  pub mod boot;
   pub mod config;
   pub mod dbg;
   pub mod engine;

@@ -12,6 +12,17 @@ pub enum Entry {
   Layer(u8),
   // switches the base layer
   To(u8),
+  // turns a layer on until pressed again
+  Toggle(u8),
+  // tapped: applies to the next key press only; held: a normal key
+  Sticky(u16),
+  StickyLayer(u8),
+  // letters shifted until a non-word key
+  CapsWord,
+  // the last sent keycode again
+  Repeat,
+  // restarts into the chip's bootloader
+  Boot,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]

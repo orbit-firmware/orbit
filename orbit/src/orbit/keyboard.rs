@@ -56,7 +56,12 @@ impl Keyboard {
   // one scan cycle: read the keys, run them through the keymap
   pub fn tick(&mut self) -> Report {
     self.scan();
-    self.engine.update(&self.pressed, time::now())
+    let report = self.engine.update(&self.pressed, time::now());
+    #[cfg(not(feature = "chip_type_emulator"))]
+    if self.engine.boot {
+      crate::orbit::boot::enter();
+    }
+    report
   }
 
   pub fn is_pressed(&self, k: usize) -> bool {
