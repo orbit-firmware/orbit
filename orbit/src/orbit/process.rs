@@ -155,7 +155,12 @@ mod emulator {
   // what a screen shows: pressed positions, the report, the status line, expected names
   struct Frame {
     pressed: Vec<bool>,
+    // key names of what each key sends now, matched against the report
     labels: Vec<String>,
+    // the same with held modifiers and caps word applied, as drawn
+    display: Vec<String>,
+    // active layers, sticky key, caps word, modifiers
+    state: String,
     report: [u8; 8],
     status: String,
     expect: Option<Vec<String>>,
@@ -166,6 +171,19 @@ mod emulator {
 
     // ORBIT_EMULATOR_TEST=1: run the tests without a screen and exit 1 on failure
     if std::env::var_os("ORBIT_EMULATOR_TEST").is_some() {
+      // the lower board's labels: a / A, 1 / ! under shift, caps word, shift row, ctrl prefix
+      let (a, one, lsft, lctl) = (Entry::Code(0x04), Entry::Code(0x1E), 0x02, 0x01);
+      let shown_ok = shown(a, false, 0, false) == "a"
+        && shown(a, false, lsft, false) == "A"
+        && shown(a, false, 0, true) == "A"
+        && shown(one, false, lsft, false) == "!"
+        && shown(one, false, 0, true) == "1"
+        && shown(Entry::Code(0x31), true, lsft, false) == "\\"
+        && shown(a, false, lctl, false) == "c-a";
+      println!("display labels: {}", if shown_ok { "PASS" } else { "FAIL" });
+      if !shown_ok {
+        std::process::exit(1);
+      }
       let failed = run_tests(&mut keyboard, &mut |f| println!("{}", f.status));
       std::process::exit(if failed.is_empty() { 0 } else { 1 });
     }
@@ -176,7 +194,7 @@ mod emulator {
     out.execute(cursor::Hide).unwrap();
 
     let mut summary = play_tests(&mut keyboard);
-    let mut last: Option<(Vec<bool>, Vec<String>, [u8; 8], (u16, u16))> = None;
+    let mut last: Option<(Vec<bool>, Vec<String>, String, [u8; 8], (u16, u16))> = None;
     loop {
       // drain terminal input so typed keys don't leak into the shell; ctrl+c quits
       while event::poll(Duration::ZERO).unwrap_or(false) {
@@ -197,7 +215,7 @@ mod emulator {
       let report = keyboard.tick().serialize();
       let size = terminal::size().unwrap_or((80, 24));
       let frame = snapshot(&keyboard, report, summary.clone(), None);
-      let state = (frame.pressed.clone(), frame.labels.clone(), report, size);
+      let state = (frame.pressed.clone(), frame.display.clone(), frame.state.clone(), report, size);
       if last.as_ref() != Some(&state) {
         draw(&mut out, &frame, size);
         last = Some(state);
@@ -304,10 +322,67 @@ mod emulator {
     }
   }
 
+  // what a key shows under the held modifiers: shifted symbols by name, letters upper case
+  // when shifted, other modifiers as c- a- g- prefixes
+  fn shown(entry: Entry, replaced: bool, mods: u8, caps_word: bool) -> String {
+    let Entry::Code(c) = entry else { return short(label(entry)) };
+    let key = c as u8;
+    if (0xE0..=0xE7).contains(&key) {
+      return short(label(entry));
+    }
+    // a shift row entry is sent without the held shift
+    let held = if replaced { mods & !0x22 } else { mods };
+    let mut mods = (c >> 8) as u8 | held;
+    if caps_word && matches!(key, 0x04..=0x1D | 0x2D) {
+      mods |= 0x02;
+    }
+    let shifted = format!("{:?}", KeyCode::from_u16(key as u16 | 0x2200));
+    let mut name = short(label(Entry::Code(key as u16)));
+    if mods & 0x22 != 0 && shifted != "None" {
+      name = short(shifted);
+    } else if name.len() == 1 && mods & 0x22 == 0 {
+      name = name.to_lowercase();
+    } else if mods & 0x22 != 0 && name.len() > 1 {
+      name = format!("s-{}", name);
+    }
+    for (bits, prefix) in [(0x11, "c-"), (0x44, "a-"), (0x88, "g-")] {
+      if mods & bits != 0 {
+        name = format!("{}{}", prefix, name);
+      }
+    }
+    name
+  }
+
+  fn describe(keyboard: &Keyboard, mods: u8) -> String {
+    let (layers, base, toggled, sticky, caps_word) = keyboard.engine().state();
+    let list = |bits: u32| (0..32).filter(|l| bits & 1 << l != 0).map(|l| l.to_string()).collect::<Vec<_>>().join(" ");
+    let top = (0..32).rev().find(|l| layers & 1 << l != 0).unwrap_or(0);
+    let mut s = format!("layer {}  (active: {}, base {}", top, list(layers), base);
+    if toggled != 0 {
+      s += &format!(", toggled {}", list(toggled));
+    }
+    s += ")";
+    if let Some(e) = sticky {
+      s += &format!("  sticky {}", short(label(e)));
+    }
+    if caps_word {
+      s += "  CAPS WORD";
+    }
+    let held: Vec<&str> = (0..8).filter(|b| mods & 1 << b != 0).map(|b| MODIFIERS[b]).collect();
+    if !held.is_empty() {
+      s += &format!("  mods: {}", held.join("+"));
+    }
+    s
+  }
+
   fn snapshot(keyboard: &Keyboard, report: [u8; 8], status: String, expect: Option<Vec<String>>) -> Frame {
+    let caps_word = keyboard.engine().state().4;
+    let view: Vec<(Entry, bool)> = (0..Orbit::KEY_COUNT).map(|k| keyboard.engine().view(k)).collect();
     Frame {
       pressed: (0..Orbit::KEY_COUNT).map(|k| keyboard.is_pressed(k)).collect(),
-      labels: (0..Orbit::KEY_COUNT).map(|k| label(keyboard.entry(k))).collect(),
+      labels: view.iter().map(|(e, _)| label(*e)).collect(),
+      display: view.iter().map(|(e, r)| shown(*e, *r, report[0], caps_word)).collect(),
+      state: describe(keyboard, report[0]),
       report,
       status,
       expect,
@@ -350,6 +425,26 @@ mod emulator {
       "Backslash" => "\\",
       "Right" => "rght",
       "None" => "",
+      "Exlm" => "!",
+      "At" => "@",
+      "Hash" => "#",
+      "Dollar" => "$",
+      "Percent" => "%",
+      "Circumflex" => "^",
+      "Ampersand" => "&",
+      "Asterisk" => "*",
+      "LeftParenthesis" => "(",
+      "RightParenthesis" => ")",
+      "Underscore" => "_",
+      "Plus" => "+",
+      "Colon" => ":",
+      "QuestionMark" => "?",
+      "LeftAngleBracket" => "<",
+      "RightAngleBracket" => ">",
+      "Pipe" => "|",
+      "Tilde" => "~",
+      "DoubleQuote" => "\"",
+      "Minus" => "-",
       _ => return name,
     };
     s.to_string()
@@ -366,7 +461,8 @@ mod emulator {
     let output: Vec<(String, Option<Color>)> = f
       .labels
       .iter()
-      .map(|name| {
+      .zip(&f.display)
+      .map(|(name, text)| {
         let is_sent = sent.contains(name);
         let color = match &f.expect {
           None => is_sent.then_some(Color::DarkGreen),
@@ -376,7 +472,7 @@ mod emulator {
             _ => None,
           },
         };
-        (short(name.clone()), color)
+        (text.clone(), color)
       })
       .collect();
     let mut status = f.status.clone();
@@ -395,7 +491,7 @@ mod emulator {
     let sx = (w as usize).saturating_sub(status.chars().count()) / 2;
     let color = if status.contains("FAIL") || status.contains("failed") { Color::Red } else { Color::Yellow };
     queue!(out, cursor::MoveTo(sx as u16, half), SetForegroundColor(color), Print(status), ResetColor).unwrap();
-    board(out, "firmware output (current layer)", &output, half + 1, h - half - 1, w);
+    board(out, &format!("firmware output: {}", f.state), &output, half + 1, h - half - 1, w);
     out.flush().unwrap();
   }
 

@@ -73,6 +73,10 @@ impl Keyboard {
     self.engine.entry(k)
   }
 
+  pub fn engine(&self) -> &Engine {
+    &self.engine
+  }
+
   fn scan(&mut self) {
     #[cfg(feature = "matrix_scan")]
     self.scan_matrix();

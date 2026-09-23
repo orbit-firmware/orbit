@@ -135,6 +135,24 @@ impl Engine {
     self.pick(&self.slot(k)).0
   }
 
+  // for display: what key k sends now (a held key keeps what it resolved at press time)
+  // and whether it came from a shift row
+  pub fn view(&self, k: usize) -> (Entry, bool) {
+    match self.keys[k] {
+      State::Active { entry, replaced } => (entry, replaced),
+      _ => self.pick(&self.slot(k)),
+    }
+  }
+
+  // for display: active layers, base, toggled layers, the pending sticky entry, caps word
+  pub fn state(&self) -> (u32, u8, u32, Option<Entry>, bool) {
+    let sticky = match self.sticky {
+      Sticky::Armed(e) | Sticky::Applied { entry: e, .. } => Some(e),
+      _ => None,
+    };
+    (self.layers(), self.base, self.toggled, sticky, self.caps_word)
+  }
+
   fn press(&mut self, k: usize, now: u32) {
     if COMBOS.iter().any(|c| c.keys.contains(&k)) {
       self.keys[k] = State::Waiting;
@@ -316,6 +334,17 @@ impl Engine {
 
   // the slot of the highest active layer that does not fall through
   fn slot(&self, k: usize) -> Slot {
+    let layers = self.layers();
+    (0..LAYER_COUNT)
+      .rev()
+      .filter(|l| layers & 1 << l != 0)
+      .map(|l| KEYMAP[l][k])
+      .find(|s| s.press != Entry::Trough)
+      .unwrap_or(KEYMAP[0][k])
+  }
+
+  // bit n set = layer n active
+  fn layers(&self) -> u32 {
     let mut layers: u32 = 1 | 1 << self.base | self.toggled;
     if let Sticky::Armed(Entry::Layer(l)) = self.sticky {
       layers |= 1 << l;
@@ -328,12 +357,7 @@ impl Engine {
     if let Some((_, Entry::Layer(l))) = self.combo {
       layers |= 1 << l;
     }
-    (0..LAYER_COUNT)
-      .rev()
-      .filter(|l| layers & 1 << l != 0)
-      .map(|l| KEYMAP[l][k])
-      .find(|s| s.press != Entry::Trough)
-      .unwrap_or(KEYMAP[0][k])
+    layers
   }
 
   fn pick(&self, slot: &Slot) -> (Entry, bool) {
