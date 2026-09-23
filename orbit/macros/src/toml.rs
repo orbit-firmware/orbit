@@ -1,4 +1,3 @@
-use serde_toml_merge::merge as toml_merge;
 use std::fs;
 use std::process::exit;
 pub use toml::{Table, Value};
@@ -16,38 +15,6 @@ pub fn read(path: &str, required: bool) -> Table {
     }
   };
   content.parse::<Table>().unwrap()
-}
-
-pub fn read_as_value(path: &str) -> Value {
-  let content = match fs::read_to_string(&path) {
-    Ok(content) => content,
-    Err(e) => {
-      println!("File does not exist!: {}", path);
-      println!("{}", e);
-      exit(1);
-    }
-  };
-  content.parse::<Value>().unwrap()
-}
-
-pub fn merge(source: &str, target: &str) {
-  let source_toml = read_as_value(source);
-  let target_toml = read_as_value(target);
-  let merged_toml = toml_merge(target_toml, source_toml).unwrap();
-
-  fs::write(
-    target,
-    toml::to_string(&merged_toml).expect("Failed to serialize TOML"),
-  )
-  .expect("Failed to write target file");
-}
-
-pub fn write(path: &str, table: &Value) {
-  fs::write(
-    path,
-    toml::to_string(&table).expect("Failed to serialize TOML"),
-  )
-  .expect("Failed to write target file");
 }
 
 pub trait FromTomlValue: Sized {
@@ -260,20 +227,4 @@ pub fn contains(table: &Table, key: &str) -> bool {
   }
 
   true
-}
-
-pub fn set_package_name(filepath: &str, name: &str) {
-  let mut content = read_as_value(filepath);
-
-  if let toml::Value::Table(ref mut root_table) = content {
-    let package_table = root_table
-      .entry("package")
-      .or_insert_with(|| toml::Value::Table(toml::map::Map::new()));
-
-    if let toml::Value::Table(ref mut package_table) = package_table {
-      package_table.insert("name".to_string(), toml::Value::String(name.to_string()));
-    }
-  }
-
-  write(filepath, &content);
 }

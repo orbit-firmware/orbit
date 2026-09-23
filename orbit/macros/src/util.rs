@@ -12,19 +12,6 @@ pub fn get_root() -> String {
   os_path(&root)
 }
 
-pub fn to_pascal_case(s: &str) -> String {
-  s.split(|c: char| c == '_' || c == ' ' || c.is_ascii_uppercase() && !c.is_ascii_alphabetic())
-    .flat_map(|word| {
-      if word.is_empty() {
-        None
-      } else {
-        let mut chars = word.chars();
-        Some(chars.next().unwrap().to_ascii_uppercase().to_string() + chars.as_str())
-      }
-    })
-    .collect()
-}
-
 pub fn file_exists(path: &str) -> bool {
   let p = os_path(&path);
   let metadata = std::fs::metadata(p);
