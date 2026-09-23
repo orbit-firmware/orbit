@@ -106,46 +106,46 @@ keycodes = "german" // [!code focus]
 | Key | Code | Alias |
 | --- | --- | --- |
 | Minus<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0038 | `minus`, `-`, `mns` |
-| Equal<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1227 | `equal`, `=`, `eql` |
-| LeftBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1425 | `leftbracket`, `[`, `lbrc` |
-| RightBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1426 | `rightbracket`, `]`, `rbrc` |
-| Backslash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x142D | `backslash`, `\`, `bslsh`, `bsls` |
-| Quote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1232 | `quote`, `'`, `quot` |
-| Grave<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x122E | `grave`, `` ` ``, `gr` |
+| Equal<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2227 | `equal`, `=`, `eql` |
+| LeftBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4025 | `leftbracket`, `[`, `lbrc` |
+| RightBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4026 | `rightbracket`, `]`, `rbrc` |
+| Backslash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x402D | `backslash`, `\`, `bslsh`, `bsls` |
+| Quote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2232 | `quote`, `'`, `quot` |
+| Grave<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x222E | `grave`, `` ` ``, `gr` |
 | Comma | 0x0036 | `comma`, `,` |
 | Dot | 0x0037 | `dot`, `.` |
-| Slash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1224 | `slash`, `/`, `slsh`, `sls` |
-| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x162E | `tilde`, `~` |
-| Exlm | 0x121E | `exlm`, `!` |
-| At<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1414 | `at`, `@` |
+| Slash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2224 | `slash`, `/`, `slsh`, `sls` |
+| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x622E | `tilde`, `~` |
+| Exlm | 0x221E | `exlm`, `!` |
+| At<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4014 | `at`, `@` |
 | Hash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0032 | `hash`, `#` |
-| Dollar | 0x1221 | `dollar`, `dlr`, `$` |
-| Percent | 0x1222 | `percent`, `perc`, `%` |
+| Dollar | 0x2221 | `dollar`, `dlr`, `$` |
+| Percent | 0x2222 | `percent`, `perc`, `%` |
 | Circumflex<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0035 | `circumflex`, `circ`, `^` |
-| Ampersand<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1223 | `ampersand`, `ampr`, `&` |
-| Asterisk<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1230 | `asterisk`, `astr`, `*` |
-| LeftParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1225 | `leftparenthesis`, `lprn`, `(` |
-| RightParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1226 | `rightparenthesis`, `rprn`, `)` |
-| Underscore<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1238 | `underscore`, `unds`, `_` |
+| Ampersand<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2223 | `ampersand`, `ampr`, `&` |
+| Asterisk<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2230 | `asterisk`, `astr`, `*` |
+| LeftParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2225 | `leftparenthesis`, `lprn`, `(` |
+| RightParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2226 | `rightparenthesis`, `rprn`, `)` |
+| Underscore<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2238 | `underscore`, `unds`, `_` |
 | Plus<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0030 | `plus`, `+` |
-| LeftCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1424 | `leftcurlybracket`, `lcbr`, `{` |
-| RightCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1427 | `rightcurlybracket`, `rcbr`, `}` |
-| Pipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1464 | `pipe`, `\|` |
-| Semicolon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1236 | `semicolon`, `;`, `scln`, `scoln` |
-| Colon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1237 | `colon`, `cln`, `:` |
-| DoubleQuote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x121F | `doublequote`, `dquot`, `"` |
+| LeftCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4024 | `leftcurlybracket`, `lcbr`, `{` |
+| RightCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4027 | `rightcurlybracket`, `rcbr`, `}` |
+| Pipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4064 | `pipe`, `\|` |
+| Semicolon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2236 | `semicolon`, `;`, `scln`, `scoln` |
+| Colon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2237 | `colon`, `cln`, `:` |
+| DoubleQuote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x221F | `doublequote`, `dquot`, `"` |
 | LeftAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0064 | `leftanglebracket`, `labk`, `<` |
-| RightAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1264 | `rightanglebracket`, `rabk`, `>` |
-| QuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x122D | `questionmark`, `ques`, `?` |
+| RightAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2264 | `rightanglebracket`, `rabk`, `>` |
+| QuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x222D | `questionmark`, `ques`, `?` |
 | NonUsBackSlash | 0x0064 | `nonusbackslash` |
 | NonUsHash | 0x0032 | `nonushash` |
 | Accent<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x002E | `accent`, `´` |
-| Degree<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1235 | `degree`, `°` |
-| Section<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1220 | `section`, `§` |
-| Pow2<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x141F | `pow2`, `²` |
-| Pow3<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1420 | `pow3`, `³` |
-| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1408 | `euro`, `€` |
-| Micro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1410 | `micro`, `µ` |
+| Degree<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2235 | `degree`, `°` |
+| Section<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2220 | `section`, `§` |
+| Pow2<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x401F | `pow2`, `²` |
+| Pow3<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4020 | `pow3`, `³` |
+| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4008 | `euro`, `€` |
+| Micro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4010 | `micro`, `µ` |
 
 ## Function keys
 

@@ -1,12 +1,12 @@
 const Modifier = {
   LeftControl: 0x0100,
-  RightControl: 0x1100,
+  RightControl: 0x1000,
   LeftShift: 0x0200,
-  RightShift: 0x1200,
+  RightShift: 0x2000,
   LeftAlt: 0x0400,
-  RightAlt: 0x1400,
+  RightAlt: 0x4000,
   LeftGui: 0x0800,
-  RightGui: 0x1800,
+  RightGui: 0x8000,
 };
 
 function lc(code) {

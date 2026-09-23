@@ -111,28 +111,28 @@ keycodes = "spanish" // [!code focus]
 | Comma | 0x0036 | `comma`, `,` |
 | Dot | 0x0037 | `dot`, `.` |
 | Slash | 0x0038 | `slash`, `/`, `slsh`, `sls` |
-| Tilde | 0x1235 | `tilde`, `~` |
-| Exlm | 0x121E | `exlm`, `!` |
-| At | 0x121F | `at`, `@` |
-| Hash | 0x1220 | `hash`, `#` |
-| Dollar | 0x1221 | `dollar`, `dlr`, `$` |
-| Percent | 0x1222 | `percent`, `perc`, `%` |
-| Circumflex | 0x1223 | `circumflex`, `circ`, `^` |
-| Ampersand | 0x1224 | `ampersand`, `ampr`, `&` |
-| Asterisk | 0x1225 | `asterisk`, `astr`, `*` |
-| LeftParenthesis | 0x1226 | `leftparenthesis`, `lprn`, `(` |
-| RightParenthesis | 0x1227 | `rightparenthesis`, `rprn`, `)` |
-| Underscore | 0x122D | `underscore`, `unds`, `_` |
-| Plus | 0x122E | `plus`, `+` |
-| LeftCurlyBracket | 0x122F | `leftcurlybracket`, `lcbr`, `{` |
-| RightCurlyBracket | 0x1230 | `rightcurlybracket`, `rcbr`, `}` |
-| Pipe | 0x1231 | `pipe`, `\|` |
+| Tilde | 0x2235 | `tilde`, `~` |
+| Exlm | 0x221E | `exlm`, `!` |
+| At | 0x221F | `at`, `@` |
+| Hash | 0x2220 | `hash`, `#` |
+| Dollar | 0x2221 | `dollar`, `dlr`, `$` |
+| Percent | 0x2222 | `percent`, `perc`, `%` |
+| Circumflex | 0x2223 | `circumflex`, `circ`, `^` |
+| Ampersand | 0x2224 | `ampersand`, `ampr`, `&` |
+| Asterisk | 0x2225 | `asterisk`, `astr`, `*` |
+| LeftParenthesis | 0x2226 | `leftparenthesis`, `lprn`, `(` |
+| RightParenthesis | 0x2227 | `rightparenthesis`, `rprn`, `)` |
+| Underscore | 0x222D | `underscore`, `unds`, `_` |
+| Plus | 0x222E | `plus`, `+` |
+| LeftCurlyBracket | 0x222F | `leftcurlybracket`, `lcbr`, `{` |
+| RightCurlyBracket | 0x2230 | `rightcurlybracket`, `rcbr`, `}` |
+| Pipe | 0x2231 | `pipe`, `\|` |
 | Semicolon | 0x0033 | `semicolon`, `;`, `scln`, `scoln` |
-| Colon | 0x1233 | `colon`, `cln`, `:` |
-| DoubleQuote | 0x1234 | `doublequote`, `dquot`, `"` |
-| LeftAngleBracket | 0x1236 | `leftanglebracket`, `labk`, `<` |
-| RightAngleBracket | 0x1237 | `rightanglebracket`, `rabk`, `>` |
-| QuestionMark | 0x1238 | `questionmark`, `ques`, `?` |
+| Colon | 0x2233 | `colon`, `cln`, `:` |
+| DoubleQuote | 0x2234 | `doublequote`, `dquot`, `"` |
+| LeftAngleBracket | 0x2236 | `leftanglebracket`, `labk`, `<` |
+| RightAngleBracket | 0x2237 | `rightanglebracket`, `rabk`, `>` |
+| QuestionMark | 0x2238 | `questionmark`, `ques`, `?` |
 | NonUsBackSlash | 0x0064 | `nonusbackslash` |
 | NonUsHash | 0x0032 | `nonushash` |
 
@@ -290,34 +290,34 @@ keycodes = "spanish" // [!code focus]
 | NTilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0033 | `ntilde`, `ñ` |
 | Cced<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0032 | `cced`, `Ç` |
 | LeftAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0064 | `leftanglebracket` |
-| RightAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1236 | `rightanglebracket` |
+| RightAngleBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2236 | `rightanglebracket` |
 | Minus<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0038 | `minus` |
-| Ford<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1200 | `ford`, `ª` |
-| DoubleQuote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x121F | `doublequote` |
-| Bullet<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1220 | `bullet`, `bult`, `·` |
-| Dollar<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1221 | `dollar` |
-| Percent<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1222 | `percent` |
-| Ampersand<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1223 | `ampersand` |
-| Slash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1224 | `slash` |
-| LeftParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1225 | `leftparenthesis` |
-| RightParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1226 | `rightparenthesis` |
-| Equal<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1227 | `equal` |
-| QuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1234 | `questionmark` |
-| InverseQuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1200 | `inversequestionmark`, `¿` |
-| Circumflex<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1235 | `circumflex` |
-| Asterisk<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x122E | `asterisk` |
-| Diae<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xBECE | `diae`, `¨` |
-| Semicolon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1236 | `semicolon` |
-| Colon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1237 | `colon` |
-| Backslash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `backslash` |
-| Pipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x141E | `pipe` |
-| At<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x141F | `at` |
-| Hash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1420 | `hash` |
-| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x140F | `tilde` |
-| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1422 | `euro` |
-| Not<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1423 | `not`, `¬` |
-| LeftBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1435 | `leftbracket` |
-| RightBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x162E | `rightbracket` |
-| LeftCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xBCCE | `leftcurlybracket` |
-| RightCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xDCED | `rightcurlybracket` |
+| Ford<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2200 | `ford`, `ª` |
+| DoubleQuote<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x221F | `doublequote` |
+| Bullet<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2220 | `bullet`, `bult`, `·` |
+| Dollar<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2221 | `dollar` |
+| Percent<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2222 | `percent` |
+| Ampersand<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2223 | `ampersand` |
+| Slash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2224 | `slash` |
+| LeftParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2225 | `leftparenthesis` |
+| RightParenthesis<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2226 | `rightparenthesis` |
+| Equal<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2227 | `equal` |
+| QuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2234 | `questionmark` |
+| InverseQuestionMark<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2200 | `inversequestionmark`, `¿` |
+| Circumflex<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2235 | `circumflex` |
+| Asterisk<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x222E | `asterisk` |
+| Diae<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xAECE | `diae`, `¨` |
+| Semicolon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2236 | `semicolon` |
+| Colon<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2237 | `colon` |
+| Backslash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `backslash` |
+| Pipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x401E | `pipe` |
+| At<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x401F | `at` |
+| Hash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4020 | `hash` |
+| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x400F | `tilde` |
+| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4022 | `euro` |
+| Not<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4023 | `not`, `¬` |
+| LeftBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4035 | `leftbracket` |
+| RightBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x622E | `rightbracket` |
+| LeftCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xECCE | `leftcurlybracket` |
+| RightCurlyBracket<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0xCCED | `rightcurlybracket` |
 

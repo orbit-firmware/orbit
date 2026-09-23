@@ -47,11 +47,11 @@ keycodes = "uk" // [!code focus]
 | X | 0x001B | `x` |
 | Y | 0x001C | `y` |
 | Z | 0x001D | `z` |
-| E_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `e_acute`, `é` |
-| U_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `u_acute`, `ú` |
-| I_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `i_acute`, `í` |
-| O_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `o_acute`, `ó` |
-| A_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1400 | `a_acute`, `á` |
+| E_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `e_acute`, `é` |
+| U_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `u_acute`, `ú` |
+| I_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `i_acute`, `í` |
+| O_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `o_acute`, `ó` |
+| A_Acute<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4000 | `a_acute`, `á` |
 
 ## Numbers
 
@@ -116,34 +116,34 @@ keycodes = "uk" // [!code focus]
 | Comma | 0x0036 | `comma`, `,` |
 | Dot | 0x0037 | `dot`, `.` |
 | Slash | 0x0038 | `slash`, `/`, `slsh`, `sls` |
-| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1264 | `tilde`, `~` |
-| Exlm | 0x121E | `exlm`, `!` |
-| At | 0x121F | `at`, `@` |
+| Tilde<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2264 | `tilde`, `~` |
+| Exlm | 0x221E | `exlm`, `!` |
+| At | 0x221F | `at`, `@` |
 | Hash<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x0064 | `hash`, `#` |
-| Dollar | 0x1221 | `dollar`, `dlr`, `$` |
-| Percent | 0x1222 | `percent`, `perc`, `%` |
-| Circumflex | 0x1223 | `circumflex`, `circ`, `^` |
-| Ampersand | 0x1224 | `ampersand`, `ampr`, `&` |
-| Asterisk | 0x1225 | `asterisk`, `astr`, `*` |
-| LeftParenthesis | 0x1226 | `leftparenthesis`, `lprn`, `(` |
-| RightParenthesis | 0x1227 | `rightparenthesis`, `rprn`, `)` |
-| Underscore | 0x122D | `underscore`, `unds`, `_` |
-| Plus | 0x122E | `plus`, `+` |
-| LeftCurlyBracket | 0x122F | `leftcurlybracket`, `lcbr`, `{` |
-| RightCurlyBracket | 0x1230 | `rightcurlybracket`, `rcbr`, `}` |
-| Pipe | 0x1231 | `pipe`, `\|` |
+| Dollar | 0x2221 | `dollar`, `dlr`, `$` |
+| Percent | 0x2222 | `percent`, `perc`, `%` |
+| Circumflex | 0x2223 | `circumflex`, `circ`, `^` |
+| Ampersand | 0x2224 | `ampersand`, `ampr`, `&` |
+| Asterisk | 0x2225 | `asterisk`, `astr`, `*` |
+| LeftParenthesis | 0x2226 | `leftparenthesis`, `lprn`, `(` |
+| RightParenthesis | 0x2227 | `rightparenthesis`, `rprn`, `)` |
+| Underscore | 0x222D | `underscore`, `unds`, `_` |
+| Plus | 0x222E | `plus`, `+` |
+| LeftCurlyBracket | 0x222F | `leftcurlybracket`, `lcbr`, `{` |
+| RightCurlyBracket | 0x2230 | `rightcurlybracket`, `rcbr`, `}` |
+| Pipe | 0x2231 | `pipe`, `\|` |
 | Semicolon | 0x0033 | `semicolon`, `;`, `scln`, `scoln` |
-| Colon | 0x1233 | `colon`, `cln`, `:` |
-| DoubleQuote | 0x1234 | `doublequote`, `dquot`, `"` |
-| LeftAngleBracket | 0x1236 | `leftanglebracket`, `labk`, `<` |
-| RightAngleBracket | 0x1237 | `rightanglebracket`, `rabk`, `>` |
-| QuestionMark | 0x1238 | `questionmark`, `ques`, `?` |
+| Colon | 0x2233 | `colon`, `cln`, `:` |
+| DoubleQuote | 0x2234 | `doublequote`, `dquot`, `"` |
+| LeftAngleBracket | 0x2236 | `leftanglebracket`, `labk`, `<` |
+| RightAngleBracket | 0x2237 | `rightanglebracket`, `rabk`, `>` |
+| QuestionMark | 0x2238 | `questionmark`, `ques`, `?` |
 | NonUsBackSlash | 0x0064 | `nonusbackslash` |
 | NonUsHash | 0x0032 | `nonushash` |
-| Not<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1235 | `not`, `¬` |
-| Pound<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1220 | `pound`, `£` |
-| BrokenPipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1435 | `brokenpipe`, `¦` |
-| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x1421 | `euro`, `€` |
+| Not<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2235 | `not`, `¬` |
+| Pound<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x2220 | `pound`, `£` |
+| BrokenPipe<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4035 | `brokenpipe`, `¦` |
+| Euro<a style='color: var(--vp-c-brand-1); text-decoration: none;' href='#legend'>*</a> | 0x4021 | `euro`, `€` |
 
 ## Function keys
 
